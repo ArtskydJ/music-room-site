@@ -26,13 +26,17 @@ io.on('connection', function (socket) {
 	socket.on('del', deleteUploads)
 
 	function upload(file, meta) {
-		var md5 = hash(file)
-		metaDb.put(md5, JSON.stringify(meta), cbIfErr(logErr, function () {
-			fileDb.put(md5, file, cbIfErr(logErr, function () {
-				socket.emit('uploaded', meta.name)
-				//console.log('emit: uploaded; ' + meta.name)
+		if (fileLooksGood(meta)) {
+			var md5 = hash(file)
+			metaDb.put(md5, JSON.stringify(meta), cbIfErr(logErr, function () {
+				fileDb.put(md5, file, cbIfErr(logErr, function () {
+					socket.emit('uploaded', true, meta.name)
+					//console.log('emit: uploaded; ' + meta.name)
+				}))
 			}))
-		}))
+		} else {
+			socket.emit('uploaded', false, meta.name)
+		}
 	}
 
 	function listUploads() {
@@ -80,6 +84,19 @@ function getMetadata(cb) {
 			logErr(e)
 		}
 	}).on('end', cb.bind(null, hashMap))
+}
+
+function fileLooksGood(meta) {
+	//Rule of thumb: 1mb/min (give or take)
+	//1mb = 1,000,000 bytes
+	return (
+		meta && meta.size && typeof meta.size === 'number' &&
+		meta.size < 1000 * 1000 * 10 && //10 mb or smaller
+		meta.type && typeof meta.type === 'string' &&
+		meta.type.split('/')[0] === 'audio' &&
+		meta.type.split('/')[1] === 'mp3'
+	)
+
 }
 
 function cbIfErr(onErr, noErr) {

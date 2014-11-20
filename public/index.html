@@ -9,15 +9,15 @@
 	<div align=CENTER>
 	<div
 		id="upload"
-		style="height: 200px; width: 500px; white-space: pre; border-radius: 30px; background-color: #ddd"
+		style="height: 120px; width: 420px; padding: 40px; border-radius: 30px; white-space: pre; background-color: #ddd"
 		align=CENTER
 		ondragenter="onDragEnter(event)"
 		ondragover="onDragOver(event)"
 		ondragleave="onDragLeave()"
 		ondrop="onDrop(event)"
 	>UPLOAD</div></div>
-	<input type="button" value="list uploaded files in console" onclick="ls();"><br>
-	<input type="button" value="delete all uploaded files" onclick="del();"><br>
+	<input type="button" style="margin:5px" value="list files" onclick="ls();"><br>
+	<input type="button" style="margin:5px" value="delete files" onclick="del();"><br>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/client.js"></script>
 </body>  

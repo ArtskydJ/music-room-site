@@ -6,8 +6,9 @@ console.log('client.js imported.')
 socket.on('startup', function (text) {
 	console.log('startup: ' + text)
 })
-socket.on('uploaded', function (filename) {
-	console.log('uploaded: ' + filename)
+socket.on('uploaded', function (success, filename) {
+	console.timeEnd(filename)
+	console.log((success ? 'uploaded: ' : 'did not upload: ') + filename)
 })
 socket.on('list uploads', function (filenames) {
 	if (filenames.length) {
@@ -28,6 +29,7 @@ function del() { socket.emit('del') }
 function upload(files) {
 	for (var i=0; i < files.length; i++) { //do not use forEach
 		var file = files.item(i)
+		console.time(file.name)
 		socket.emit('upload', file, {
 			name: file.name,
 			size: file.size,
