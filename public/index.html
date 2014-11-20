@@ -8,13 +8,13 @@
 <body>
 	<div align=CENTER>
 	<div
-		id="output"
-		style="height: 200px; width: 500px; white-space: pre; border: 8px dotted black; border-radius: 30px;"
+		id="upload"
+		style="height: 200px; width: 500px; white-space: pre; border-radius: 30px; background-color: #ddd"
 		align=CENTER
-		ondragenter="output(); onDrag(event); //'', true"
-		ondragover="onDrag(event);"
-		ondragleave="output();"
-		ondrop="onDrag(event); upload(event);"
+		ondragenter="onDragEnter(event)"
+		ondragover="onDragOver(event)"
+		ondragleave="onDragLeave()"
+		ondrop="onDrop(event)"
 	>UPLOAD</div></div>
 	<input type="button" value="list uploaded files in console" onclick="ls();"><br>
 	<input type="button" value="delete all uploaded files" onclick="del();"><br>

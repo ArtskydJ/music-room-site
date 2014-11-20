@@ -27,24 +27,22 @@ io.on('connection', function (socket) {
 
 	function upload(file, meta) {
 		var md5 = hash(file)
-		var str = JSON.stringify(meta)
-		console.log('stringified:', str)
-		metaDb.put(md5, str, cbIfErr(logErr, function () {
+		metaDb.put(md5, JSON.stringify(meta), cbIfErr(logErr, function () {
 			fileDb.put(md5, file, cbIfErr(logErr, function () {
 				socket.emit('uploaded', meta.name)
-				console.log('emit: uploaded, ' + meta.name)
+				//console.log('emit: uploaded; ' + meta.name)
 			}))
 		}))
 	}
 
 	function listUploads() {
 		getFilenames(function (hashnames) {
-			getHashMap(function (hashToMetadata) {
+			getMetadata(function (hashToMetadata) {
 				var uploadedFilenames = hashnames.map(function (e) {
 					return hashToMetadata[e].name
 				})
 				socket.emit('list uploads', uploadedFilenames)
-				console.log('emit: list uploads, ', uploadedFilenames)
+				//console.log('emit: list uploads; ' + uploadedFilenames.join(', '))
 			})
 		})
 	}
@@ -53,7 +51,7 @@ io.on('connection', function (socket) {
 		deleteAll(fileDb, cbIfErr(logErr, function () {
 			deleteAll(metaDb, cbIfErr(logErr, function () {
 				socket.emit('deleted')
-				console.log('emit: deleted')
+				//console.log('emit: deleted')
 			}))
 		}))
 	}
@@ -68,14 +66,12 @@ function deleteAll(db, cb) {
 
 function getFilenames(cb) {
 	var filenames = []
-	fileDb.createKeyStream().on('data', function (key) {
-		filenames.push(key)
-	}).on('end', function () {
-		cb(filenames)
-	})
+	var read = fileDb.createKeyStream()
+	read.on('data', function (key) { filenames.push(key) })
+	read.on('end', function () { cb(filenames) })
 }
 
-function getHashMap(cb) {
+function getMetadata(cb) {
 	var hashMap = {}
 	metaDb.createReadStream().on('data', function (pair) {
 		try {
@@ -83,10 +79,7 @@ function getHashMap(cb) {
 		} catch (e) {
 			logErr(e)
 		}
-	}).on('end', function () {
-		console.dir(Object.keys(hashMap))
-		cb(hashMap)
-	})
+	}).on('end', cb.bind(null, hashMap))
 }
 
 function cbIfErr(onErr, noErr) {

@@ -1,6 +1,6 @@
 var socket = io('http://localhost')
 
-//*****************LOG ON EVENT*****************//
+//*****************LOG*ON*EVENT*****************//
 console.log('upload.js imported.')
 
 socket.on('startup', function (text) {
@@ -10,15 +10,31 @@ socket.on('uploaded', function (filename) {
 	console.log('uploaded: ' + filename)
 })
 socket.on('list uploads', function (filenames) {
-	console.log('files:\n' + filenames.join('\n'))
+	if (filenames.length) {
+		var join = '\n- '
+		console.log('files:' + join + filenames.join(join))
+	} else {
+		console.log('No files found.')
+	}
 })
 socket.on('deleted', function () {
 	console.log('Deleted all files.')
 })
 
-//*****************EMIT ON CLICK****************//
+//*******************EMITTERS*******************//
 function ls()  { socket.emit('ls')  }
 function del() { socket.emit('del') }
+
+function upload(files) {
+	for (var i=0; i < files.length; i++) { //do not use forEach
+		var file = files.item(i)
+		socket.emit('upload', file, {
+			name: file.name,
+			size: file.size,
+			type: file.type
+		})
+	}
+}
 
 // ^^^^^^^^^
 // Socket IO
@@ -28,35 +44,52 @@ function del() { socket.emit('del') }
 // Beautiful Interface :D
 // vvvvvvvvvvvvvvvvvvv
 
-//**************DRAGGING INTERFACE**************//
-function onDrag(evnt) {
+//**************DRAGGING*INTERFACE**************//
+function onDragEnter(evnt) {
+	document.getElementById("upload").style['background-color'] = '#3f3'
+	_dragging(evnt)
+	_output()
+}
+
+function onDragOver(evnt) {
+	_dragging(evnt)
+}
+
+function onDragLeave() {
+	document.getElementById("upload").style['background-color'] = '#ddd'
+	_output('UPLOAD', true)
+}
+
+function onDrop(evnt) {
+	document.getElementById("upload").style['background-color'] = '#ddd'
+	_dragging(evnt)
+	_drop(evnt)
+	upload(evnt.dataTransfer.files)
+}
+
+//***************HELPER*FUNCTIONS***************//
+
+function _dragging(evnt) {
 	evnt.stopPropagation()
 	evnt.preventDefault()
 }
 
-function upload(evnt) {
+function _drop(evnt) {
 	var files = evnt.dataTransfer.files
-	console.log(files)
-
-	output(files.length + " files:\n")
+	var plural = (files.length === 1 ? '' : 's')
+	var text = files.length + " File" + plural + ":\n"
+	_output(text, true)
 	for(var i=0; i < files.length; i++) { //do not bind forEach
 		var file = files.item(i)
-		console.log(file.name, typeof file.slice())
-		socket.emit('upload', file, {
-			name: file.name,
-			size: file.size,
-			type: file.type
-		})
-		output(file.name + ", " + file.size + "bytes, " + file.type + "\n")
+		_output(file.name + ", " + file.size + "bytes, " + file.type + "\n")
 	}
 }
 
-//********************OUTPUT********************//
 var lastOutput = ''
-function output(text, clear) {
-	if (!text || clear) {
-		lastOutput = document.getElementById("output").textContent
-		document.getElementById("output").textContent = ''
+function _output(text, clear) {
+	if (typeof text === 'undefined' || clear) {
+		lastOutput = document.getElementById("upload").textContent
+		document.getElementById("upload").textContent = ''
 	}
-	document.getElementById("output").textContent += text ? text : lastOutput;
+	document.getElementById("upload").textContent += text ? text : lastOutput;
 }
