@@ -20,47 +20,50 @@ var metaDb = space(db, 'meta')
 server.listen(80)
 
 io.on('connection', function (socket) {
-	socket.on('upload', upload.bind(null, socket))
-	socket.on('ls', listUploads.bind(null, socket))
-	socket.on('del', deleteUploads.bind(null, function (err, n) {
-		if (err) {
-			console.error(err)
-		} else {
-			socket.emit('deleted', n)
-		}
-	}))
+	socket.emit('startup', 'why, hullo thar')
+	socket.on('upload', upload)
+	socket.on('ls', listUploads)
+	socket.on('del', deleteUploads)
+
+	function upload(file, meta) {
+		var md5 = hash(file)
+		var str = JSON.stringify(meta)
+		console.log('stringified:', str)
+		metaDb.put(md5, str, cbIfErr(logErr, function () {
+			fileDb.put(md5, file, cbIfErr(logErr, function () {
+				socket.emit('uploaded', meta.name)
+				console.log('emit: uploaded, ' + meta.name)
+			}))
+		}))
+	}
+
+	function listUploads() {
+		getFilenames(function (hashnames) {
+			getHashMap(function (hashToMetadata) {
+				var uploadedFilenames = hashnames.map(function (e) {
+					return hashToMetadata[e].name
+				})
+				socket.emit('list uploads', uploadedFilenames)
+				console.log('emit: list uploads, ', uploadedFilenames)
+			})
+		})
+	}
+
+	function deleteUploads() {
+		deleteAll(fileDb, cbIfErr(logErr, function () {
+			deleteAll(metaDb, cbIfErr(logErr, function () {
+				socket.emit('deleted')
+				console.log('emit: deleted')
+			}))
+		}))
+	}
 })
 
-function upload(socket, file, meta) {
-	var md5 = hash(file)
-	var str = JSON.stringify(meta)
-	console.log('stringified:', str)
-	metaDb.put(md5, str, logErr)
-	fileDb.put(md5, file, function (err) {
-		if (err) {
-			console.error(err)
-		} else {
-			socket.emit('uploaded', meta.name)
-		}
-	})
-}
-
-function listUploads(socket) {
-	getFilenames(function (hashnames) {
-		getHashMap(function (hashMap) {
-			var filenames = hashnames.map(function (e) {
-				return hashMap[e]
-			})
-			socket.emit('filenames', filenames)
-		})
-	})
-}
-
-function deleteUploads(cb) {
-	var remove = getFilenames().map(function (key) {
-		return {type: 'del', key: key}
-	})
-	fileDb.batch(remove, cb) //number out remove.length
+function deleteAll(db, cb) {
+	var batch = db.batch()
+	var read = fileDb.createKeyStream()
+	read.on('data', function (key) { batch.del(key) })
+	read.on('end', function () { batch.write(cb) })
 }
 
 function getFilenames(cb) {
@@ -77,18 +80,25 @@ function getHashMap(cb) {
 	metaDb.createReadStream().on('data', function (pair) {
 		try {
 			hashMap[pair.key] = JSON.parse(pair.value)
-			console.dir(hashMap[pair.key])
 		} catch (e) {
-			console.log(e)
+			logErr(e)
 		}
 	}).on('end', function () {
+		console.dir(Object.keys(hashMap))
 		cb(hashMap)
 	})
 }
 
+function cbIfErr(onErr, noErr) {
+	return function (err) {
+		if (err) onErr(err)
+		else noErr.apply(null, [].slice.call(arguments, 1))
+	}
+}
+
 function logErr(err) {
 	if (err) {
-		console.error(err)
+		console.log('Error: ' + (err && err.message))
 	}
 }
 

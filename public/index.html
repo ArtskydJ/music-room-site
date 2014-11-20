@@ -11,13 +11,13 @@
 		id="output"
 		style="height: 200px; width: 500px; white-space: pre; border: 8px dotted black; border-radius: 30px;"
 		align=CENTER
-		ondragenter="output('', true); onDrag(event);"
+		ondragenter="output(); onDrag(event); //'', true"
 		ondragover="onDrag(event);"
-		ondragleave="output(lastOutput, true);"
+		ondragleave="output();"
 		ondrop="onDrag(event); upload(event);"
 	>UPLOAD</div></div>
-	<input type="button" value="list uploaded files in console" onclick="ls();">
-	<input type="button" value="delete all uploaded files" onclick="del();">
+	<input type="button" value="list uploaded files in console" onclick="ls();"><br>
+	<input type="button" value="delete all uploaded files" onclick="del();"><br>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/upload.js"></script>
 </body>  
