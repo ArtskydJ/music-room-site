@@ -1,0 +1,28 @@
+{
+  "name": "music-room",
+  "version": "0.0.1",
+  "description": "Share, enjoy, and chat about music online",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArtskydJ/music-room.git"
+  },
+  "keywords": [
+    "music",
+    "chat",
+    "website"
+  ],
+  "author": "Joseph Dykstra",
+  "license": "VOL",
+  "bugs": {
+    "url": "https://github.com/ArtskydJ/music-room/issues"
+  },
+  "homepage": "https://github.com/ArtskydJ/music-room",
+  "dependencies": {
+    "ecstatic": "^0.5.6",
+    "socket.io": "^1.2.0"
+  }
+}
