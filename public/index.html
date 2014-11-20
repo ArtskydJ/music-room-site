@@ -3,46 +3,22 @@
 <head>  
 	<meta charset="utf-8">  
 	<title>Music Room</title>
+	<link rel='shortcut icon' type='image/png' href='/favicon.png' />
 </head>  
 <body>
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
-		var socket = io('http://localhost')
-		socket.on('news', function (data) {
-			console.log('data from server:', data)
-		})
-
-		function onDrag(evnt) {
-			evnt.stopPropagation()
-			evnt.preventDefault()
-		}
-
-		function doDrop(evnt) {
-			var files = evnt.dataTransfer.files
-
-			socket.emit('upload', files)
-
-			output(files.length + " files:\n")
-			;[].forEach.call(files, function (file) {
-				output(file.name + ", " + file.size + "bytes, " + file.type + "\n")
-			})
-		}
-
-		function output(text, clear) {
-			if (clear) {
-				document.getElementById("output").textContent = ''
-			}
-			document.getElementById("output").textContent += text;
-			//dump(text);
-		}
-	</script>
+	<div align=CENTER>
 	<div
 		id="output"
-		style="height: 200px; width: 500px; white-space: pre; border: 8px dotted black;"
+		style="height: 200px; width: 500px; white-space: pre; border: 8px dotted black; border-radius: 30px;"
 		align=CENTER
 		ondragenter="output('', true); onDrag(event);"
 		ondragover="onDrag(event);"
-		ondrop="onDrag(event); doDrop(event);"
-	><br><br><br><br><br>UPLOAD</div>
+		ondragleave="output(lastOutput, true);"
+		ondrop="onDrag(event); upload(event);"
+	>UPLOAD</div></div>
+	<input type="button" value="list uploaded files in console" onclick="ls();">
+	<input type="button" value="delete all uploaded files" onclick="del();">
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/upload.js"></script>
 </body>  
 </html>
