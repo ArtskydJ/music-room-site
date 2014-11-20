@@ -1,7 +1,7 @@
 var socket = io('http://localhost')
 
 //*****************LOG*ON*EVENT*****************//
-console.log('upload.js imported.')
+console.log('client.js imported.')
 
 socket.on('startup', function (text) {
 	console.log('startup: ' + text)
