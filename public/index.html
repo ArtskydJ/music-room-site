@@ -4,21 +4,19 @@
 	<meta charset="utf-8">  
 	<title>Music Room</title>
 	<link rel='shortcut icon' type='image/png' href='/favicon.png' />
+	<style>
+		#dragDropUpload{height: 120px; width: 420px; padding: 40px;
+			border-radius: 30px;white-space: pre;background-color: #ddd;}
+		#dragDropUpload.drag{background-color:#0f0;}
+		input{margin:5px;}
+	</style>
 </head>  
 <body>
 	<div align=CENTER>
-	<div
-		id="dragDropUpload"
-		style="height: 120px; width: 420px; padding: 40px; border-radius: 30px; white-space: pre; background-color: #ddd"
-		align=CENTER
-		ondragenter="onDragEnter(event)"
-		ondragover="onDragOver(event)"
-		ondragleave="onDragLeave()"
-		ondrop="onDrop(event)"
-	>UPLOAD</div></div>
-	<input type="button" style="margin:5px" value="list files" onclick="ls();"><br>
-	<input type="button" style="margin:5px" value="delete files" onclick="del();"><br>
-	<!--<script src="/socket.io/socket.io.js"></script>-->
-	<script src="/build.js"></script>
+		<div id="dragDropUpload" align=CENTER>UPLOAD</div>
+	</div>
+	<input type="button" value="list files" onclick="window.ls();"><br>
+	<input type="button" value="delete files" onclick="window.del();"><br>
+	<script src="/bundle.js"></script>
 </body>  
 </html>

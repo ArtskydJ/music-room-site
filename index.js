@@ -7,7 +7,6 @@ var space = require('level-spaces')
 var Socket = require('socket.io')
 var uploadIsValid = require('./uploadIsValid.js')
 
-console.log(__dirname + '/public')
 var serve = Ecstatic({
 	root: __dirname + '/public',
 	showDir: false,
@@ -22,7 +21,7 @@ var metaDb = space(db, 'meta')
 server.listen(80)
 
 io.on('connection', function (socket) {
-	socket.emit('startup', 'why, hullo thar')
+	socket.emit('greeting', 'why, hullo thar')
 	socket.on('upload', upload)
 	socket.on('ls', listUploads)
 	socket.on('del', deleteUploads)
@@ -102,5 +101,5 @@ function logErr(err) {
 }
 
 function hash(data) {
-	return crypto.createHash('md5').update(data).digest('hex')
+	return crypto.createHash('md5').update(data.toString()).digest('hex')
 }

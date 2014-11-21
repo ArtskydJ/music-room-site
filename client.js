@@ -1,32 +1,52 @@
-var socket = require('socket.io-client')('http://localhost') //io('http://localhost')
-var dragDrop = require('drag-drop/buffer')
+var socket = require('socket.io-client')('http://localhost')
+var dragDrop = require('drag-drop')
+var musicMetadata = require('musicmetadata')
 var uploadIsValid = require('./uploadIsValid.js')
 
-//*****************LOG*ON*EVENT*****************//
 dragDrop('#dragDropUpload', function (files, pos) {
 	files.forEach(function (file) {
-		console.time(file.name)
-		socket.emit('upload', file, {
-			name: file.name,
-			size: file.size,
-			type: file.type
-		})
+		if (uploadIsValid(file)) {
+			console.log(file)
+
+			var metadata = musicMetadata(file) //(new Blob(file))
+			metadata.on('metadata', function (result) {
+				console.log(result)
+				/*if (result.picture.length > 0) {
+					var picture = result.picture[0]
+					var url = URL.createObjectURL(new Blob([picture.data], {'type': 'image/' + picture.format}))
+					var image = document.getElementById('myimg')
+					image.src = url
+				}
+				var div = document.getElementById('info')
+				div.innerText = JSON.stringify(result, undefined, 2)*/
+			})
+			metadata.on('done', function thrower(err) {
+				if (err) throw err
+			})
+
+			console.time(file.name)
+			socket.emit('upload', file, {
+				name: file.name,
+				size: file.size,
+				type: file.type
+			})
+		} else {
+			console.log('Blocked upload: ' + file.name) // tell then why it was blocked?
+		}
 	})
 })
 
-console.log('client.js imported.')
-
-socket.on('startup', function (text) {
-	console.log('startup: ' + text)
+socket.on('greeting', function (greeting) {
+	console.log(greeting)
 })
 socket.on('uploaded', function (success, filename) {
 	console.timeEnd(filename)
-	console.log((success ? 'uploaded: ' : 'did not upload: ') + filename)
+	console.log((success ? 'Uploaded: ' : 'File not allowed: ') + filename)
 })
 socket.on('list uploads', function (filenames) {
 	if (filenames.length) {
 		var join = '\n- '
-		console.log('files:' + join + filenames.join(join))
+		console.log('Files:' + join + filenames.join(join))
 	} else {
 		console.log('No files found.')
 	}
@@ -35,64 +55,5 @@ socket.on('deleted', function () {
 	console.log('Deleted all files.')
 })
 
-//*******************EMITTERS*******************//
-function ls()  { socket.emit('ls')  }
-function del() { socket.emit('del') }
-
-// ^^^^^^^^^
-// Socket IO
-
-// -------------------------------------------- //
-
-// Beautiful Interface :D
-// vvvvvvvvvvvvvvvvvvv
-
-//**************DRAGGING*INTERFACE**************//
-function onDragEnter(evnt) {
-	document.getElementById("upload").style['background-color'] = '#3f3'
-	_dragging(evnt)
-	_output()
-}
-
-function onDragOver(evnt) {
-	_dragging(evnt)
-}
-
-function onDragLeave() {
-	document.getElementById("upload").style['background-color'] = '#ddd'
-	_output('UPLOAD', true)
-}
-
-function onDrop(evnt) {
-	document.getElementById("upload").style['background-color'] = '#ddd'
-	_dragging(evnt)
-	_drop(evnt)
-	upload(evnt.dataTransfer.files)
-}
-
-//***************HELPER*FUNCTIONS***************//
-
-function _dragging(evnt) {
-	evnt.stopPropagation()
-	evnt.preventDefault()
-}
-
-function _drop(evnt) {
-	var files = evnt.dataTransfer.files
-	var plural = (files.length === 1 ? '' : 's')
-	var text = files.length + " File" + plural + ":\n"
-	_output(text, true)
-	for(var i=0; i < files.length; i++) { //do not bind forEach
-		var file = files.item(i)
-		_output(file.name + ", " + file.size + "bytes, " + file.type + "\n")
-	}
-}
-
-var lastOutput = ''
-function _output(text, clear) {
-	if (typeof text === 'undefined' || clear) {
-		lastOutput = document.getElementById("upload").textContent
-		document.getElementById("upload").textContent = ''
-	}
-	document.getElementById("upload").textContent += text ? text : lastOutput;
-}
+window.ls =  function ls()  { socket.emit('ls')  }
+window.del = function del() { socket.emit('del') }
