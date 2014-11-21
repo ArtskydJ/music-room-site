@@ -4,7 +4,10 @@
   "description": "Share, enjoy, and chat about music online",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify client.js -d -o public/build.js",
+    "watch": "watchify client.js -d -o public/build.js",
+    "prestart": "browserify client.js -o public/build.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,8 @@
     "ecstatic": "^0.5.6",
     "level": "^0.18.0",
     "level-spaces": "^1.1.1",
-    "socket.io": "^1.2.0"
+    "socket.io": "^1.2.0",
+    "drag-drop": "^2.0.0",
+    "socket.io-client": "^1.2.0"
   }
 }
