@@ -78,19 +78,18 @@ function getFilenames(cb) {
 
 function getMetadata(cb) {
 	var hashMap = {}
-	metaDb.createReadStream().on('data', function (pair) {
-		try {
-			hashMap[pair.key] = JSON.parse(pair.value)
-		} catch (e) {
-			logErr(e)
-		}
-	}).on('end', cb.bind(null, hashMap))
+	var read = metaDb.createReadStream()
+	read.on('data', function (pair) {
+		try { hashMap[pair.key] = JSON.parse(pair.value) }
+		catch (err) { logErr(err) }
+	})
+	read.on('end', cb.bind(null, hashMap))
 }
 
-function cbIfErr(onErr, noErr) {
+function cbIfErr(errCb, noErrCb) {
 	return function (err) {
-		if (err) onErr(err)
-		else noErr.apply(null, [].slice.call(arguments, 1))
+		if (err) { errCb(err) }
+		else { noErrCb.apply(null, [].slice.call(arguments, 1)) }
 	}
 }
 
