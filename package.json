@@ -31,6 +31,9 @@
     "level-spaces": "^1.1.1",
     "musicmetadata": "^0.6.0",
     "socket.io": "^1.2.0",
-    "socket.io-client": "^1.2.0"
+    "socket.io-client": "^1.2.0",
+    "sux": "^0.1.5",
+    "webtorrent": "^0.14.0",
+    "xtend": "^4.0.0"
   }
 }
