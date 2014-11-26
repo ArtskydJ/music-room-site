@@ -4,7 +4,7 @@ var Ecstatic = require('ecstatic')
 var Socket = require('socket.io')
 var xtend = require('xtend')
 var webtorrent = require('webtorrent')
-//var uploadIsValid = require('./uploadIsValid.js')
+var uploadIsValid = require('./uploadIsValid.js')
 var config = require('./config.json').musicRoom
 var Sux = require('sux')
 
@@ -18,11 +18,33 @@ var io = Socket(server)
 server.listen(80)
 io.on('connection', function (socket) {
 	socket.emit('greeting', 'why, hullo thar')
+	socket.on('upload', upload)
+
+	function upload(file, meta) {
+		if (uploadIsValid(meta)) {
+			var id = hash(file)
+			socket.emit('uploaded', true, meta.name)
+			convert(file, id)
+		} else {
+			socket.emit('uploaded', false, meta.name)
+		}
+	}
 })
 
-function convert(inStream) {
-	var convert = new Sux(config.sux)
-	convert.in(inStream).start() //.out()
+function convert(file, id) {
+	var fs = require('fs')
+	Object.keys(config.sux).forEach(function (ext) {
+		var writePath = config.convertedPath + id + '.' + ext
+		console.log('creating: ' + writePath)
+		var suxOpts = xtend(config.sux[ext], {
+			input: file,
+			output: fs.createWriteStream(writePath)
+		})
+		var convert = new Sux(suxOpts)
+		convert.on('error', logErr)
+		convert.on('warning', logErr)
+		convert.start()
+	})
 }
 
 function cbIfErr(errCb, noErrCb) {

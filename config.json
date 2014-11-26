@@ -4,17 +4,18 @@
 			"root": "/public",
 			"showDir": false,
 			"gzip": true
-		}
-	},
-	"sux": {
-		"mp3": {
-			"depth": 16,
-			"rate": 44100,
-			"bitrate": 192
 		},
-		"ogg": {
-			"depth": 16,
-			"rate": 44100
-		}
+		"sux": {
+			"mp3": {
+				"depth": 16,
+				"rate": 44100,
+				"bitrate": 192
+			},
+			"ogg": {
+				"depth": 16,
+				"rate": 44100
+			}
+		},
+		"convertedPath": "./converted/"
 	}
 }
