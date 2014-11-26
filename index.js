@@ -3,9 +3,9 @@ var crypto = require('crypto')
 var Ecstatic = require('ecstatic')
 var Socket = require('socket.io')
 var xtend = require('xtend')
-var websocket = require('websocket')
+var webtorrent = require('webtorrent')
 //var uploadIsValid = require('./uploadIsValid.js')
-var config = require('./config.js').musicRoom
+var config = require('./config.json').musicRoom
 var Sux = require('sux')
 
 

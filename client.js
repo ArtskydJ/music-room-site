@@ -8,17 +8,9 @@ dragDrop('#dragDropUpload', function (files, pos) {
 		if (uploadIsValid(file)) {
 			console.log(file)
 
-			var metadata = musicMetadata(file) //(new Blob(file))
+			var metadata = musicMetadata(file)
 			metadata.on('metadata', function (result) {
 				console.log(result)
-				/*if (result.picture.length > 0) {
-					var picture = result.picture[0]
-					var url = URL.createObjectURL(new Blob([picture.data], {'type': 'image/' + picture.format}))
-					var image = document.getElementById('myimg')
-					image.src = url
-				}
-				var div = document.getElementById('info')
-				div.innerText = JSON.stringify(result, undefined, 2)*/
 			})
 			metadata.on('done', function thrower(err) {
 				if (err) throw err
