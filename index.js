@@ -6,7 +6,7 @@ var xtend = require('xtend')
 var webtorrent = require('webtorrent')
 var uploadIsValid = require('./uploadIsValid.js')
 var config = require('./config.json').musicRoom
-var Sux = require('sux')
+var transcode = require('sox').transcode
 
 
 config.ecstatic.root = __dirname + config.ecstatic.root
@@ -33,14 +33,14 @@ io.on('connection', function (socket) {
 
 function convert(file, id) {
 	var fs = require('fs')
-	Object.keys(config.sux).forEach(function (ext) {
+	Object.keys(config.sox).forEach(function (ext) {
 		var writePath = config.convertedPath + id + '.' + ext
 		console.log('creating: ' + writePath)
-		var suxOpts = xtend(config.sux[ext], {
+		var soxOpts = xtend(config.sox[ext], {
 			input: file,
 			output: fs.createWriteStream(writePath)
 		})
-		var convert = new Sux(suxOpts)
+		var convert = transcode(soxOpts)
 		convert.on('error', logErr)
 		convert.on('warning', logErr)
 		convert.start()
