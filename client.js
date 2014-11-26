@@ -48,4 +48,3 @@ socket.on('deleted', function () {
 })
 
 window.ls =  function ls()  { socket.emit('ls')  }
-window.del = function del() { socket.emit('del') }
