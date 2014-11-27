@@ -3,3 +3,4 @@ database/*
 public/bundle.js
 converted/*
 sox/*
+*.log
