@@ -46,5 +46,3 @@ socket.on('list uploads', function (filenames) {
 socket.on('deleted', function () {
 	console.log('Deleted all files.')
 })
-
-window.ls =  function ls()  { socket.emit('ls')  }
