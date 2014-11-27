@@ -1,32 +1,14 @@
-var socket = require('socket.io-client')('http://localhost')
-var dragDrop = require('drag-drop')
+var Socket = require('socket.io-client')
+var dragDrop = require('drag-drop') // /buffer
+var Webtorrent = require('webtorrent')
+var crypto = require('crypto')
 var musicMetadata = require('musicmetadata')
 var uploadIsValid = require('./uploadIsValid.js')
+var reflect = require('./reflect.js')
+var config = require('./config.json').musicRoom
 
-dragDrop('#dragDropUpload', function (files, pos) {
-	files.forEach(function (file) {
-		if (uploadIsValid(file)) {
-			console.log(file)
-
-			var metadata = musicMetadata(file)
-			metadata.on('metadata', function (result) {
-				console.log(result)
-			})
-			metadata.on('done', function thrower(err) {
-				if (err) throw err
-			})
-
-			console.time(file.name)
-			socket.emit('upload', file, {
-				name: file.name,
-				size: file.size,
-				type: file.type
-			})
-		} else {
-			console.log('Blocked upload: ' + file.name) // tell then why it was blocked?
-		}
-	})
-})
+var socket = Socket(config.socketIoUrl)
+var client = new Webtorrent()
 
 socket.on('greeting', function (greeting) {
 	console.log(greeting)
@@ -35,14 +17,28 @@ socket.on('uploaded', function (success, filename) {
 	console.timeEnd(filename)
 	console.log((success ? 'Uploaded: ' : 'File not allowed: ') + filename)
 })
-socket.on('list uploads', function (filenames) {
-	if (filenames.length) {
-		var join = '\n- '
-		console.log('Files:' + join + filenames.join(join))
-	} else {
-		console.log('No files found.')
-	}
+reflect('torrent', client, socket)
+
+dragDrop('#dragDropUpload', function (files, pos) {
+	console.log(files)
+	files.filter(uploadIsValid).forEach(function (file) {
+		client.seed(file, {
+			name: hash(file)
+		})
+	})
 })
-socket.on('deleted', function () {
-	console.log('Deleted all files.')
-})
+
+
+function parseMetadataFromFile(file) {
+	var metadata = musicMetadata(file)
+	metadata.on('metadata', function (result) {
+		console.log(result)
+	})
+	metadata.on('done', function (err) {
+		if (err) throw err
+	})
+}
+
+function hash(data) {
+	return crypto.createHash('md5').update(data.toString()).digest('hex')
+}

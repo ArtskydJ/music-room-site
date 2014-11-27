@@ -17,6 +17,7 @@
 				"channelCount": 2
 			}
 		],
-		"convertedPath": "./converted/"
+		"convertedPath": "./converted/",
+		"socketIoUrl": "http://localhost"
 	}
 }
