@@ -8,18 +8,23 @@ var reflect = require('./reflect.js')
 var config = require('./config.json').musicRoom
 
 var socket = Socket(config.socketIoUrl)
-var client = new Webtorrent()
+var transfer = new Webtorrent()
 
 socket.on('greeting', function (greeting) {
 	console.log(greeting)
 })
-reflect('torrent', client, socket)
+transfer.on('torrent', function (torrent) {
+	console.log(torrent)
+	//socket.emit('torrent', torrent)
+})
 
 dragDrop('#dragDropUpload', function (files, pos) {
 	console.log(files)
 	files.filter(uploadIsValid).forEach(function (file) {
-		client.seed(file, {
+		transfer.seed(file, {
 			name: hash(file)
+		}, function (torrent) {
+			console.log('torrent cb:', torrent)
 		})
 	})
 })

@@ -1,0 +1,26 @@
+{
+	"musicRoom": {
+		"ecstatic": {
+			"root": "/public",
+			"showDir": false,
+			"gzip": true
+		},
+		"convertedPath": "./converted/",
+		"socketIoUrl": "http://localhost",
+		"supportedCodecs": [
+			"aac",
+			"aiff",
+			"alac",
+			"au",
+			"caf",
+			"flac",
+			"m4a",
+			"mp3",
+			"wave"
+		]
+	}
+}
+
+
+
+
