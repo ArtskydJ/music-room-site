@@ -13,10 +13,6 @@ var client = new Webtorrent()
 socket.on('greeting', function (greeting) {
 	console.log(greeting)
 })
-socket.on('uploaded', function (success, filename) {
-	console.timeEnd(filename)
-	console.log((success ? 'Uploaded: ' : 'File not allowed: ') + filename)
-})
 reflect('torrent', client, socket)
 
 dragDrop('#dragDropUpload', function (files, pos) {
@@ -27,7 +23,6 @@ dragDrop('#dragDropUpload', function (files, pos) {
 		})
 	})
 })
-
 
 function parseMetadataFromFile(file) {
 	var metadata = musicMetadata(file)
