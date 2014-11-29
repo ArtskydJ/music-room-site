@@ -11,5 +11,7 @@ var io = Socket(server)
 server.listen(80)
 io.on('connection', function (socket) {
 	socket.emit('greeting', 'why, hullo thar')
-
+	socket.on('new file', function (infoHash) {
+		socket.broadcast.emit('new file', infoHash)
+	}) //do stuff here
 })
