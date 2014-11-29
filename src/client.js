@@ -20,13 +20,10 @@ transfer.on('torrent', function (torrent) {
 })
 socket.on('new file', function (infoHash) {
 	console.log('socket > new file: ' + infoHash)
-	//if (myUploads.indexOf(infoHash) === -1) { //download file only if it wasn't mine
-		console.log('Downloading...')
-		transfer.download(infoHash, function onTorrent(torrent) { //args?
-			console.log('downloaded: ' + infoHash)
-			console.log(torrent)
-		})
-	//}
+	transfer.download(infoHash, function onTorrent(torrent) { //args?
+		console.log('downloaded: ' + infoHash)
+		console.log(torrent)
+	})
 })
 
 dragDrop('#dragDropUpload', function (files, pos) {
