@@ -9,14 +9,12 @@ var config = require('./config.json').musicRoom
 
 var socket = Socket(config.socketIoUrl)
 var transfer = new Webtorrent()
-//var myUploads = []
 
 socket.on('greeting', function (greeting) {
 	console.log(greeting)
 })
 transfer.on('torrent', function (torrent) {
 	console.log(torrent)
-	//socket.emit('torrent', torrent)
 })
 socket.on('new file', function (infoHash) {
 	console.log('socket > new file: ' + infoHash)
@@ -31,7 +29,6 @@ dragDrop('#dragDropUpload', function (files, pos) {
 	files.filter(uploadIsValid).forEach(function (file) {
 		transfer.seed(file, {name: hash(file)}, function onSeed(torrent) {
 			var infoHash = torrent.infoHash
-			//myUploads.push(infoHash)
 			console.log('created torrent: ' + infoHash)
 			socket.emit('new file', infoHash) //.broadcast
 		})
