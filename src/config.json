@@ -1,11 +1,12 @@
 {
 	"musicRoom": {
+		"announce": [ "wss://tracker.webtorrent.io" ],
+		"convertedPath": "./converted/",
 		"ecstatic": {
 			"root": "/public",
 			"showDir": false,
 			"gzip": true
 		},
-		"convertedPath": "./converted/",
 		"socketIoUrl": "http://localhost",
 		"supportedCodecs": [
 			"aac",
