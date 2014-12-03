@@ -13,10 +13,15 @@ var playlist = PlaylistCombinator()
 server.listen(80)
 
 io.on('connection', function (socket) {
+	var userId = socket.id //I don't think these are persistent between shutdowns
+	playlist.addUser(userId)
+
 	socket.emit('greeting', 'why, hullo thar')
-	socket.on('new file', function (infoHash) {
+	socket.on('new file', function (infoHash) { //add auth here
+		playlist.addSong(userId, infoHash)
 		socket.broadcast.emit('new file', infoHash)
-	}) //do stuff here
+	})
 })
 
-playlist.on('error', console.log.bind(null, 'error'))
+
+playlist.on('error', console.log.bind(null, 'playlist error'))

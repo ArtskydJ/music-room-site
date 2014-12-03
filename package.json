@@ -28,18 +28,22 @@
     "aac": "^0.1.0",
     "alac": "^0.1.0",
     "av": "^0.4.3",
+    "concat-stream": "^1.4.7",
     "drag-drop": "^2.0.0",
     "ecstatic": "^0.5.6",
     "flac.js": "^0.2.1",
     "level": "^0.18.0",
     "level-spaces": "^1.1.1",
     "mp3": "^0.1.0",
-    "playlist-combinator": "0.0.2",
+    "playlist-combinator": "0.0.3",
     "socket.io": "^1.2.0",
     "socket.io-client": "^1.2.0",
     "sox": "^0.1.0",
     "typedarray-to-buffer": "^3.0.0",
     "webtorrent": "^0.14.0",
     "xtend": "^4.0.0"
+  },
+  "devDependencies": {
+    "coffeeify": "^1.0.0"
   }
 }
