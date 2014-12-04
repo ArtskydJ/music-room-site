@@ -33,7 +33,7 @@
     "ecstatic": "^0.5.6",
     "flac.js": "^0.2.1",
     "mp3": "^0.1.0",
-    "playlist-combinator": "0.0.3",
+    "playlist-combinator": "0.0.5",
     "socket.io": "^1.2.0",
     "socket.io-client": "^1.2.0",
     "webtorrent": "^0.14.0"
