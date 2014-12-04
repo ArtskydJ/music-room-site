@@ -12,49 +12,50 @@ var io = Socket(server)
 var playlist = PlaylistCombinator()
 var torrenter = new Webtorrent()
 
+//var userCount = 0
+var upcomingSongs = []
 server.listen(80)
 
-io.on('connection', function (socket) {
+io.on('connect', function (socket) {
 	var userId = socket.id //I don't think these are persistent between shutdowns
 	socket.join('room')
+	//userCount++
 
 	playlist.addUser(userId)
 
 	socket.emit('greeting', 'why, hullo thar')
+
 	socket.on('upload', function (infoHash) { //TODO add auth here
 		playlist.addSong(userId, infoHash)
-		torrenter.download({ //act as a seeder
+		torrenter.download({
 			infoHash: infoHash,
 			announce: config.announce
 		})
 		socket.broadcast.emit('download', infoHash) //TODO do this elsewhere
 	})
-	socket.on('disconnect', function () {
 
+	socket.emit('download', upcomingSongs)
+
+	socket.on('disconnect', function () {
+		//userCount--
 	})
 })
-
-/*setInterval(function poll() {
-
-}, 100)*/
 
 
 playlist.on('error', console.log.bind(null, 'playlist error'))
 
 /*
-gets uplaod:
-	add upload to playlist
+TODO
+#on join
+- evaluatestate
 
-no songs are playing:
-	there are enough people to play a song:
-		enough people have the song:
-			tell everyone to play the song
-		ELSE:
-			give everyone the song
+#when songshouldbedone
+- post message in chat
+- grab next song
+- emit startsong with [message, song, songtodownload]
 
-onsongend:
-	delete just played song (torrent.remove())
-	have all play next song
+#on leave
+- evaluatestate
 
-
+evaluatestate(users) if enough users, play a song or something
 */

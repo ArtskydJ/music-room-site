@@ -8,31 +8,33 @@ var config = require('./config.json').musicRoom
 var socket = Socket(config.socketIoUrl)
 var torrenter = new Webtorrent()
 var songStorage = new SongStorage()
-var latestUploadInfoHash = null
 
 socket.on('greeting', function (str) { console.log(str) })
 
-socket.on('download', function (infoHash) {
-	console.log('attempting to download: ' + infoHash)
-	torrenter.download({
-		infoHash: infoHash,
-		announce: config.announce
-	}, function onTorrent(torrent) {
-		latestUploadInfoHash = infoHash //for window.play()
-		console.log('downloaded ' + infoHash + ' from ' + torrent.swarm.wires.length + ' peers.')
-		songStorage.put(torrent)
+socket.on('download', function (infoHashes) {
+	if (typeof infoHashes === 'string') infoHashes = [infoHashes]
+	infoHashes.forEach(function (infoHash) {
+		console.log('attempting to download: ' + infoHash)
+		torrenter.download({
+			infoHash: infoHash,
+			announce: config.announce
+		}, function onTorrent(torrent) {
+			console.log('window.play(\'' + infoHash + '\')')
+			console.log('downloaded ' + infoHash + ' from ' + torrent.swarm.wires.length + ' peers.')
+			songStorage.put(torrent)
+		})
 	})
 })
 
-socket.on('play song', function (playInfoHash, preloadInfoHash) {
+socket.on('play', function (playInfoHash) {
 	songStorage.get(playInfoHash).play()
-	songStorage.get(preloadInfoHash).preload()
+	//deleteSong(oldInfoHash)
 })
 
 if (typeof document !== 'undefined') { //if in browser
 
-	window.play = function play() {
-		return songStorage.get( latestUploadInfoHash ).play()
+	window.play = function play(s) {
+		return songStorage.get(s).play()
 	}
 	console.log('window.play()')
 
@@ -45,7 +47,7 @@ if (typeof document !== 'undefined') { //if in browser
 						console.log('connected to peer')
 					})
 					var infoHash = torrent.infoHash
-					latestUploadInfoHash = infoHash //for window.play()
+					console.log('window.play(\'' + infoHash + '\')')
 					console.log('created torrent: ' + infoHash)
 					socket.emit('upload', infoHash) //add auth here; emit username too
 					songStorage.put(torrent)
@@ -55,4 +57,9 @@ if (typeof document !== 'undefined') { //if in browser
 			}
 		})
 	})
+}
+
+function deleteSong(infoHash) {
+	torrenter.remove(infoHash)
+	songStorage.get(infoHash).stop()
 }
