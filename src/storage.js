@@ -1,12 +1,10 @@
 var AV = require('av')
 var concat = require('concat-stream')
 
-function fail() {
-	console.log('failure')
-}
 var mock = {
-	play: fail,
-	preload: fail
+	play:    console.log('play failure'),
+	preload: console.log('preload failure'),
+	stop:    console.log('stop failure')
 }
 
 module.exports = function () {
@@ -16,6 +14,7 @@ module.exports = function () {
 		var file = torrent.files[0]
 		file.createReadStream().pipe(concat(function (buf) {
 			storage[torrent.infoHash] = AV.Player.fromBuffer(buf)
+			storage[torrent.infoHash].preload()
 		}))
 	}
 
