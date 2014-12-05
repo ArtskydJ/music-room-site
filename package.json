@@ -4,7 +4,7 @@
   "description": "Share, enjoy, and chat about music online",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tap test/*.js",
     "build": "browserify src/client.js -d -o public/bundle.js",
     "watch": "watchify src/client.js -d -o public/bundle.js",
     "prestart": "browserify src/client.js -o public/bundle.js"
@@ -25,21 +25,14 @@
   },
   "homepage": "https://github.com/ArtskydJ/music-room",
   "dependencies": {
-    "aac": "^0.1.0",
-    "alac": "^0.1.0",
-    "av": "^0.4.3",
     "concat-stream": "^1.4.7",
     "drag-drop": "^2.0.0",
     "ecstatic": "^0.5.6",
-    "flac.js": "^0.2.1",
-    "mp3": "^0.1.0",
     "playlist-combinator": "0.0.5",
     "socket.io": "^1.2.0",
     "socket.io-client": "^1.2.0",
-    "webtorrent": "^0.14.0",
-    "sux": "^0.1.5"
+    "sux": "^0.1.5",
+    "webtorrent": "^0.14.0"
   },
-  "devDependencies": {
-    "coffeeify": "^1.0.0"
-  }
+  "devDependencies": {}
 }
