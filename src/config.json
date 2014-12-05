@@ -18,7 +18,13 @@
 			"m4a",
 			"mp3",
 			"wave"
-		]
+		],
+		"presets":{
+			"mp3": {
+				"bitrate": 192
+			},
+			"ogg": {}
+		}
 	}
 }
 

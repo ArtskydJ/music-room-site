@@ -3,6 +3,7 @@ var Ecstatic = require('ecstatic')
 var Socket = require('socket.io')
 var PlaylistCombinator = require('playlist-combinator')
 var config = require('./src/config.json').musicRoom
+var storage = require('./src/serverStorage.js')
 
 config.ecstatic.root = process.cwd() + config.ecstatic.root
 var serve = Ecstatic(config.ecstatic)
@@ -25,7 +26,7 @@ io.on('connect', function (socket) {
 
 	socket.on('upload', function (infoHash) { //TODO add auth here
 		playlist.addSong(userId, infoHash)
-		storage.add(infoHash, infoHash)
+		storage.put(infoHash, infoHash) //yes, infoHash 2x
 		socket.broadcast.emit('download', infoHash) //TODO do this elsewhere
 	})
 
