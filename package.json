@@ -36,7 +36,8 @@
     "playlist-combinator": "0.0.5",
     "socket.io": "^1.2.0",
     "socket.io-client": "^1.2.0",
-    "webtorrent": "^0.14.0"
+    "webtorrent": "^0.14.0",
+    "sux": "^0.1.5"
   },
   "devDependencies": {
     "coffeeify": "^1.0.0"

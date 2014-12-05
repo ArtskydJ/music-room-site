@@ -1,16 +1,14 @@
 var http = require('http')
 var Ecstatic = require('ecstatic')
 var Socket = require('socket.io')
-var Webtorrent = require('webtorrent')
 var PlaylistCombinator = require('playlist-combinator')
 var config = require('./src/config.json').musicRoom
 
-config.ecstatic.root = __dirname + config.ecstatic.root
+config.ecstatic.root = process.cwd() + config.ecstatic.root
 var serve = Ecstatic(config.ecstatic)
 var server = http.createServer(serve)
 var io = Socket(server)
 var playlist = PlaylistCombinator()
-var torrenter = new Webtorrent()
 
 //var userCount = 0
 var upcomingSongs = []
@@ -27,10 +25,7 @@ io.on('connect', function (socket) {
 
 	socket.on('upload', function (infoHash) { //TODO add auth here
 		playlist.addSong(userId, infoHash)
-		torrenter.download({
-			infoHash: infoHash,
-			announce: config.announce
-		})
+		storage.add(infoHash, infoHash)
 		socket.broadcast.emit('download', infoHash) //TODO do this elsewhere
 	})
 

@@ -34,9 +34,10 @@ socket.on('play', function (playInfoHash) {
 if (typeof document !== 'undefined') { //if in browser
 
 	window.play = function play(s) {
-		return songStorage.get(s).play()
+		var song = songStorage.get(s)
+		song.play()
+		return song
 	}
-	console.log('window.play()')
 
 	dragDrop('#dragDropUpload', function (files, pos) {
 		files.forEach(function (file) {

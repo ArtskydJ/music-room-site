@@ -14,7 +14,7 @@ module.exports = function () {
 		var file = torrent.files[0]
 		file.createReadStream().pipe(concat(function (buf) {
 			storage[torrent.infoHash] = AV.Player.fromBuffer(buf)
-			storage[torrent.infoHash].preload()
+			//storage[torrent.infoHash].preload()
 		}))
 	}
 
