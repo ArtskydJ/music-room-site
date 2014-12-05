@@ -3,13 +3,14 @@ var Ecstatic = require('ecstatic')
 var Socket = require('socket.io')
 var PlaylistCombinator = require('playlist-combinator')
 var config = require('./src/config.json').musicRoom
-var storage = require('./src/serverStorage.js')
+var Storage = require('./src/serverStorage.js')
 
 config.ecstatic.root = process.cwd() + config.ecstatic.root
 var serve = Ecstatic(config.ecstatic)
 var server = http.createServer(serve)
 var io = Socket(server)
 var playlist = PlaylistCombinator()
+var storage = Storage()
 
 //var userCount = 0
 var upcomingSongs = []

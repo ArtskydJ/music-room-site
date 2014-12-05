@@ -1,5 +1,5 @@
 var Webtorrent = require('webtorrent')
-var config = require('./src/config.json').musicRoom
+var config = require('./config.json').musicRoom
 var sux = require('sux')
 var xtend = require('xtend')
 var runParallel = require('run-parallel')
@@ -20,7 +20,7 @@ function ConvertAndSeed(newType) {
 				type: newType,
 				input: {
 					type: inputType,
-					source: 
+					source: inputSource
 				}
 			}))
 			var seedStream = toMp3.out()
@@ -45,10 +45,6 @@ module.exports = function ServerStorage() {
 	var torrenter = new Webtorrent()
 	var convertToMp3 = ConvertAndSeed('mp3')
 	var convertToOgg = ConvertAndSeed('ogg')
-	var convertors = {
-		mp3: convertToMp3.bind(null, torrent),
-		ogg: convertToOgg.bind(null, torrent)
-	}
 
 	var map = {}
 	//should look like { songId1: {mp3: 'infoHash1', ogg: 'infoHash2'} }
@@ -59,7 +55,11 @@ module.exports = function ServerStorage() {
 			announce: config.announce
 		}, function onTorrent(torrent) {
 			//get duration...
-
+			
+			var convertors = {
+				mp3: convertToMp3.bind(null, torrent),
+				ogg: convertToOgg.bind(null, torrent)
+			}
 			runParallel(convertors, function end(err, results) {
 				if (!err) {
 					map[songId] = results
