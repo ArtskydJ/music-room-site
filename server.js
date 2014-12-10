@@ -12,47 +12,72 @@ var io = Socket(server)
 var playlist = PlaylistCombinator()
 var storage = Storage()
 
-//var userCount = 0
-var upcomingSongs = []
+var upcomingSongs = [] //playing and upcoming
 server.listen(80)
 
-io.on('connect', function (socket) {
-	var userId = socket.id //I don't think these are persistent between shutdowns
+io.sockets.on('connect', function co(socket) {
+	var userId = socket.id //non-persistent
 	socket.join('room')
-	//userCount++
+
+	tryPlaying()
 
 	playlist.addUser(userId)
-
-	socket.emit('greeting', 'why, hullo thar')
-
-	socket.on('upload', function (infoHash) { //TODO add auth here
-		playlist.addSong(userId, infoHash)
-		storage.put(infoHash, infoHash) //yes, infoHash 2x
-		socket.broadcast.emit('download', infoHash) //TODO do this elsewhere
-	})
-
+	socket.emit('chat', 'why hullo thar')
 	socket.emit('download', upcomingSongs)
 
-	socket.on('disconnect', function () {
-		//userCount--
+	socket.on('upload', function up(infoHash) { //TODO add auth here
+		var songId = 'songid_' + infoHash
+		playlist.addSong(userId, songId)
+		storage.put(songId, infoHash)
+		tryPlaying()
 	})
+
+	socket.on('chat', function ch(msg) {
+		socket.broadcast.emit('chat', msg)
+	})
+
+	socket.on('disconnect', function di() {})
 })
 
 
 playlist.on('error', console.log.bind(null, 'playlist error'))
 
+function tryPlaying() {
+	if (io.engine.clientsCount > 1) { //&& upcomingSongs.length === 0) {
+		nextSong()
+	} else console.log('not enough users')
+}
+
+function nextSong() {
+	//var lastPlayed = upcomingSongs.shift() //"pop" first ele
+	var nextSongId = playlist.getNextSong()
+	if (nextSongId) {
+		var nextSongBundle = storage.get(nextSongId)
+		var meta = (nextSongBundle && nextSongBundle.metadata) || {artist:[]}
+		io.sockets.emit('download', nextSongBundle)
+		io.sockets.emit('chat', 'Now playing '+meta.title+' by '+meta.artist[0]+' from '+meta.album+'.')
+		if (upcomingSongs.length) {
+			io.sockets.emit('play', nextSongBundle)
+		} else console.log('no registered songs')
+		upcomingSongs.push(nextSongBundle)
+	} else console.log('no upload')
+}
+
 /*
 TODO
 #on join
-- evaluatestate
+- give songs
+- once: 'downloaded' or timeout at 30 sec:
+	- start music
+	- start timer
 
-#when songshouldbedone
+
+#when timer "rings" //next song
 - post message in chat
 - grab next song
 - emit startsong with [message, song, songtodownload]
 
 #on leave
-- evaluatestate
+- if users < 2, stop music for everyone
 
-evaluatestate(users) if enough users, play a song or something
 */

@@ -3,29 +3,43 @@ var config = require('./config.json').musicRoom
 var sux = require('sux')
 var xtend = require('xtend')
 var runParallel = require('run-parallel')
-//var metadata = require('') //find module
+var musicMetadata = require('musicmetadata')
 
-function ConvertAndSeed(newType) {
+function getMetadata(file, cb) {
+	var opts = { duration: true, fileSize: file.size }
+	var metadata = musicMetadata(file.createReadStream(), opts)
+	var timeout = setTimeout(finish.bind(null, new Error('timeout')), 5000)
+	metadata.once('metadata', finish.bind(null, null))
+	metadata.once('done', finish)
+	function finish(err, data) {
+		metadata.removeAllListeners('done')
+		if (err || data) {
+			clearTimeout(timeout)
+			cb.call(null, err, data)
+		}
+	}
+}
+
+function ConvertAndSeed(torrenter, newType) {
 	newType = newType.toLowerCase()
 	var opts = xtend.bind(null, config.presets[newType])
 
-	return function convertAndSeed(torrent, callback) {
-		var file = torrent.files[0]
+	return function convertAndSeed(file, defaultResult, callback) {
 		var fileName = file.name
 		var inputType = file.name.split('.').pop().toLowerCase()
 		var inputSource = file.createReadStream()
 
 		if (inputType !== newType) {
-			var toMp3 = new Sux(opts({
+			var conversion = new Sux(opts({
 				type: newType,
 				input: {
 					type: inputType,
 					source: inputSource
 				}
 			}))
-			var seedStream = toMp3.out()
+			var seedStream = conversion.out()
 
-			toMp3.start()
+			conversion.start()
 
 			torrenter.seed(seedStream, {
 				name: fileName,
@@ -34,8 +48,8 @@ function ConvertAndSeed(newType) {
 				callback(null, newTorrent.infoHash)
 			})
 		} else {
-			process.nextTick(function () {
-				callback(null, torrent.infoHash)
+			process.nextTick(function finish() {
+				callback(null, defaultResult)
 			})
 		}
 	}
@@ -43,27 +57,28 @@ function ConvertAndSeed(newType) {
 
 module.exports = function ServerStorage() {
 	var torrenter = new Webtorrent()
-	var convertToMp3 = ConvertAndSeed('mp3')
-	var convertToOgg = ConvertAndSeed('ogg')
+	var convertToMp3 = ConvertAndSeed(torrenter, 'mp3')
+	var convertToOgg = ConvertAndSeed(torrenter, 'ogg')
 
 	var map = {}
-	//should look like { songId1: {mp3: 'infoHash1', ogg: 'infoHash2'} }
+	//looks like { songId1: {mp3: 'infoHash1', ogg: 'infoHash2', duration: 187} } //3min 7sec
 
-	function put(songId, infoHash) {
+	function put(songId, infoHash, cb) {
 		torrenter.download({
 			infoHash: infoHash,
 			announce: config.announce
 		}, function onTorrent(torrent) {
-			//get duration...
+			var file = torrent.files[0]
+			var defaultInfoHash = torrent.infoHash
 			
-			var convertors = {
-				mp3: convertToMp3.bind(null, torrent),
-				ogg: convertToOgg.bind(null, torrent)
-			}
-			runParallel(convertors, function end(err, results) {
-				if (!err) {
-					map[songId] = results
-				}
+			runParallel({
+				mp3: convertToMp3.bind(null, torrent, defaultInfoHash),
+				ogg: convertToOgg.bind(null, torrent, defaultInfoHash),
+				metadata: getMetadata(file)
+			}, function end(err, songBundle) {
+				err ?
+					cb(err) :
+					cb(null, map[songId] = songBundle)
 			})
 
 		})
@@ -73,7 +88,17 @@ module.exports = function ServerStorage() {
 		return map[songId]
 	}
 
+	function get2(songId, type) {
+		return map[songId] && map[songId][type]
+	}
+
+	function del(songId) {
+		torrenter.remove(songId.mp3)
+		torrenter.remove(songId.ogg)
+	}
+
 	return {
+		del: del,
 		put: put,
 		get: get
 	}
