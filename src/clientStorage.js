@@ -1,7 +1,6 @@
 var StreamToBlob = require('blob-stream')
 var Webtorrent = require('webtorrent')
 var domready = require('domready')
-var uploadIsInvalid = require('./uploadIsInvalid.js')
 
 var torrenter = new Webtorrent()
 
@@ -35,19 +34,6 @@ module.exports = function () {
 		})
 	}
 	var storage = {}
-
-	function create(file, cb) {
-		var err = uploadIsInvalid(file)
-		if (!err) {
-			torrenter.seed(file, function onSeed(torrent) {
-				logCreate(torrent)
-				cb(torrent.infoHash)
-			})
-		} else {
-			console.log(err && err.message)
-		}
-
-	}
 
 	function get(songBundle) {
 		if (!songBundle) return null
@@ -83,7 +69,6 @@ module.exports = function () {
 	}
 
 	return {
-		create: create,
 		get: get,
 		remove: remove,
 		load: load
