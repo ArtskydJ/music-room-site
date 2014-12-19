@@ -21,7 +21,7 @@
 		],
 		"presets":{
 			"mp3": {
-				"bitrate": 192
+				"rate": 192
 			},
 			"ogg": {}
 		}

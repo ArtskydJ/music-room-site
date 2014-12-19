@@ -1,5 +1,5 @@
 var config = require('./config.json').musicRoom
-var Sux = require('sux')
+var Sox = require('sox-stream')
 var xtend = require('xtend')
 var createTagData = require('musicmetadata')
 //var filereaderStream = require('filereader-stream')
@@ -23,27 +23,17 @@ function getTagData(stream, meta, cb) {
 
 function Convert(newType) {
 	newType = newType.toLowerCase()
-	var opts = xtend.bind(null, config.presets[newType])
 
 	return function convert(stream, meta) {
 		var fileName = meta.name
 		var inputType = path.extname(meta.name).toLowerCase()
 
-		if (inputType !== newType) {
-			var cnvrt = new Sux(opts({
-				type: newType,
-				input: {
-					type: inputType,
-					source: stream
-				}
-			}))
-			process.nextTick(function () {
-				//cnvrt.start.bind(cnvrt)
-			})
-			cnvrt.start()
-			return cnvrt.out()
-		} else {
+		if (inputType === newType) {
 			return stream
+		} else {
+			var opts = xtend( config.presets[newType], { type: newType })
+			var sox = new Sox(opts)
+			return stream.pipe(sox)
 		}
 	}
 }
@@ -60,8 +50,8 @@ module.exports = function MultiConvertor() {
 			if (err && err.message !== 'Could not find metadata header') {
 				cb(err)
 			} else {
-				console.log('mp3Stream', (''+mp3Stream).slice(0, 100))
-				console.log('oggStream', (''+oggStream).slice(0, 100))
+				console.log('mp3Stream', mp3Stream.toString().slice(0, 80))
+				console.log('oggStream', oggStream.toString().slice(0, 80))
 				cb(null, tagData, mp3Stream, oggStream)
 			}
 		})
