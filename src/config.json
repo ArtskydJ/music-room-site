@@ -20,14 +20,8 @@
 			"wave"
 		],
 		"presets":{
-			"mp3": {
-				"rate": 192
-			},
+			"mp3": { "compression": 192 },
 			"ogg": {}
 		}
 	}
 }
-
-
-
-
