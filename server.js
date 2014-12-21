@@ -1,10 +1,8 @@
 var http = require('http')
 var Ecstatic = require('ecstatic')
 var Socket = require('socket.io')
-var socketStream = require('socket.io-stream')
 var PlaylistCombinator = require('playlist-combinator')
 var config = require('./src/config.json').musicRoom
-var Convertor = require('./src/serverConvert.js')
 var crypto = require('crypto')
 var concat = require('concat-stream')
 
@@ -13,7 +11,6 @@ var serve = Ecstatic(config.ecstatic)
 var server = http.createServer(serve)
 var io = Socket(server)
 var playlist = PlaylistCombinator()
-var convert = Convertor()
 
 var upcomingSongs = [] //playing and upcoming
 server.listen(80)
@@ -27,23 +24,6 @@ io.sockets.on('connect', function co(socket) {
 
 	playlist.addUser(userId)
 	socket.emit('chat', 'why hullo thar')
-	socket.emit('download', upcomingSongs)
-
-	socketStream(socket).on('upload', function up(stream, meta, fnReturn) { //TODO add auth here
-		console.log('on upload')
-		convert(stream, meta, function (err, tagData, mp3Stream, oggStream) { //thisFile instead of file?
-			console.log('done converting,', err)
-			if (!err) {
-				stream.pipe(crypto.createHash('md5')).pipe(concat(function (md5) {
-					var songId = 'songid_' + md5.toString('hex')
-					console.log(songId)
-					fnReturn(songId, tagData, mp3Stream, oggStream) //bad idea?
-					playlist.addSong(userId, songId)
-				}))
-			}
-			tryPlaying()
-		})
-	})
 
 	socket.on('chat', function ch(msg) {
 		socket.broadcast.emit('chat', msg)
@@ -55,11 +35,15 @@ io.sockets.on('connect', function co(socket) {
 	})
 })
 
+function usersInRoom() {
+	return io.engine.clientsCount
+}
+
 
 playlist.on('error', console.log.bind(null, 'playlist error'))
 
 function tryPlaying() {
-	if (io.engine.clientsCount > 1) { //&& upcomingSongs.length === 0) {
+	if (usersInRoom() > 1) { //&& upcomingSongs.length === 0) {
 		nextSong()
 	} else console.log('not enough users')
 }

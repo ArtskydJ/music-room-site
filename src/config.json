@@ -1,24 +1,11 @@
 {
 	"musicRoom": {
-		"announce": [ "wss://tracker.webtorrent.io" ],
-		"convertedPath": "./converted/",
 		"ecstatic": {
 			"root": "/public",
 			"showDir": false,
 			"gzip": true
 		},
 		"socketIoUrl": "http://localhost",
-		"supportedCodecs": [
-			"aac",
-			"aiff",
-			"alac",
-			"au",
-			"caf",
-			"flac",
-			"m4a",
-			"mp3",
-			"wave"
-		],
 		"presets":{
 			"mp3": { "compression": 192 },
 			"ogg": {}
