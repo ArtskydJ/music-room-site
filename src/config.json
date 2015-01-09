@@ -6,9 +6,5 @@
 			"gzip": true
 		},
 		"socketIoUrl": "http://localhost",
-		"presets":{
-			"mp3": { "compression": 192 },
-			"ogg": {}
-		}
 	}
 }

@@ -1,10 +1,10 @@
 var http = require('http')
 var Ecstatic = require('ecstatic')
-var Socket = require('socket.io')
+var Socket = process.env.test?
+	require('mock-socket.io').Server
+	require('socket.io')
 var PlaylistCombinator = require('playlist-combinator')
 var config = require('./src/config.json').musicRoom
-var crypto = require('crypto')
-var concat = require('concat-stream')
 
 config.ecstatic.root = process.cwd() + config.ecstatic.root
 var serve = Ecstatic(config.ecstatic)

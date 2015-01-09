@@ -1,4 +1,6 @@
-var Socket = require('socket.io-client')
+var Socket = process.env.test?
+	reqiure('mock-socket.io').Client
+	require('socket.io-client')
 var dragDrop = require('drag-drop') // /buffer
 var ClientStorage = require('./clientStorage.js')
 var config = require('./config.json').musicRoom
