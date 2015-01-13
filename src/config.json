@@ -5,6 +5,12 @@
 			"showDir": false,
 			"gzip": true
 		},
-		"socketIoUrl": "http://localhost",
+		"socketIoUrl": "http://localhost/socketio",
+		"fileTypes": [
+			"mp3",
+			"ogg"
+		],
+		"defaultFileType": "mp3",
+		"announce": ["wss://tracker.instant.io"]
 	}
 }

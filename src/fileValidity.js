@@ -3,7 +3,7 @@ var MAX_MB = 15
 //Rule of thumb: 1mb/min (give or take)
 //1mb = 1,000,000 bytes
 
-module.exports = function uploadIsInvalid(meta) {
+function invalid(meta) {
 	if (!meta) {
 		return new ReferenceError('Must supply a file, supplied ' + meta + '.')
 	} else if (!meta.size) {
@@ -21,4 +21,13 @@ module.exports = function uploadIsInvalid(meta) {
 	} else {
 		return null
 	}
+}
+
+function valid(meta) {
+	return !invalid(meta)
+}
+
+module.exports = {
+	invalid: invalid,
+	valid: valid
 }

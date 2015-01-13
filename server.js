@@ -1,30 +1,29 @@
 var http = require('http')
 var Ecstatic = require('ecstatic')
-var Socket = process.env.test?
-	require('mock-socket.io').Server
+var Socket = process.env.test ?
+	require('mock-socket.io').Server :
 	require('socket.io')
 var PlaylistCombinator = require('playlist-combinator')
-var config = require('./src/config.json').musicRoom
+var xtend = require('xtend')
+var cfg = require('./src/config.json').musicRoom
 
-config.ecstatic.root = process.cwd() + config.ecstatic.root
-var serve = Ecstatic(config.ecstatic)
+cfg.ecstatic.root = process.cwd() + cfg.ecstatic.root
+var serve = Ecstatic(cfg.ecstatic)
 var server = http.createServer(serve)
 var io = Socket(server)
+server.listen(80)
 var playlist = PlaylistCombinator()
 
 var upcomingSongs = [] //playing and upcoming
-server.listen(80)
 
-console.log('___RESTARTING___')
-io.sockets.on('connect', function co(socket) {
+io.on('connect', function conn(socket) {
 	var userId = socket.id //non-persistent
 	socket.join('room')
+	playlist.addUser(userId)
 	
 	tryPlaying()
 
-	playlist.addUser(userId)
 	socket.emit('chat', 'why hullo thar')
-
 	socket.on('chat', function ch(msg) {
 		socket.broadcast.emit('chat', msg)
 	})
@@ -64,7 +63,7 @@ function nextSong() {
 			io.sockets.emit('play', nextSongBundle)
 		}
 		upcomingSongs.push(nextSongBundle)
-	} else console.log('no upload')
+	} else {console.log('no upload')}
 }
 
 /*
