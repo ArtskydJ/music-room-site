@@ -1,0 +1,23 @@
+{
+  "name": "music-room-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArtskydJ/music-room-site.git"
+  },
+  "author": "Joseph Dykstra",
+  "license": "VOL",
+  "bugs": {
+    "url": "https://github.com/ArtskydJ/music-room-site/issues"
+  },
+  "homepage": "https://github.com/ArtskydJ/music-room-site",
+  "dependencies": {
+    "ecstatic": "^0.5.8"
+  }
+}
