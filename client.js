@@ -8,6 +8,18 @@ var chatView = new Ractive({
 	data: require('./test-chat-data.json')
 })
 
+var chatInputView = new Ractive({
+	el: '#chat-input-view',
+	template: '#chat-input-template',
+	data: {
+		input: ''
+	}
+})
+
+chatInputView.on('text-submit', function ts(event) {
+	window.watinput = event
+})
+
 var musicView = new Ractive({
 	el: '#music-metadata-view',
 	template: '#music-metadata-template',
@@ -15,8 +27,8 @@ var musicView = new Ractive({
 		title: 'A Dark Knight',
 		artist: 'Hans Zimmer and James Newton Howard',
 		album: 'The Dark Knight Soundtrack',
-		length: '16:15',
-		elapsed: '12:41',
+		lengthSec: 975,
+		elapsedSec: 761,
 		percent: 78
 	},
 	append: true
@@ -24,7 +36,7 @@ var musicView = new Ractive({
 
 setTimeout(function () {
 	musicView.set({
-		elapsed: '16:14',
+		elapsedSec: 974,
 		percent: 99
 	})
 }, 2000)
@@ -60,5 +72,3 @@ var albumArtView = new Ractive({ //does not work
 		source: 'the-dark-knight-ost.jpg'
 	}
 })
-
-window.wat=true
