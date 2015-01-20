@@ -2,8 +2,10 @@
 <html>
 	<head>
 		<title>Music Room</title>
-			<meta charset='utf-8'>
+		<meta charset='utf-8'>
 		<link href="bootstrap.min.css" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+		<link rel='shortcut icon' type='image/png' href='/favicon.png' />
 	</head>
 	<body>
 		<div class="navbar navbar-default">
@@ -13,94 +15,86 @@
 				</div>
 				<div class="navbar-collapse">
 					<ul class="nav navbar-nav navbar-right">
-						<li>
-							<a class="navbar-brand" href="#">User</a>
-						</li>
+						<li><a class="navbar-brand" href="#">User</a></li>
 					</ul>
 				</div>
 			</div>
 		</div> <!-- navbar -->
 
 		<div class="container">
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-sm-2">
-							<img src="the-dark-knight-ost.jpg" style="width:100%; height:100%;">
-						</div>
-						<div class="col-sm-10">
-							<span align="LEFT">1:48 / 3:36</span>
-							<div class="progress">
-								<div class="progress-bar" style="width: 50%"></div>
-							</div>
-
-							<strong>Song</strong><br>
-							<em>Artist</em><br>
-							Album
-						</div>
-					</div> <!-- row -->
-				</div>
-			</div>
-
 			<div class="row">
 				<div class="col-sm-3">
+					<div class="well" id="album-art-view"></div>
+
 					<div class="panel panel-success">
 						<div class="panel-heading">
 							<h5>Rooms</h5>
 						</div>
-						<div class="list-group">
-							<a href="#" class="list-group-item">room1</a>
-							<a href="#" class="list-group-item active">room2</a>
-							<a href="#" class="list-group-item">room3</a>
-						</div>
-					</div>
-					<div class="panel panel-warning">
-						<div class="panel-heading">
-							<h5>Song Queue</h5>
-						</div>
-						<div class="list-group">
-							<a href="#" class="list-group-item">song1</a>
-							<a href="#" class="list-group-item">song2</a>
-							<a href="#" class="list-group-item">song3</a>
-						</div>
+						<div id="room-view" class="list-group"></div>
 					</div>
 				</div>
-				<div class="col-sm-9">
+				<div class="col-sm-7">
+					<div class="well">
+						<div id="music-metadata-view"></div>
+					</div>
 					<div class="panel panel-default">
-						<div class="panel-body" style="overflow:auto; height: calc(100vh - 30em);">
+						<div class="panel-body" id="chat-box">
 							<table class="table table-striped table-hover">
 								<thead>
 									<tr><th>Date</th><th>User</th><th>Message</th></tr>
 								</thead>
-								<tbody>
-									<tr> <td>2014-01-19 15:38:05</td> <td>Joseph</td> <td>This is a website</td>  </tr>
-									<tr> <td>2014-01-19 15:38:35</td> <td>Tobias</td> <td>It looks cool.</td>     </tr>
-									<tr> <td>2014-01-19 15:39:05</td> <td>Josh</td>   <td>But does it blend?</td> </tr>
-									<tr> <td>2014-01-20 15:38:05</td> <td>Joseph</td> <td>This is a website</td>  </tr>
-									<tr> <td>2014-01-20 15:38:35</td> <td>Tobias</td> <td>It looks cool.</td>     </tr>
-									<tr> <td>2014-01-20 15:39:05</td> <td>Josh</td>   <td>But does it blend?</td> </tr>
-									<tr> <td>2014-01-21 15:38:05</td> <td>Joseph</td> <td>This is a website</td>  </tr>
-									<tr> <td>2014-01-21 15:38:35</td> <td>Tobias</td> <td>It looks cool.</td>     </tr>
-									<tr> <td>2014-01-21 15:39:05</td> <td>Josh</td>   <td>But does it blend?</td> </tr>
-									<tr> <td>2014-01-22 15:38:05</td> <td>Joseph</td> <td>This is a website</td>  </tr>
-									<tr> <td>2014-01-22 15:38:35</td> <td>Tobias</td> <td>It looks cool.</td>     </tr>
-									<tr> <td>2014-01-22 15:39:05</td> <td>Josh</td>   <td>But does it blend?</td> </tr>
-									<tr> <td>2014-01-23 15:38:05</td> <td>Joseph</td> <td>This is a website</td>  </tr>
-									<tr> <td>2014-01-23 15:38:35</td> <td>Tobias</td> <td>It looks cool.</td>     </tr>
-									<tr> <td>2014-01-23 15:39:05</td> <td>Josh</td>   <td>But does it blend?</td> </tr>
-									<tr> <td>2014-01-24 15:38:05</td> <td>Joseph</td> <td>This is a website</td>  </tr>
-									<tr> <td>2014-01-24 15:38:35</td> <td>Tobias</td> <td>It looks cool.</td>     </tr>
-									<tr> <td>2014-01-24 15:39:05</td> <td>Josh</td>   <td>But does it blend?</td> </tr>
-								</tbody>
+								<tbody id="chat-view"></tbody>
 							</table>
 						</div>
 						<div class="panel-footer">
 							<input class="form-control" id="focusedInput" type="text" value="" placeholder="Enter your message...">
 						</div> <!-- panel-footer -->
 					</div> <!-- panel -->
-				</div> <!-- col-sm-8 -->
+				</div> <!-- col-sm-7 -->
+				<div class="col-sm-2">
+					<div class="panel panel-warning">
+						<div class="panel-heading">
+							<h5>Queue</h5>
+						</div>
+						<div id="queue-view" class="list-group"></div>
+					</div>
+				</div> <!-- col-sm-2 -->
 			</div> <!-- row -->
 		</div> <!-- container -->
+
+		<script id="chat-template" type="text/ractive">
+			{{#this}}
+				<tr>
+					<td>{{date}}</td>
+					<td>{{name}}</td>
+					<td>{{message}}</td>
+				</tr>
+			{{/}}
+		</script>
+
+		<script id="music-metadata-template" type="text/ractive">
+			{{elapsed}} / {{length}}<br>
+			<div class="progress">
+				<div class="progress-bar" style="width: {{percent}}%"></div>
+			</div>
+			<b>{{title}}</b><br>
+			<i>{{artist}}</i><br>
+			{{album}}
+		</script>
+
+		<script id="list-template" type="text/ractive">
+			{{#array}}
+				<a href="#" class="list-group-item{{#active}} active{{/active}}">{{name}}</a>
+			{{else}}
+				<a class="list-group-item">{{emptyMessage}}</a>
+			{{/}}
+		</script>
+
+		<script id="album-art-template" type="text/ractive">
+			<img src="{{source}}">
+		</script>
+
+		<script src="bundle.js"></script>
 	</body>
 </html>
 		

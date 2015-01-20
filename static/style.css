@@ -1,0 +1,9 @@
+img {
+	width: 100%;
+	height: 100%;
+}
+
+div#chat-box {
+	overflow:auto;
+	height: calc(100vh - 336px);
+}

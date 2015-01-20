@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "browserify client.js -d -o static/bundle.js",
+    "watch": "watchify client.js -d -o static/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +20,7 @@
   },
   "homepage": "https://github.com/ArtskydJ/music-room-site",
   "dependencies": {
-    "ecstatic": "^0.5.8"
+    "ecstatic": "^0.5.8",
+    "ractive": "^0.6.1"
   }
 }
