@@ -27,15 +27,12 @@ io.on('connect', function conn(socket) {
 	io.on('disconnect', function () {
 		socket.broadcast.emit('receive', createMessage(leaveMsg))
 	})
-
 })
 
 function fixMessage(msg) {
-	return xtend(
-		{ name: 'unknown', message: '' }, //provide default name and message
-		msg,
-		{ date: new Date().toISOString() } //overwrite the date
-	)
+	var defaultObj = { name: 'unknown', message: '' }
+	var overwrite = { date: new Date().toISOString() }
+	return xtend(defaultObj, msg, overwrite)
 }
 function createMessage(text) {
 	return fixMessage({ name: 'server', message: text })

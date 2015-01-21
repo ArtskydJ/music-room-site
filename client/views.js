@@ -25,12 +25,11 @@ var musicOptions = {
 	el: '#music-metadata-view',
 	template: '#music-metadata-template',
 	data: {
-		title: 'A Dark Knight',
-		artist: 'Hans Zimmer and James Newton Howard',
-		album: 'The Dark Knight Soundtrack',
-		lengthSec: 975,
-		elapsedSec: 761,
-		percent: 78
+		title: 'Science is Fun',
+		artist: 'Aperture Science',
+		album: 'Portal 2 - Volume 1',
+		lengthSec: 153,
+		elapsedSec: 58
 	},
 	append: true
 }
@@ -56,7 +55,7 @@ var queueOptions = {
 	template: '#list-template',
 	data: {
 		array: [],
-		emptyMessage: 'Drag songs here to upload!!'
+		emptyMessage: 'Drag songs here to upload!! (Coming soon.)'
 	}
 }
 
@@ -64,7 +63,7 @@ var queueOptions = {
 var albumArtOptions = { //does not work
 	el: '#album-art-view',
 	template: '#album-art-template',
-	data: {source: 'the-dark-knight-ost.jpg'}
+	data: {source: 'temp/portal-2.jpg'}
 }
 
 

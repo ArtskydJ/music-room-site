@@ -5,7 +5,8 @@ var views = Views()
 var chat = Chat()
 
 chat.on('receive', function (msgObj) {
-	views.chat.push('.', msgObj)
+	views.chat.push('.', msgObj) //push it to my message list
+	scrollToBottom()
 })
 
 views.chatInput.on('text-submit', function ts(evnt) {
@@ -20,13 +21,23 @@ views.chatInput.on('text-submit', function ts(evnt) {
 		}
 		views.chat.push('.', msgObj) //push it to my message list
 		chat.emit('send', msgObj)
+		scrollToBottom()
 	}
 	return false
 })
 
-setTimeout(function () {
+var iv = setInterval(function () {
 	views.music.set({
-		elapsedSec: 974,
-		percent: 99
+		elapsedSec: views.music.get('elapsedSec') + 1
 	})
-}, 2000)
+}, 1000)
+
+//http://stackoverflow.com/questions/270612/scroll-to-bottom-of-div
+function scrollToBottom() {
+	var div = document.getElementById('chat-style')
+	div.scrollTop = div.scrollHeight
+}
+
+setTimeout(function () {
+	clearInterval(iv)
+}, 65500)

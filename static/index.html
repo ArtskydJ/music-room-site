@@ -81,11 +81,11 @@
 		</script>
 
 		<script id="music-metadata-template" type="text/ractive">
-			{{Math.floor(elapsedSec / 60)}}:{{elapsedSec % 60}} /
-			{{Math.floor(lengthSec  / 60)}}:{{lengthSec  % 60}}
+			{{Math.floor(elapsedSec / 60)}}:{{( (elapsedSec % 60) / 100 ).toFixed(2).slice(2) }} /
+			{{Math.floor(lengthSec  / 60)}}:{{( (lengthSec  % 60) / 100 ).toFixed(2).slice(2) }}
 
 			<div class="progress">
-				<div class="progress-bar" style="width: {{percent}}%"></div>
+				<div class="progress-bar" style="width: {{elapsedSec/lengthSec*100}}%"></div>
 			</div>
 			<b>{{title}}</b><br>
 			<i>{{artist}}</i><br>
