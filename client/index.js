@@ -39,7 +39,8 @@ views.chatInput.on('text-submit', function ts(evnt) {
 var iv = setInterval(function () {
 	views.music.set({
 		currentSec: audio.currentTime,
-		durationSec: audio.duration || 0
+		durationSec: audio.duration || 0,
+		audio: audio //for volume binding
 	})
 }, 100)
 

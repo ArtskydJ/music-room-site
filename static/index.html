@@ -88,9 +88,16 @@
 			<div class="progress">
 				<div class="progress-bar" style="width: {{currentSec/durationSec*100}}%"></div>
 			</div>
-			<b>{{title}}</b><br>
-			<i>{{artist}}</i><br>
-			{{album}}
+			<div class="row">
+				<div class="col-sm-6">
+					<b>{{title}}</b><br>
+					<i>{{artist}}</i><br>
+					{{album}}
+				</div>
+				<div class="col-sm-6">
+					<a align="right" href="#" class="btn btn-default" style="width:100%">Mute</a> <!--btn-success btn-danger-->
+				</div>
+			</div>
 		</script>
 
 		<script id="list-template" type="text/ractive">
