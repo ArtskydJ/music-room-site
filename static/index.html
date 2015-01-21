@@ -62,6 +62,7 @@
 
 			</div>
 		</div>
+		<audio id="audio-element"></audio>
 
 		<script id="chat-template" type="text/ractive">
 			{{#.}}
@@ -81,11 +82,11 @@
 		</script>
 
 		<script id="music-metadata-template" type="text/ractive">
-			{{Math.floor(elapsedSec / 60)}}:{{( (elapsedSec % 60) / 100 ).toFixed(2).slice(2) }} /
-			{{Math.floor(lengthSec  / 60)}}:{{( (lengthSec  % 60) / 100 ).toFixed(2).slice(2) }}
+			{{Math.floor(currentSec  / 60)}}:{{ (Math.floor(currentSec  % 60) / 100).toFixed(2).slice(2) }} /
+			{{Math.floor(durationSec / 60)}}:{{ (Math.floor(durationSec % 60) / 100).toFixed(2).slice(2) }}
 
 			<div class="progress">
-				<div class="progress-bar" style="width: {{elapsedSec/lengthSec*100}}%"></div>
+				<div class="progress-bar" style="width: {{currentSec/durationSec*100}}%"></div>
 			</div>
 			<b>{{title}}</b><br>
 			<i>{{artist}}</i><br>

@@ -28,8 +28,8 @@ var musicOptions = {
 		title: 'Science is Fun',
 		artist: 'Aperture Science',
 		album: 'Portal 2 - Volume 1',
-		lengthSec: 153,
-		elapsedSec: 58
+		currentSec: 0,
+		durationSec: 0
 	},
 	append: true
 }
