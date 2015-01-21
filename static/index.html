@@ -66,7 +66,7 @@
 		<script id="chat-template" type="text/ractive">
 			{{#.}}
 				<tr>
-					<td>{{date.replace('T', ' ').replace('.000Z', '')}}</td>
+					<td>{{date.replace('T', ' ').slice(0, -5)}}</td>
 					<td>{{name}}</td>
 					<td>{{message}}</td>
 				</tr>
@@ -74,8 +74,10 @@
 		</script>
 
 		<script id="chat-input-template" type="text/ractive">
-			<input class="form-control" id="focusedInput" type="text"
-				value="{{input}}" placeholder="Enter your message...">
+			<form on-submit='text-submit'>
+				<input class="form-control" value='{{message}}'
+					placeholder='Enter your message...' autofocus>
+			</form>
 		</script>
 
 		<script id="music-metadata-template" type="text/ractive">

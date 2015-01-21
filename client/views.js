@@ -1,26 +1,27 @@
 var Ractive = require('ractive')
-//reordering code
+//reordering elements
 //http://ractivejs.github.io/Ractive-decorators-sortable/
+//https://github.com/Nijikokun/ractive.drag.drop.js
+//https://github.com/Nijikokun/ractive.sortable.js
 
-var chatView = new Ractive({
+
+var chatOptions = {
 	el: '#chat-view',
 	template: '#chat-template',
-	data: require('./test-chat-data.json')
-})
+	data: []
+}
 
-var chatInputView = new Ractive({
+
+var chatInputOptions = {
 	el: '#chat-input-view',
 	template: '#chat-input-template',
 	data: {
 		input: ''
 	}
-})
+}
 
-chatInputView.on('text-submit', function ts(event) {
-	window.watinput = event
-})
 
-var musicView = new Ractive({
+var musicOptions = {
 	el: '#music-metadata-view',
 	template: '#music-metadata-template',
 	data: {
@@ -32,16 +33,10 @@ var musicView = new Ractive({
 		percent: 78
 	},
 	append: true
-})
+}
 
-setTimeout(function () {
-	musicView.set({
-		elapsedSec: 974,
-		percent: 99
-	})
-}, 2000)
 
-var roomView = new Ractive({
+var roomOptions = {
 	el: '#room-view',
 	template: '#list-template',
 	data: {
@@ -53,22 +48,40 @@ var roomView = new Ractive({
 		],
 		emptyMessage: 'You are not a member of any rooms.'
 	}
-})
+}
 
-var queueView = new Ractive({
+
+var queueOptions = {
 	el: '#queue-view',
 	template: '#list-template',
 	data: {
-		array: [
-		],
+		array: [],
 		emptyMessage: 'Drag songs here to upload!!'
 	}
-})
+}
 
-var albumArtView = new Ractive({ //does not work
+
+var albumArtOptions = { //does not work
 	el: '#album-art-view',
 	template: '#album-art-template',
-	data: {
-		source: 'the-dark-knight-ost.jpg'
+	data: {source: 'the-dark-knight-ost.jpg'}
+}
+
+
+module.exports = function Views() {
+	var chatView = new Ractive(chatOptions)
+	var chatInputView = new Ractive(chatInputOptions)
+	var musicView = new Ractive(musicOptions)
+	var roomView = new Ractive(roomOptions)
+	var queueView = new Ractive(queueOptions)
+	var albumArtView = new Ractive(albumArtOptions)
+
+	return {
+		chat: chatView,
+		chatInput: chatInputView,
+		music: musicView,
+		room: roomView,
+		queue: queueView,
+		albumArt: albumArtView
 	}
-})
+}
