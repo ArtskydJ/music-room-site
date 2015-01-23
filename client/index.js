@@ -6,32 +6,25 @@ var views = Views()
 var chat = Chat()
 var audio = Audio()
 
-//file.createReadStream().pipe(audio)
-//audio.volume = 0.85
-audio.src = 'temp/Portal2-01-Science_is_Fun.mp3'
-window.j = audio
-//console.log(audio.paused?'paused':'playing')
-//audio.muted = true
-//audio.pause(); audio.play()
+audio.src = 'temp/Portal2-01-Science_is_Fun.mp3' //testing purposes
+window.j = audio //testing purposes
+//file.createReadStream().pipe(audio) //future
 
-chat.on('receive', function (msgObj) {
-	views.chat.push('.', msgObj) //push it to my message list
+function pushMessage(msgObj) {
+	views.chat.push('.', msgObj)
 	scrollToBottom()
-})
+}
+
+chat.on('receive', pushMessage)
 
 views.chatInput.on('text-submit', function ts(evnt) {
 	var text = this.get('message')
+	this.set('message', '')
 	if (text) {
-		this.set('message', '')
-		console.log(text)
-		var msgObj = {
+		chat.emit('send', {
 			name: 'Joseph',
-			date: new Date().toISOString(),
 			message: text
-		}
-		views.chat.push('.', msgObj) //push it to my message list
-		chat.emit('send', msgObj)
-		scrollToBottom()
+		})
 	}
 	return false
 })
@@ -39,8 +32,7 @@ views.chatInput.on('text-submit', function ts(evnt) {
 var iv = setInterval(function () {
 	views.music.set({
 		currentSec: audio.currentTime,
-		durationSec: audio.duration || 0,
-		audio: audio //for volume binding
+		durationSec: audio.duration || 0
 	})
 }, 100)
 
@@ -49,3 +41,9 @@ function scrollToBottom() {
 	var div = document.getElementById('chat-style')
 	div.scrollTop = div.scrollHeight
 }
+
+views.music.on('button-mute', function ( evnt ) {
+	var toggled = !this.get('muted')
+	audio.muted = toggled
+	this.set('muted', toggled)
+})

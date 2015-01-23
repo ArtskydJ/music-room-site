@@ -19,13 +19,13 @@ io.on('connect', function conn(socket) {
 	//playlist.addUser(userId)
 
 	// CHAT
-	socket.emit('receive', createMessage(arrivalMsg))
-	socket.broadcast.emit('receive', createMessage(joinMsg))
+	socket.emit('receive', createMessage(messages.selfJoin))
+	socket.broadcast.emit('receive', createMessage(messages.otherJoin))
 	socket.on('send', function ch(msg) {
-		socket.broadcast.emit('receive', fixMessage(msg))
+		io.emit('receive', fixMessage(msg)) //socket.broadcast.emit
 	})
 	io.on('disconnect', function () {
-		socket.broadcast.emit('receive', createMessage(leaveMsg))
+		socket.broadcast.emit('receive', createMessage(messages.otherLeave))
 	})
 })
 
@@ -38,6 +38,8 @@ function createMessage(text) {
 	return fixMessage({ name: 'server', message: text })
 }
 
-var arrivalMsg = 'why hullo thar'
-var joinMsg = 'Weird Person joined the room.'
-var leaveMsg = 'Weird Person left the room.'
+var messages = {
+	selfJoin: 'why hullo thar',
+	otherJoin: 'Weird Person joined the room.',
+	otherLeave: 'Weird Person left the room.'
+}

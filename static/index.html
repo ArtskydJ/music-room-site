@@ -89,13 +89,13 @@
 				<div class="progress-bar" style="width: {{currentSec/durationSec*100}}%"></div>
 			</div>
 			<div class="row">
-				<div class="col-sm-6">
+				<div class="col-sm-9">
 					<b>{{title}}</b><br>
 					<i>{{artist}}</i><br>
 					{{album}}
 				</div>
-				<div class="col-sm-6">
-					<a align="right" href="#" class="btn btn-default" style="width:100%">Mute</a> <!--btn-success btn-danger-->
+				<div class="col-sm-3">
+					<a id="mute-btn" class="btn btn-{{muted ? 'success' : 'danger'}}" on-click='button-mute'>{{muted ? 'Unm' : 'M'}}ute</a>
 				</div>
 			</div>
 		</script>

@@ -29,7 +29,8 @@ var musicOptions = {
 		artist: 'Aperture Science',
 		album: 'Portal 2 - Volume 1',
 		currentSec: 0,
-		durationSec: 0
+		durationSec: 0,
+		muted: false
 	},
 	append: true
 }
