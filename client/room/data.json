@@ -25,11 +25,11 @@
 	"users-in-room": {
 		"array": [
 			{"name": "user1"},
-			{"name": "user2", "number": 2},
+			{"name": "user2", "badge": 2},
 			{"name": "user3"},
 			{"name": "user4"}
 		],
 		"emptyMessage": "You are alooooooone...",
-		"showNumbers": true
+		"showBadges": true
 	}
 }

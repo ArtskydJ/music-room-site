@@ -92,22 +92,12 @@
 			</div>
 		</script>
 
-		<script id="users-in-room-template" type="text/ractive">
-			{{#array}}
-				<a href="#" class="list-group-item">{{name}}{{#showNumbers}}
-					<span class="badge">{{number}}</span>{{/showNumbers}}</a>
-			{{else}}
-				<a class="list-group-item">{{emptyMessage}}</a>
-			{{/}}
+		<script id="queue-template" type="text/ractive">
+			{{>list}}
 		</script>
 
-		<script id="queue-template" type="text/ractive">
-			{{#array}}
-				<a href="#" class="list-group-item">{{name}}{{#showNumbers}}
-					<span class="badge">{{number}}</span>{{/showNumbers}}</a>
-			{{else}}
-				<a class="list-group-item">{{emptyMessage}}</a>
-			{{/}}
+		<script id="users-in-room-template" type="text/ractive">
+			{{>list}}
 		</script>
 
 		<script id="album-art-template" type="text/ractive">
