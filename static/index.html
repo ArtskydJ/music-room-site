@@ -57,15 +57,13 @@
 
 		<script id="chat-template" type="text/ractive">
 			<div class="list-group">
-				<ul>
-					{{#messages}}
-						<a href="" class="list-group-item{{#highlight}} active{{/highlight}}">
-							{{#name}}
-								<small class="text-muted">{{name}}</small>
-							{{/name}}{{message}}
-						</a>
-					{{/}}
-				</ul>
+				{{#messages}}
+					<a href="" class="list-group-item{{#highlight}} active{{/highlight}}">
+						{{#name}}
+							<small class="text-muted">{{name}}</small>
+						{{/name}}{{message}}
+					</a>
+				{{/}}
 			</div>
 			<form on-submit='text-submit'>
 				<input class="form-control" value='{{message}}'
