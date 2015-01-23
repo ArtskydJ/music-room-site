@@ -8,15 +8,9 @@ var Ractive = require('ractive')
 var chatOptions = {
 	el: '#chat-view',
 	template: '#chat-template',
-	data: []
-}
-
-
-var chatInputOptions = {
-	el: '#chat-input-view',
-	template: '#chat-input-template',
 	data: {
-		input: ''
+		messages: [],
+		message: ''
 	}
 }
 
@@ -36,17 +30,18 @@ var musicOptions = {
 }
 
 
-var roomOptions = {
-	el: '#room-view',
+var usersInRoomOptions = {
+	el: '#users-in-room-view',
 	template: '#list-template',
 	data: {
 		array: [
-			{name: 'room1'},
-			{name: 'room2', active: true},
-			{name: 'room3'},
-			{name: 'room4'}
+			{name: 'user1'},
+			{name: 'user2', number: 2},
+			{name: 'user3'},
+			{name: 'user4'}
 		],
-		emptyMessage: 'You are not a member of any rooms.'
+		emptyMessage: 'You are alooooooone...',
+		showNumbers: true
 	}
 }
 
@@ -70,17 +65,15 @@ var albumArtOptions = { //does not work
 
 module.exports = function Views() {
 	var chatView = new Ractive(chatOptions)
-	var chatInputView = new Ractive(chatInputOptions)
 	var musicView = new Ractive(musicOptions)
-	var roomView = new Ractive(roomOptions)
+	var usersInRoomView = new Ractive(usersInRoomOptions)
 	var queueView = new Ractive(queueOptions)
 	var albumArtView = new Ractive(albumArtOptions)
 
 	return {
 		chat: chatView,
-		chatInput: chatInputView,
 		music: musicView,
-		room: roomView,
+		usersInRoom: usersInRoomView,
 		queue: queueView,
 		albumArt: albumArtView
 	}

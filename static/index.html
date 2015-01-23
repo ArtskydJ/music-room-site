@@ -30,25 +30,15 @@
 
 					<div class="panel panel-success">
 						<div class="panel-heading">
-							<h5>Rooms</h5>
+							<h5>In Room</h5>
 						</div>
-						<div id="room-view" class="list-group"></div>
+						<div id="users-in-room-view" class="list-group"></div>
 					</div>
 				</div>
 
 				<div class="col-sm-7">
 					<div id="music-metadata-view" class="well"></div>
-					<div class="panel panel-default">
-						<div class="panel-body" id="chat-style">
-							<table class="table table-striped table-hover">
-								<thead>
-									<tr><th>Date</th><th>User</th><th>Message</th></tr>
-								</thead>
-								<tbody id="chat-view"></tbody>
-							</table>
-						</div>
-						<div id="chat-input-view" class="panel-footer"></div>
-					</div>
+					<div id="chat-view"></div>
 				</div>
 
 				<div class="col-sm-2">
@@ -64,17 +54,19 @@
 		</div>
 		<audio id="audio-element"></audio>
 
-		<script id="chat-template" type="text/ractive">
-			{{#.}}
-				<tr>
-					<td>{{date.replace('T', ' ').slice(0, -5)}}</td>
-					<td>{{name}}</td>
-					<td>{{message}}</td>
-				</tr>
-			{{/}}
-		</script>
 
-		<script id="chat-input-template" type="text/ractive">
+		<script id="chat-template" type="text/ractive">
+			<div class="list-group">
+				<ul>
+					{{#messages}}
+						<a href="" class="list-group-item{{#highlight}} active{{/highlight}}">
+							{{#name}}
+								<small class="text-muted">{{name}}</small>
+							{{/name}}{{message}}
+						</a>
+					{{/}}
+				</ul>
+			</div>
 			<form on-submit='text-submit'>
 				<input class="form-control" value='{{message}}'
 					placeholder='Enter your message...' autofocus>
@@ -95,14 +87,16 @@
 					{{album}}
 				</div>
 				<div class="col-sm-3">
-					<a id="mute-btn" class="btn btn-{{muted ? 'success' : 'danger'}}" on-click='button-mute'>{{muted ? 'Unm' : 'M'}}ute</a>
+					<a id="mute-btn" class="btn btn-{{muted ? 'success' : 'danger'}}"
+						on-click='button-mute'>{{muted ? 'Unm' : 'M'}}ute</a>
 				</div>
 			</div>
 		</script>
 
 		<script id="list-template" type="text/ractive">
 			{{#array}}
-				<a href="#" class="list-group-item{{#active}} active{{/active}}">{{name}}</a>
+				<a href="#" class="list-group-item">{{name}}{{#showNumbers}}
+					<span class="badge">{{number}}</span>{{/showNumbers}}</a>
 			{{else}}
 				<a class="list-group-item">{{emptyMessage}}</a>
 			{{/}}

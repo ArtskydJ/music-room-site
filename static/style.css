@@ -7,9 +7,14 @@ img {
 	height: 100%;
 }
 
-#chat-style {
-	overflow:auto;
-	height: calc(100vh - 336px);
+ul {
+	padding-left: 0;
+	word-break: break-word;
+}
+
+#chat-view {
+	overflow: auto;
+	height: calc(100vh - 280px);
 }
 
 #mute-btn {

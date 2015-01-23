@@ -22,20 +22,15 @@ io.on('connect', function conn(socket) {
 	socket.emit('receive', createMessage(messages.selfJoin))
 	socket.broadcast.emit('receive', createMessage(messages.otherJoin))
 	socket.on('send', function ch(msg) {
-		io.emit('receive', fixMessage(msg)) //socket.broadcast.emit
+		io.emit('receive', msg) //socket.broadcast.emit
 	})
 	io.on('disconnect', function () {
 		socket.broadcast.emit('receive', createMessage(messages.otherLeave))
 	})
 })
 
-function fixMessage(msg) {
-	var defaultObj = { name: 'unknown', message: '' }
-	var overwrite = { date: new Date().toISOString() }
-	return xtend(defaultObj, msg, overwrite)
-}
 function createMessage(text) {
-	return fixMessage({ name: 'server', message: text })
+	return { name: 'server', message: text, highlight: true }
 }
 
 var messages = {
