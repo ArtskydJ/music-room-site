@@ -3,13 +3,7 @@ var Chat = require('./chat.js')
 var Audio = require('./audio.js')
 var data = require('./data.json')
 
-var views = Views(data, [
-	'album-art',
-	'chat',
-	'music',
-	'queue',
-	'users-in-room'
-])
+var views = Views(data)
 var chat = Chat()
 var audio = Audio()
 
