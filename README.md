@@ -53,11 +53,4 @@ The site for the room of the musicz
 - [ ] put templates into .ract files. use opt.template = fs.readFileSync(\'tplt.ract\')
 - [ ] create the overview rooms page
 
-#discontinued goals
-
-- uploads to db, auto-conversion later, vbr mp3 preferable
-- use node-webkit with webtorrent to act as a seeder for the files that are uploaded
-- https://www.npmjs.org/package/mocket-io
-- https://www.npmjs.org/package/sox
-- use howler.js
 
