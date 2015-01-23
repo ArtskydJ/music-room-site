@@ -1,11 +1,38 @@
 var Ractive = require('ractive')
+var camelCase = require('camelcase')
+var readFileSync = require('fs').readFileSync
 //reordering elements
 //http://ractivejs.github.io/Ractive-decorators-sortable/
 //https://github.com/Nijikokun/ractive.drag.drop.js
 //https://github.com/Nijikokun/ractive.sortable.js
 
+var list = [
+	'album-art',
+	'chat',
+	'music',
+	'queue',
+	'users-in-room'
+]
+var templateMap = {
+	'queue': 'list',
+	'users-in-room': 'list'
+}
+var appendMap = {
+	'music': true
+}
 
-var chatOptions = {
+var options = list.reduce(function (options, key) {
+	var template = templateMap[key] || key
+	options[key] = {
+		el: '#' + key + '-view',
+		template: readFileSync('./templates/' + template + '.ract'),
+		data: JSON.parse(readFileSync('./data/' + key + '.json')),
+		append: appendMap[key]
+	}
+	return options
+}, {})
+
+options.chat = {
 	el: '#chat-view',
 	template: '#chat-template',
 	data: {
@@ -15,9 +42,9 @@ var chatOptions = {
 }
 
 
-var musicOptions = {
-	el: '#music-metadata-view',
-	template: '#music-metadata-template',
+options.music = {
+	el: '#music-view',
+	template: '#music-template',
 	data: {
 		title: 'Science is Fun',
 		artist: 'Aperture Science',
@@ -30,7 +57,7 @@ var musicOptions = {
 }
 
 
-var usersInRoomOptions = {
+options.usersInRoom = {
 	el: '#users-in-room-view',
 	template: '#list-template',
 	data: {
@@ -46,7 +73,7 @@ var usersInRoomOptions = {
 }
 
 
-var queueOptions = {
+options.queue = {
 	el: '#queue-view',
 	template: '#list-template',
 	data: {
@@ -56,7 +83,7 @@ var queueOptions = {
 }
 
 
-var albumArtOptions = { //does not work
+options.albumArt = { //does not work
 	el: '#album-art-view',
 	template: '#album-art-template',
 	data: {source: 'temp/portal-2.jpg'}
@@ -64,17 +91,13 @@ var albumArtOptions = { //does not work
 
 
 module.exports = function Views() {
-	var chatView = new Ractive(chatOptions)
-	var musicView = new Ractive(musicOptions)
-	var usersInRoomView = new Ractive(usersInRoomOptions)
-	var queueView = new Ractive(queueOptions)
-	var albumArtView = new Ractive(albumArtOptions)
+	var views = {}
 
-	return {
-		chat: chatView,
-		music: musicView,
-		usersInRoom: usersInRoomView,
-		queue: queueView,
-		albumArt: albumArtView
-	}
+	views.chat =        new Ractive(options.chat)
+	views.music =       new Ractive(options.music)
+	views.usersInRoom = new Ractive(options.usersInRoom)
+	views.queue =       new Ractive(options.queue)
+	views.albumArt =    new Ractive(options.albumArt)
+
+	return views
 }

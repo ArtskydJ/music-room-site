@@ -1,0 +1,10 @@
+{{isAuthenticated}}
+	<div class="panel panel-success">
+		<div class="panel-heading">
+			<h5>Starred Rooms</h5>
+		</div>
+		<div id="starred-view" class="list-group"></div>
+	</div>
+{{else}}
+	Ur not authenticated dude.
+{{/}}

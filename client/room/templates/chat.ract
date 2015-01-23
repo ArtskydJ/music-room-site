@@ -1,0 +1,14 @@
+
+			<div class="list-group">
+				{{#messages}}
+					<a href="" class="list-group-item{{#highlight}} active{{/highlight}}">
+						{{#name}}
+							<small class="text-muted">{{name}}</small>
+						{{/name}}{{message}}
+					</a>
+				{{/}}
+			</div>
+			<form on-submit='text-submit'>
+				<input class="form-control" value='{{message}}'
+					placeholder='Enter your message...' autofocus>
+			</form>
