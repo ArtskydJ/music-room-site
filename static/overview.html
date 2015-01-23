@@ -21,6 +21,30 @@
 		</div>
 
 		<div id="overview-view" class="container"></div><!-- Note: append must be true!!!-->
+
+		<script id="overview-template">
+			{{isAuthenticated}}
+				<div class="panel panel-success">
+					<div class="panel-heading">
+						<h5>Starred Rooms</h5>
+					</div>
+					<div id="starred-view" class="list-group"></div>
+				</div>
+			{{else}}
+				Ur not authenticated dude.
+			{{/}}
+		</script>
+
+		<script id="starred-template" type="text/ractive">
+			{{#array}}
+				<a href="#" class="list-group-item">{{name}}{{#showNumbers}}
+					<span class="badge">{{number}}</span>{{/showNumbers}}</a>
+			{{else}}
+				<a class="list-group-item">{{emptyMessage}}</a>
+			{{/}}
+		</script>
+
+		<script src="overview.js"></script>
 	</body>
 </html>
 		

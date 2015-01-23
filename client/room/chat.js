@@ -2,15 +2,11 @@ var Client = require('socket.io-client')
 var EventEmitter = require('events').EventEmitter
 
 module.exports = function () {
-	var emitter = new EventEmitter
-
 	var io = Client('/')
-	io.on('receive', function (msgObj) {
-		emitter.emit('receive', msgObj)
-	})
-	emitter.on('send', function (msgObj) {
-		io.emit('send', msgObj)
-	})
+	var em = new EventEmitter
 
-	return emitter
+	io.on('receive', em.emit.bind(em, 'receive'))
+	em.on('send',    io.emit.bind(io, 'send'))
+	
+	return em
 }

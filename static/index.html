@@ -37,7 +37,7 @@
 				</div>
 
 				<div class="col-sm-7">
-					<div id="music-view" class="well"></div>
+					<div class="well"><div id="music-view"></div></div>
 					<div id="chat-view"></div>
 				</div>
 
@@ -54,7 +54,67 @@
 		</div>
 		<audio id="audio-element"></audio>
 
-		<script src="bundle.js"></script>
+
+
+		<script id="chat-template" type="text/ractive">
+			<div class="list-group">
+				{{#messages}}
+					<a href="" class="list-group-item{{#highlight}} active{{/highlight}}">
+						{{#name}}
+							<small class="text-muted">{{name}}</small>
+						{{/name}}{{message}}
+					</a>
+				{{/}}
+			</div>
+			<form on-submit='text-submit'>
+				<input class="form-control" value='{{message}}'
+					placeholder='Enter your message...' autofocus>
+			</form>
+		</script>
+
+		<script id="music-template" type="text/ractive">
+			{{Math.floor(currentSec  / 60)}}:{{ (Math.floor(currentSec  % 60) / 100).toFixed(2).slice(2) }} /
+			{{Math.floor(durationSec / 60)}}:{{ (Math.floor(durationSec % 60) / 100).toFixed(2).slice(2) }}
+
+			<div class="progress">
+				<div class="progress-bar" style="width: {{currentSec/durationSec*100}}%"></div>
+			</div>
+			<div class="row">
+				<div class="col-sm-9">
+					<b>{{title}}</b><br>
+					<i>{{artist}}</i><br>
+					{{album}}
+				</div>
+				<div class="col-sm-3">
+					<a id="mute-btn" class="btn btn-{{muted ? 'success' : 'danger'}}"
+						on-click='button-mute'>{{muted ? 'Unm' : 'M'}}ute</a>
+				</div>
+			</div>
+		</script>
+
+		<script id="users-in-room-template" type="text/ractive">
+			{{#array}}
+				<a href="#" class="list-group-item">{{name}}{{#showNumbers}}
+					<span class="badge">{{number}}</span>{{/showNumbers}}</a>
+			{{else}}
+				<a class="list-group-item">{{emptyMessage}}</a>
+			{{/}}
+		</script>
+
+		<script id="queue-template" type="text/ractive">
+			{{#array}}
+				<a href="#" class="list-group-item">{{name}}{{#showNumbers}}
+					<span class="badge">{{number}}</span>{{/showNumbers}}</a>
+			{{else}}
+				<a class="list-group-item">{{emptyMessage}}</a>
+			{{/}}
+		</script>
+
+		<script id="album-art-template" type="text/ractive">
+			<img src="{{source}}">
+		</script>
+
+		<script src="room.js"></script>
 	</body>
 </html>
 		
