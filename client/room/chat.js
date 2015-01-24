@@ -7,6 +7,8 @@ module.exports = function () {
 
 	io.on('receive', em.emit.bind(em, 'receive'))
 	em.on('send',    io.emit.bind(io, 'send'))
+
+	io.on('new song', em.emit.bind(em, 'new song'))
 	
 	return em
 }

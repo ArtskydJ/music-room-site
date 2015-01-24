@@ -7,11 +7,11 @@ var views = Views(data)
 var chat = Chat()
 var audio = Audio()
 
-audio.src = 'temp/Portal2-01-Science_is_Fun.mp3' //testing purposes
-//audio.muted = true //sanity purposes
-window.j = audio //testing purposes
+
+window.j = audio
 window.onresize = scrollToBottom
 //file.createReadStream().pipe(audio) //future
+
 
 function scrollToBottom() {
 	//http://stackoverflow.com/questions/270612/scroll-to-bottom-of-div
@@ -19,10 +19,25 @@ function scrollToBottom() {
 	div.scrollTop = div.scrollHeight
 }
 
+
 chat.on('receive', function pushMessage(msgObj) {
 	views.chat.push('array', msgObj)
 	scrollToBottom()
 })
+
+
+chat.on('new song', function (song) { //find a way to make this not in ./chat.js
+	views.albumArt.set({
+		source: song.cover
+	})
+	views.music.set({
+		title: song.title,
+		artist: song.artist,
+		album: song.album
+	})
+	audio.src = song.src
+})
+
 
 views.chat.on('text-submit', function ts(evnt) {
 	var text = this.get('input')
@@ -36,12 +51,14 @@ views.chat.on('text-submit', function ts(evnt) {
 	return false
 })
 
+
 setInterval(function () {
 	views.music.set({
 		currentSec: audio.currentTime,
 		durationSec: audio.duration || 0.1 //no div by zero
 	})
 }, 100)
+
 
 views.music.on('mute', function ( evnt ) {
 	var toggled = !this.get('muted')

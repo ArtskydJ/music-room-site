@@ -1,6 +1,6 @@
 module.exports = {
 	albumArt: {
-		source: 'temp/portal-2.jpg'
+		source: ''
 	},
 
 	chat: {
@@ -9,11 +9,11 @@ module.exports = {
 	},
 
 	music: {
-		title: "Science is Fun",
-		artist: "Aperture Science",
-		album: "Portal 2 - Volume 1",
+		title: '',
+		artist: '',
+		album: '',
 		currentSec: 0,
-		durationSec: 0,
+		durationSec: 0.1, //no div by zero
 		muted: false,
 		formatTime: function (seconds) {
 			return '' + Math.floor(seconds  / 60) + ':' +

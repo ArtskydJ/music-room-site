@@ -48,6 +48,11 @@ The site for the room of the musicz
 - [x] on `'upload' (ih1)` emit `'uploaded' (ih2, ih3)`
 - [x] hang out in #webtorrent chatroom
 
+###mock server
+
+- [ ] pings all users and say 'hey new song!', and gives them the song id
+- [ ] it is, in the meanwhile, hosting a thing on a different port that is seeding 3 songs, and 2 album art pics
+
 ###other
 
 - [x] add tests for sox-stream, add good docs
