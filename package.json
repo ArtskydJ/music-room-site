@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/ArtskydJ/music-room-site",
   "dependencies": {
-    "camelcase": "^1.0.2",
     "ecstatic": "^0.5.8",
     "ractive": "^0.6.1",
     "socket.io": "^1.3.2",

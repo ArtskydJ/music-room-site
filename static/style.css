@@ -2,17 +2,23 @@
 	font-family: sans-serif;
 }
 
+.progress-bar {
+	transition: 0;
+	-o-transition: 0;
+	-webkit-transition: 0;
+}
+
 img {
 	width: 100%;
 	height: 100%;
 }
 
-#chat-view {
+#chatView {
 	word-break: break-word;
 	overflow: auto;
-	height: calc(100vh - 280px);
+	max-height: calc(100vh - 260px);
 }
 
-#mute-btn {
+#muteBtn {
 	width:100%;
 }

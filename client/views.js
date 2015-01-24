@@ -1,14 +1,13 @@
 var Ractive = require('ractive')
-var camelCase = require('camelcase')
-var listPartialString = require('./list-partial.json').join('')
+var partials = require('./partials.js')
 
 module.exports = function Views(data) {
 	return Object.keys(data).reduce(function (views, key) {
-		views[camelCase(key)] = new Ractive({
-			el: '#' + key + '-view',
-			template: '#' + key + '-template',
-			partials: {list: listPartialString},
-			data: data[key]
+		views[key] = new Ractive({
+			el: '#' + key + 'View',
+			template: '#' + key + 'Template',
+			data: data[key],
+			partials: partials
 		})
 		return views
 	}, {})

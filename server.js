@@ -1,7 +1,6 @@
 var http = require('http')
 var ecstatic = require('ecstatic')
 var io = require('socket.io')()
-var xtend = require('xtend')
 //var PlaylistCombinator = require('playlist-combinator')
 
 var ecstaticOpts = {
@@ -30,7 +29,7 @@ io.on('connect', function conn(socket) {
 })
 
 function createMessage(text) {
-	return { name: 'server', message: text, highlight: true }
+	return { label: 'server', item: text, highlight: true }
 }
 
 var messages = {

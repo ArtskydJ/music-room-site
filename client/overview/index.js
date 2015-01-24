@@ -1,5 +1,5 @@
 var Views = require('../views.js')
-var data = require('./data.json')
+var data = require('./data.js')
 
 var views = Views(data)
 
