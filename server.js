@@ -2,7 +2,7 @@ var http = require('http')
 var ecstatic = require('ecstatic')
 var io = require('socket.io')()
 //var PlaylistCombinator = require('playlist-combinator')
-var TEST = true
+var TEST = true //process.env.test
 
 var ecstaticOpts = {
 	root: './static',
@@ -25,6 +25,12 @@ io.on('connect', function conn(socket) {
 	})
 	play(0)
 	play = function () {}
+
+	if (TEST) {
+		socket.on('disconnect', function () {
+			process.kill(process.pid, 'SIGKILL')
+		})
+	}
 })
 
 function createMessage(text) {

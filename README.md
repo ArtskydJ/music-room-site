@@ -7,6 +7,7 @@ The site for the room of the musicz
 
 - [ ] auto-post a message in the chat when a song starts
 - [x] use socket.io
+- [ ] in chat.js, abstract away the message format. can't pass the user's name on construct?
 
 ###session/auth
 
