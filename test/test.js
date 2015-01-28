@@ -17,14 +17,14 @@ test('sending a chat will come back to me', function (t) {
 	var chat = Chat()
 	var msg = {label: 'Joseph', item: 'cool'}
 
-	setTimeout(function () {
+	//setTimeout(function () {
 		chat.emit('send', msg)
 		chat.on('receive', function (msgObj) {
 			t.deepEqual(msgObj, msg, 'should be the same')
 			t.end()
 			inBrowser && window.close()
 		})
-	}, 50)
+	//}, 50)
 })
 
 

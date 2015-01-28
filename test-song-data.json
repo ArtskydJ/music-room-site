@@ -1,0 +1,24 @@
+[
+	{
+		"title": "Answering Machine",
+		"album": "MacGyver OST",
+		"artist": "MacGyver OST",
+		"cover": "temp/MacGyver.jpg",
+		"src": "temp/macgyvers_answer_phone.mp3",
+		"len": 6
+	}, {
+		"title": "Welcome to Markov Geist",
+		"album": "Frozen Synapse OST",
+		"artist": "nervous_testpilot",
+		"cover": "temp/Frozen_Synapse_Original_Soundtrack.jpg",
+		"src": "temp/01-Welcome-to-Markov-Geist.mp3",
+		"len": 74
+	}, {
+		"title": "Science is Fun",
+		"album": "Portal 2 - Volume 1",
+		"artist": "Aperture Science",
+		"cover": "temp/portal-2.jpg",
+		"src": "temp/Portal2-01-Science_is_Fun.mp3",
+		"len": 173
+	}
+]

@@ -1,8 +1,9 @@
 var Client = require('socket.io-client')
+var resolve = require('../../resolve-namespace.js')
 var EventEmitter = require('events').EventEmitter
 
-module.exports = function () {
-	var io = Client('/')
+module.exports = function (namespace) {
+	var io = Client(resolve(namespace))
 	var em = new EventEmitter
 
 	io.on('receive', em.emit.bind(em, 'receive'))
