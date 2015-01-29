@@ -5,7 +5,7 @@
 		"artist": "MacGyver OST",
 		"cover": "temp/MacGyver.jpg",
 		"src": "temp/macgyvers_answer_phone.mp3",
-		"len": 6
+		"len": 7
 	}, {
 		"title": "Welcome to Markov Geist",
 		"album": "Frozen Synapse OST",
@@ -19,6 +19,6 @@
 		"artist": "Aperture Science",
 		"cover": "temp/portal-2.jpg",
 		"src": "temp/Portal2-01-Science_is_Fun.mp3",
-		"len": 173
+		"len": 153
 	}
 ]
