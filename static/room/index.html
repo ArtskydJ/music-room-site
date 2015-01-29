@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Music Room</title>
+		<meta charset='utf-8'>
+		<link href="/bootstrap.min.css" rel="stylesheet">
+		<link href="./style.css" rel="stylesheet">
+		<link rel='shortcut icon' type='image/png' href='/favicon.png' />
+	</head>
+	<body>
+
+		<div class="navbar navbar-default">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="../">Music Room</a>
+				</div>
+				<div class="navbar-collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a class="navbar-brand" href="#">User</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="row">
+
+				<div class="col-sm-3">
+					<div class="well" id="albumArtView"></div>
+
+					<div class="panel panel-success">
+						<div class="panel-heading">
+							<h5>In Room</h5>
+						</div>
+						<div id="usersInRoomView" class="list-group"></div>
+					</div>
+				</div>
+
+				<div class="col-sm-7">
+					<div class="well"><div id="musicView"></div></div>
+					<div id="chatView"></div>
+				</div>
+
+				<div class="col-sm-2">
+					<div class="panel panel-warning">
+						<div class="panel-heading">
+							<h5>Queue</h5>
+						</div>
+						<div id="queueView" class="list-group"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<audio id="audio-element"></audio>
+
+		<script id="chatTemplate" type="text/ractive">
+			<div class="list-group">
+				{{>list}}
+			</div>
+			<form on-submit='text-submit'>
+				<input class="form-control" value='{{input}}'
+					placeholder='Enter your message...' autofocus>
+			</form>
+		</script>
+
+		<script id="musicTemplate" type="text/ractive">
+			{{formatTime(currentSec)}} / {{formatTime(durationSec)}}
+
+			<div class="progress">
+				<div class="progress-bar" style="width: {{100*currentSec/durationSec}}%"></div>
+			</div>
+			<div class="row">
+				<div class="col-sm-9">
+					<b>{{title}}</b><br>
+					<i>{{artist}}</i><br>
+					{{album}}
+				</div>
+				<div class="col-sm-3">
+					<a id="muteBtn" class="btn btn-{{muted ? 'success' : 'danger'}}"
+						on-click='mute'>{{muted ? 'Unm' : 'M'}}ute</a>
+				</div>
+			</div>
+		</script>
+
+		<script id="queueTemplate" type="text/ractive">                 {{>list}}    </script>
+		<script id="usersInRoomTemplate" type="text/ractive">           {{>list}}    </script>
+		<script id="albumArtTemplate" type="text/ractive">    <img src="{{source}}"> </script>
+
+		<script src="./bundle.js"></script>
+	</body>
+</html>
+		
