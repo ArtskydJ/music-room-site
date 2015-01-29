@@ -1,32 +1,33 @@
 var http = require('http')
-var ecstatic = require('ecstatic')
-var io = require('socket.io')()
+var Io = require('socket.io')
+var Router = require('./router.js')
 var Room = require('./room.js')
-var TEST = true //process.env.test
+var TEST = (process.argv[2] === '-t')
 
-var ecstaticOpts = {
-	root: './static',
-	showDir: false
-}
-var server = http.createServer( ecstatic(ecstaticOpts) )
-server.listen(80)
+var router = Router()
+var server = http.createServer( router )
+var io = new Io()
 io.attach(server)
-var room = Room(io)
+var roomAutoplay = Room(io, 'autoplay')
 
-if (TEST) {
+server.listen(80)
+
+if (true) { //autoplay stuff
 	var songs = require('./test-song-data.json')
 
 	var play = function playSong(index) {
 		var song = songs[index]
-		room.emit('new song', song)
+		roomAutoplay.emit('new song', song)
 		setTimeout(playSong, song.len * 1000, (index + 1) % songs.length)
-		room.emit('receive', { label: 'Now Playing', item: song.title, highlight: true })
+		roomAutoplay.emit('receive',
+			{ label: 'Now Playing', item: song.title, highlight: true }
+		)
 		play = function () {console.log('already playing')}
 	}
-
-	setTimeout(process.exit, 9000) //i don't like this "solution"
-
-	room.on('connect', function conn(socket) {
+	if (TEST) {
+		setTimeout(process.exit, 10000) //i don't like this "solution"
+	}
+	roomAutoplay.on('connect', function conn(socket) {
 		play(0)
 
 		socket.emit('receive', {
@@ -36,3 +37,4 @@ if (TEST) {
 		})
 	})
 }
+
