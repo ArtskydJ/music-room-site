@@ -1,10 +1,11 @@
 var Views = require('../views.js')
-var Chat = require('./chat.js')
+var Room = require('./room.js')
 var Audio = require('./audio.js')
 var data = require('./data.js')
 
+var namespace = window.location.pathname
 var views = Views(data)
-var chat = Chat()
+var room = Room(namespace)
 var audio = Audio()
 
 
@@ -20,13 +21,13 @@ function scrollToBottom() {
 }
 
 
-chat.on('receive', function pushMessage(msgObj) {
+room.on('chat receive', function pushMessage(msgObj) {
 	views.chat.push('array', msgObj)
 	scrollToBottom()
 })
 
 
-chat.on('new song', function (song) { //find a way to make this not in ./chat.js
+room.on('new song', function (song) {
 	views.albumArt.set({
 		source: song.cover
 	})
@@ -43,7 +44,7 @@ views.chat.on('text-submit', function ts(evnt) {
 	var text = this.get('input')
 	this.set('input', '')
 	if (text) {
-		chat.emit('send', {
+		room.emit('chat send', {
 			label: 'Joseph',
 			item: text
 		})
