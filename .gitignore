@@ -1,7 +1,5 @@
 node_modules
 npm-debug.log
-static/room.js
-static/.room.js
-static/overview.js
-static/.overview.js
+bundle.js
+.bundle.js
 database
