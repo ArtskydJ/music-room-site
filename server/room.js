@@ -1,5 +1,5 @@
 var PlaylistCombinator = require('playlist-combinator')
-var resolve = require('./resolve-namespace.js')
+var resolve = require('../resolve-namespace.js')
 
 module.exports = function room(io, namespace) {
 	var playlist = PlaylistCombinator()
@@ -14,7 +14,7 @@ module.exports = function room(io, namespace) {
 		//socket.emit('upcoming')
 		//})
 
-		// CHAT
+		// The Chat Relay
 		socket.on('chat send', function ch(msg) {
 			room.emit('chat receive', msg)
 		})

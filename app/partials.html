@@ -1,23 +1,21 @@
-module.exports = {
-	list: '{{#array}}' +
-		'<a class="list-group-item{{#highlight}} active{{/highlight}}">' +
-			'{{#label}}' +
-				'<small class="text-muted">{{label}}</small>&nbsp;&nbsp;' +
-			'{{/}}' +
-			'{{item}}' +
-			'{{#badge}}' +
-				'<span class="badge">{{badge}}</span>' +
-			'{{/}}' +
-		'</a>' +
-	'{{else}}' +
-		'{{#empty}}' +
-			'<a class="list-group-item">{{empty}}</a>' +
-		'{{/}}' +
-	'{{/}}'
-}
+{{#array}}
+	<a class="list-group-item{{#highlight}} active{{/highlight}}">
+		{{#label}}
+			<small class="text-muted">{{label}}</small>&nbsp;&nbsp;
+		{{/}}
+		{{item}}
+		{{#badge}}
+			<span class="badge">{{badge}}</span>
+		{{/}}
+	</a>
+{{else}}
+	{{#empty}}
+		<a class="list-group-item">{{empty}}</a>
+	{{/}}
+{{/}}
 
 
-/* This partial is expecting data in the following form:
+<!-- This partial expects data in the following form:
 data: {
 	array: [
 		{item:'welcome!', label: 'server says', badge: 3, highlight: true},
@@ -31,4 +29,4 @@ data: {
 	],
 	empty: 'no messages here.'
 }
-*/
+-->
