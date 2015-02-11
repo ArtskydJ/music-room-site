@@ -1,7 +1,5 @@
 module.exports = {
-	albumArt: {
-		source: ''
-	},
+	albumArt: '',
 
 	chat: {
 		array: [],

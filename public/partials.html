@@ -1,18 +1,20 @@
-{{#array}}
-	<a class="list-group-item{{#highlight}} active{{/highlight}}">
-		{{#label}}
-			<small class="text-muted">{{label}}</small>&nbsp;&nbsp;
+<div class="list-group">
+	{{#array}}
+		<a class="list-group-item{{#highlight}} active{{/highlight}}">
+			{{#label}}
+				<small class="text-muted">{{label}}</small>&nbsp;&nbsp;
+			{{/}}
+			{{item}}
+			{{#badge}}
+				<span class="badge">{{badge}}</span>
+			{{/}}
+		</a>
+	{{else}}
+		{{#empty}}
+			<a class="list-group-item">{{empty}}</a>
 		{{/}}
-		{{item}}
-		{{#badge}}
-			<span class="badge">{{badge}}</span>
-		{{/}}
-	</a>
-{{else}}
-	{{#empty}}
-		<a class="list-group-item">{{empty}}</a>
 	{{/}}
-{{/}}
+</div>
 
 
 <!-- This partial expects data in the following form:

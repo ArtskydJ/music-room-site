@@ -1,64 +1,54 @@
 var fs = require('fs')
 var path = require('path')
-var Room = require('./chat.js')
+var Socket = require('./socket.js')
 var Audio = require('./audio.js')
 var data = require('./data.js')
 
-function resolve(data, parameters, cb) {
-	cb()
-}
-
-function activate(context) {
-	console.log(context.parameters)
-}
-
 module.exports = function(stateRouter) {
-	// Don't change the following line much; brfs doesn't like it
+	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
 	stateRouter.addState({
-		name: 'app.room',
+		name: 'room',
 		route: '/room/:room',
 		template: template,
 		data: data,
-		resolve: resolve,
 		activate: activate
 	})
 }
 
 
 function activate(context) {
-	console.log('dom api ... parameters')
-	console.log(context.domApi)
-	console.log(context.parameters)
-
-	var room = Room(context.parameters) //it needs to know what room it's in
+	var socket = Socket(context.parameters.room)
 	var audio = Audio()
+	console.log(context.domApi)
+	var views = context.domApi
+
+	console.log('data')
+	console.log(views.data)
 
 	window.j = audio
 	window.onresize = scrollToBottom
 	//file.createReadStream().pipe(audio) //future
 
-	room.on('chat receive', function pushMessage(msgObj) {
+	socket.on('chat receive', function pushMessage(msgObj) {
 		views.chat.push('array', msgObj)
 		scrollToBottom()
 	})
 
-	room.on('new song', function (song) {
-		views.albumArt.set({
-			source: song.cover
-		})
-		views.music.set({
-			title: song.title,
-			artist: song.artist,
-			album: song.album
+	socket.on('new song', function (song) {
+		views.set({
+			'albumArt': song.cover,
+			'music.title': song.title,
+			'music.artist': song.artist,
+			'music.album': song.album
 		})
 		audio.src = song.src
 	})
 
-	views.chat.on('text-submit', function ts() {
-		var text = this.get('input')
-		this.set('input', '')
+	views.on('text-submit', function ts() {
+		var text = this.get('chat.input')
+		this.set('chat.input', '')
 		if (text) {
 			room.emit('chat send', {
 				label: 'Joseph',
@@ -69,19 +59,21 @@ function activate(context) {
 	})
 
 	setInterval(function () {
-		views.music.set({
-			currentSec: audio.currentTime,
-			durationSec: audio.duration || 0.1 //no div by zero
+		views.set({
+			'music.currentSec': audio.currentTime,
+			'music.durationSec': audio.duration || 0.1 //no div by zero
 		})
 	}, 100)
 
-	views.music.on('mute', function () {
-		var toggled = !this.get('muted')
+	views.on.bind(views, 'mute', function () {
+		console.log('toggled mute')
+		var toggled = !this.get('music.muted')
 		audio.muted = toggled
-		this.set('muted', toggled)
+		this.set('music.muted', toggled)
 	})
 
 	context.on('destroy', function() {
+		console.log('getting destroyed')
 		delete window.j
 		delete window.onresize
 	})

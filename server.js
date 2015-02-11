@@ -5,7 +5,7 @@ var Room = require('./server/room.js')
 var TEST = (process.argv[2] === '-t')
 
 var router = St({
-	path: './app/',
+	path: './public/',
 	url: '/',
 	index: 'index.html',
 	passthrough: true
@@ -21,10 +21,6 @@ io.attach(server)
 var roomAutoplay = Room(io, 'autoplay')
 
 server.listen(80)
-
-server.on('request', function(req, res) {
-	console.log(req.url)
-})
 
 if (true) { //autoplay stuff
 	var songs = require('./server/test-song-data.json')

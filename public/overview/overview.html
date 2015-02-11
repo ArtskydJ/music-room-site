@@ -1,0 +1,35 @@
+<div class="container">
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="panel panel-{{#isAuthenticated}}success{{else}}danger{{/}}">
+				<div class="panel-heading">
+					<h5>Starred Rooms</h5>
+				</div>
+				{{#isAuthenticated}}
+					{{>list}}
+				{{else}}
+					Please log in to see view your starred rooms.
+				{{/}}
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<!-- some other view will go here i guess... -->
+		</div>
+	</div>
+</div>
+
+<!-- {{>list}} -->
+	<div class="list-group">
+		{{#array}}
+			<a class="list-group-item">
+				{{item}}
+			</a>
+		{{else}}
+			{{#empty}}
+				<a class="list-group-item">
+					{{empty}}
+				</a>
+			{{/}}
+		{{/}}
+	</div>
+<!-- {{/list}} -->
