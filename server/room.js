@@ -1,9 +1,8 @@
 var PlaylistCombinator = require('playlist-combinator')
-var resolve = require('../resolve-namespace.js')
 
 module.exports = function room(io, namespace) {
 	var playlist = PlaylistCombinator()
-	var room = io.of( resolve(namespace) )
+	var room = io.of( '/' + namespace )
 
 	room.on('connect', function conn(socket) {
 		//socket.on('auth', function (contactAddress, token) {

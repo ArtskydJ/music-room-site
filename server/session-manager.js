@@ -1,11 +1,48 @@
-/*var JustLogin = require('just-login-core')
+var JustLogin = require('just-login-core')
 var SessionManager = require('just-login-example-session-manager')
 var Level = require('level')
-var Spaces = require('level-spaces')*/
+var Spaces = require('level-spaces')
 
-module.exports = function SessionManager() {
-	/*var db = Level('./database')
-	var ssnMngDb = Spaces(db, 'session-manager')
+
+function noop() {}
+
+module.exports = function SessionManager(io) {
+	var db = Level('./database')
+	var sessionManagerDb = Spaces(db, 'session-manager')
+
 	var core = JustLogin(db)
-	var manager = SessionManager(core, ssnMngDb)*/
+	var manager = SessionManager(core, sessionManagerDb)
+
+	io.on('connect', function (socket) {
+		var api = {
+			isAuthenticated: noop,
+			beginAuthentication: noop,
+			unauthenticate: noop
+		}
+
+		function onSession(cb) {
+			return function onSess(err, loginApi, sessionId) {
+				api = loginApi || api
+				cb(err, sessionId)
+			}
+		}
+
+		socket.on('session create', function create(cb) {
+			sessionManager.createSession(onSession(cb))
+		})
+		socket.on('session continue', function continue(sessionId, cb) {
+			sessionManager.continueSession(sessionId, onSession(cb))
+		})
+		socket.on('session isAuthenticated',     api.isAuthenticated)
+		socket.on('session beginAuthentication', api.beginAuthentication)
+		socket.on('session unauthenticate',      api.unauthenticate)
+	})
+
+	core.on('authentication initiated', function auth1(credentials) {
+		core.authenticate(credentials.token, function auth2(err, contactAddress) {
+			console.log(err ? ('Error: ' + err.message) : ('Signed in as: ' + contactAddress))
+		})
+	})
+
+	return core
 }

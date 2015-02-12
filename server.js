@@ -2,27 +2,23 @@ var http = require('http')
 var Io = require('socket.io')
 var St = require('st')
 var Room = require('./server/room.js')
+var SessionManager = require('./server/session-manager.js')
 var TEST = (process.argv[2] === '-t')
 
 var router = St({
 	path: './public/',
 	url: '/',
-	index: 'index.html',
-	passthrough: true
+	index: 'index.html'
 })
-var server = http.createServer( function (req, res) {
-	router(req, res, function (e) {
-		res.write('oh noes')
-		res.end()
-	})
-} )
+var server = http.createServer(router)
 var io = new Io()
 io.attach(server)
-var roomAutoplay = Room(io, 'autoplay')
+var sessionMgr = SessionManager(io)
 
 server.listen(80)
 
 if (true) { //autoplay stuff
+	var roomAutoplay = Room(io, 'autoplay')
 	var songs = require('./server/test-song-data.json')
 
 	var play = function playSong(index) {
