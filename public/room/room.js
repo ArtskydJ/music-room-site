@@ -8,11 +8,19 @@ module.exports = function(stateRouter) {
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
+	console.log('start data')
+	console.log(data)
+
 	stateRouter.addState({
 		name: 'room',
 		route: '/room/:room',
 		template: template,
 		data: data,
+		resolve: function (data, p, cb) {
+			console.log('mid data')
+			console.log(data)
+			cb()
+		},
 		activate: activate
 	})
 }
@@ -21,15 +29,16 @@ module.exports = function(stateRouter) {
 function activate(context) {
 	var socket = Socket(context.parameters.room)
 	var audio = Audio()
-	console.log(context.domApi)
+
+	context.domApi.data = context.data
 	var views = context.domApi
-
-	console.log('data')
-	console.log(views.data)
-
+	window.da = context.domApi
 	window.j = audio
 	window.onresize = scrollToBottom
 	//file.createReadStream().pipe(audio) //future
+
+	console.log('vgm')
+	console.log(views.data)
 
 	socket.on('chat receive', function pushMessage(msgObj) {
 		views.chat.push('array', msgObj)
@@ -61,12 +70,11 @@ function activate(context) {
 	setInterval(function () {
 		views.set({
 			'music.currentSec': audio.currentTime,
-			'music.durationSec': audio.duration || 0.1 //no div by zero
+			'music.durationSec': audio.duration || 0.1 // no div by zero
 		})
 	}, 100)
 
-	views.on.bind(views, 'mute', function () {
-		console.log('toggled mute')
+	views.on('mute', function () {
 		var toggled = !this.get('music.muted')
 		audio.muted = toggled
 		this.set('music.muted', toggled)
@@ -74,6 +82,7 @@ function activate(context) {
 
 	context.on('destroy', function() {
 		console.log('getting destroyed')
+		delete window.da
 		delete window.j
 		delete window.onresize
 	})

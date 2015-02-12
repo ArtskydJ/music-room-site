@@ -11,37 +11,37 @@
 					<h5>In Room</h5>
 				</div>
 				<div class="list-group">
-					{{#with queue}}
-						{{>list}}
-					{{/with}}
+					{{>list usersInRoom}}
 				</div>
 			</div>
 		</div>
 
 		<div class="col-sm-7">
-			<div class="well">
-				{{formatTime(music.currentSec)}} / {{formatTime(music.durationSec)}}
+			{{#music}}
+				<div class="well">
+					{{formatTime(currentSec)}} / {{formatTime(durationSec)}} <br>
+					{{currentSec}} / {{durationSec}} <br>
+					hi {{formatTime(100)}}
 
-				<div class="progress">
-					<div class="progress-bar" style="width: {{100*music.currentSec/music.durationSec}}%"></div>
-				</div>
-				<div class="row">
-					<div class="col-sm-9">
-						{{#with music}}
+					<div class="progress">
+						<div class="progress-bar" style="width: {{100*currentSec/durationSec}}%"></div>
+					</div>
+					<div class="row">
+						<div class="col-sm-9">
 							<b>{{title}}</b><br>
 							<i>{{artist}}</i><br>
 							{{album}}
-						{{/with}}
-					</div>
-					<div class="col-sm-3">
-						<a id="muteBtn" class="btn btn-{{music.muted ? 'success' : 'danger'}}"
-							on-click='mute'>{{music.muted ? 'Unm' : 'M'}}ute</a>
+						</div>
+						<div class="col-sm-3">
+							<a id="muteBtn" class="btn btn-{{muted ? 'success' : 'danger'}}"
+								on-click='mute'>{{muted ? 'Unm' : 'M'}}ute</a>
+						</div>
 					</div>
 				</div>
-			</div>
+			{{/}}
 
 			<div class="list-group">
-				{{>list}}
+				{{>list chat}}
 			</div>
 			<form on-submit='text-submit'>
 				<input class="form-control" value='{{chat.input}}' placeholder='Enter your message...' autofocus>
@@ -54,9 +54,7 @@
 					<h5>Queue</h5>
 				</div>
 				<div class="list-group">
-					{{#with queue}}
-						{{>list}}
-					{{/with}}
+					{{>list queue}}
 				</div>
 			</div>
 		</div>
