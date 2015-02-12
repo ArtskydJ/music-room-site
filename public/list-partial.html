@@ -1,0 +1,17 @@
+<div class="list-group">
+	{{#array}}
+		<a class="list-group-item{{#highlight}} active{{/highlight}}">
+			{{#label}}
+				<small class="text-muted">{{label}}</small>&nbsp;&nbsp;
+			{{/}}
+			{{item}}
+			{{#badge}}
+				<span class="badge">{{badge}}</span>
+			{{/}}
+		</a>
+	{{else}}
+		{{#empty}}
+			<a class="list-group-item">{{empty}}</a>
+		{{/}}
+	{{/}}
+</div>

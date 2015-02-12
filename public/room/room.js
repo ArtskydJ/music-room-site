@@ -8,58 +8,44 @@ module.exports = function(stateRouter) {
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
-	console.log('start data')
-	console.log(data)
-
 	stateRouter.addState({
 		name: 'room',
 		route: '/room/:room',
 		template: template,
 		data: data,
-		resolve: function (data, p, cb) {
-			console.log('mid data')
-			console.log(data)
-			cb()
-		},
 		activate: activate
 	})
 }
 
 
 function activate(context) {
+	var ractive = context.domApi
 	var socket = Socket(context.parameters.room)
 	var audio = Audio()
+	audio.muted = true //sanity purposes
 
-	context.domApi.data = context.data
-	var views = context.domApi
-	window.da = context.domApi
+	window.r = ractive
 	window.j = audio
 	window.onresize = scrollToBottom
 	//file.createReadStream().pipe(audio) //future
 
-	console.log('vgm')
-	console.log(views.data)
+	ractive.set(context.data) //this doesn't work because it renders then activates.
 
 	socket.on('chat receive', function pushMessage(msgObj) {
-		views.chat.push('array', msgObj)
+		ractive.get('chat.array').push(msgObj)
 		scrollToBottom()
 	})
 
 	socket.on('new song', function (song) {
-		views.set({
-			'albumArt': song.cover,
-			'music.title': song.title,
-			'music.artist': song.artist,
-			'music.album': song.album
-		})
+		ractive.set('music', song)
 		audio.src = song.src
 	})
 
-	views.on('text-submit', function ts() {
+	ractive.on('text-submit', function ts() {
 		var text = this.get('chat.input')
 		this.set('chat.input', '')
 		if (text) {
-			room.emit('chat send', {
+			socket.emit('chat send', {
 				label: 'Joseph',
 				item: text
 			})
@@ -67,21 +53,20 @@ function activate(context) {
 		return false
 	})
 
-	setInterval(function () {
-		views.set({
-			'music.currentSec': audio.currentTime,
+	setInterval(function updateTimeView() {
+		ractive.set({
+			'music.currentSec': audio.currentTime || 0,
 			'music.durationSec': audio.duration || 0.1 // no div by zero
 		})
-	}, 100)
+	}, 50)
 
-	views.on('mute', function () {
+	ractive.on('mute', function toggleMute() {
 		var toggled = !this.get('music.muted')
 		audio.muted = toggled
 		this.set('music.muted', toggled)
 	})
 
 	context.on('destroy', function() {
-		console.log('getting destroyed')
 		delete window.da
 		delete window.j
 		delete window.onresize

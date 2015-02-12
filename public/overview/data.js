@@ -1,5 +1,5 @@
 module.exports = {
-	overview: {
+	starred: {
 		array: [
 			{item: 'room1'},
 			{item: 'room2', 'badge': 2},
