@@ -33,15 +33,15 @@ function Activator(socket) {
 		var audio = Audio()
 		var room = context.parameters.room
 
-		audio.muted = true //sanity purposes
-		ractive.set('music.muted', true)
-
 		window.r = ractive
 		window.j = audio
 		window.onresize = scrollToBottom
 		//file.createReadStream().pipe(audio) //future
 
 		ractive.set(context.data)
+
+		audio.muted = true //sanity purposes
+		ractive.set('music.muted', true)
 
 		socket.on('chat receive', function pushMessage(msgObj) {
 			ractive.get('chat.array').push(msgObj)
