@@ -1,10 +1,12 @@
 var JustLogin = require('just-login-core')
 var SessionManager = require('just-login-example-session-manager')
 var Spaces = require('level-spaces')
+var chatRelay = require('./chat-relay.js')
 
 function noop() {}
 
 module.exports = function SessMng(io, db) {
+	chatRelay(io)
 	var sessionManagerDb = Spaces(db, 'session-manager')
 
 	var core = JustLogin(db)

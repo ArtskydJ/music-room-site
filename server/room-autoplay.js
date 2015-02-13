@@ -1,4 +1,3 @@
-var Room = require('./room.js')
 var songs = require('./test-song-data.json')
 
 module.exports = function autoplayRoom(io, testMode) {
@@ -6,7 +5,7 @@ module.exports = function autoplayRoom(io, testMode) {
 		setTimeout(process.exit, 10000) //i don't like this "solution"
 	}
 
-	var roomAutoplay = Room(io, 'autoplay')
+	var roomAutoplay = io.in('autoplay')
 
 	function chat(what, from, message) {
 		what.emit('chat receive', {
@@ -19,14 +18,19 @@ module.exports = function autoplayRoom(io, testMode) {
 	var play = function playSong(index) {
 		var song = songs[index]
 		roomAutoplay.emit('new song', song)
-		setTimeout(playSong, song.len * 1000, (index + 1) % songs.length)
 		chat(roomAutoplay, 'Now Playing', song.title)
+
+		setTimeout(playSong, song.len * 1000, (index + 1) % songs.length)
+		play = function(){ console.log('already playing') }
 	}
 
-	roomAutoplay.on('connect', function conn(socket) {
-		play(0)
-		play = console.log.bind(null, 'already playing')
-
-		chat(socket, 'server', 'why hullo thar')
+	io.on('connect', function(socket) {
+		socket.on('join', function(room) {
+			if (room === 'autoplay') {
+				//setTimeout(function(){
+					play(0)
+				//}, 10)
+			}
+		})
 	})
 }

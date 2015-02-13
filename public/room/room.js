@@ -1,10 +1,10 @@
+var Promise = require('promise')
 var fs = require('fs')
 var path = require('path')
-var Socket = require('./socket.js')
 var Audio = require('./audio.js')
 var data = require('./data.js')
 
-module.exports = function(stateRouter) {
+module.exports = function(stateRouter, socket) {
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
@@ -12,65 +12,80 @@ module.exports = function(stateRouter) {
 		name: 'room',
 		route: '/room/:room',
 		template: template,
+		resolve: resolver(socket),
 		data: data,
-		activate: activate
+		activate: Activator(socket)
 	})
 }
 
-
-function activate(context) {
-	var ractive = context.domApi
-	var socket = Socket(context.parameters.room)
-	var audio = Audio()
-	audio.muted = true //sanity purposes
-
-	window.r = ractive
-	window.j = audio
-	window.onresize = scrollToBottom
-	//file.createReadStream().pipe(audio) //future
-
-	ractive.set(context.data) //this doesn't work because it renders then activates.
-
-	socket.on('chat receive', function pushMessage(msgObj) {
-		ractive.get('chat.array').push(msgObj)
-		scrollToBottom()
+function resolver(socket) {
+	var p = new Promise(function (resolve, reject) {
+		socket.on('connect', resolve)
+		socket.on('error', reject)
 	})
 
-	socket.on('new song', function (song) {
-		ractive.set('music', song)
-		audio.src = song.src
-	})
+	return function resolve() { return p }
+}
 
-	ractive.on('text-submit', function ts() {
-		var text = this.get('chat.input')
-		this.set('chat.input', '')
-		if (text) {
-			socket.emit('chat send', {
-				label: 'Joseph',
-				item: text
-			})
-		}
-		return false
-	})
+function Activator(socket) {
+	return function activate(context) {
+		var ractive = context.domApi
+		var audio = Audio()
+		var room = context.parameters.room
 
-	setInterval(function updateTimeView() {
-		ractive.set({
-			'music.currentSec': audio.currentTime || 0,
-			'music.durationSec': audio.duration || 0.1 // no div by zero
+		audio.muted = true //sanity purposes
+		ractive.set('music.muted', true)
+
+		window.r = ractive
+		window.j = audio
+		window.onresize = scrollToBottom
+		//file.createReadStream().pipe(audio) //future
+
+		ractive.set(context.data)
+
+		socket.on('chat receive', function pushMessage(msgObj) {
+			ractive.get('chat.array').push(msgObj)
+			scrollToBottom()
 		})
-	}, 50)
 
-	ractive.on('mute', function toggleMute() {
-		var toggled = !this.get('music.muted')
-		audio.muted = toggled
-		this.set('music.muted', toggled)
-	})
+		socket.on('new song', function (song) {
+			ractive.set('music', song)
+			audio.src = song.src
+		})
 
-	context.on('destroy', function() {
-		delete window.da
-		delete window.j
-		delete window.onresize
-	})
+		ractive.on('text-submit', function ts() {
+			var text = this.get('chat.input')
+			this.set('chat.input', '')
+			if (text) {
+				socket.emit('chat send', {
+					label: 'Joseph',
+					item: text
+				})
+			}
+			return false
+		})
+
+		setInterval(function updateTimeView() {
+			ractive.set({
+				'music.currentSec': audio.currentTime || 0,
+				'music.durationSec': audio.duration || 0.1 // no div by zero
+			})
+		}, 50)
+
+		ractive.on('mute', function toggleMute() {
+			var toggled = !this.get('music.muted')
+			audio.muted = toggled
+			this.set('music.muted', toggled)
+		})
+
+		socket.emit('join', room)
+		context.on('destroy', function() {
+			socket.emit('leave', room)
+			delete window.da
+			delete window.j
+			delete window.onresize
+		})
+	}
 }
 
 function scrollToBottom() {
