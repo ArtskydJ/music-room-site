@@ -75,6 +75,6 @@ function activate(context) {
 
 function scrollToBottom() {
 	// http://stackoverflow.com/questions/270612/scroll-to-bottom-of-div
-	var div = document.getElementById('chatView')
+	var div = document.getElementById('autoscroll')
 	div.scrollTop = div.scrollHeight
 }

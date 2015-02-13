@@ -8,15 +8,20 @@
 	-webkit-transition: 0;
 }
 
-img {
+#cover {
 	width: 100%;
 	height: 100%;
+	margin-bottom: 15px;
 }
 
-#chatView {
+#autoscroll {
 	word-break: break-word;
 	overflow: auto;
-	max-height: calc(100vh - 260px);
+	max-height: calc(100vh - 308px);
+}
+
+#input {
+	margin-bottom: 15px;
 }
 
 #muteBtn {
