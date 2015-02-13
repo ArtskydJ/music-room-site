@@ -1,13 +1,10 @@
 var JustLogin = require('just-login-core')
 var SessionManager = require('just-login-example-session-manager')
-var Level = require('level')
 var Spaces = require('level-spaces')
-
 
 function noop() {}
 
-module.exports = function SessionManager(io) {
-	var db = Level('./database')
+module.exports = function SessMng(io, db) {
 	var sessionManagerDb = Spaces(db, 'session-manager')
 
 	var core = JustLogin(db)
@@ -28,10 +25,10 @@ module.exports = function SessionManager(io) {
 		}
 
 		socket.on('session create', function create(cb) {
-			sessionManager.createSession(onSession(cb))
+			manager.createSession(onSession(cb))
 		})
-		socket.on('session continue', function continue(sessionId, cb) {
-			sessionManager.continueSession(sessionId, onSession(cb))
+		socket.on('session continue', function continu(sessionId, cb) {
+			manager.continueSession(sessionId, onSession(cb))
 		})
 		socket.on('session isAuthenticated',     api.isAuthenticated)
 		socket.on('session beginAuthentication', api.beginAuthentication)
