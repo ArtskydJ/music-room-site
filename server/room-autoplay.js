@@ -27,9 +27,9 @@ module.exports = function autoplayRoom(io, testMode) {
 	io.on('connect', function(socket) {
 		socket.on('join', function(room) {
 			if (room === 'autoplay') {
-				//setTimeout(function(){
+				setTimeout(function(){
 					play(0)
-				//}, 10)
+				}, 10)
 			}
 		})
 	})

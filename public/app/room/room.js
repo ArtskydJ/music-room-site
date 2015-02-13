@@ -9,12 +9,12 @@ module.exports = function(stateRouter, socket) {
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
 	stateRouter.addState({
-		name: 'room',
+		name: 'app.room',
 		route: '/room/:room',
 		template: template,
 		resolve: resolver(socket),
 		data: data,
-		activate: Activator(socket)
+		activate: activator(socket)
 	})
 }
 
@@ -27,7 +27,7 @@ function resolver(socket) {
 	return function resolve() { return p }
 }
 
-function Activator(socket) {
+function activator(socket) {
 	return function activate(context) {
 		var ractive = context.domApi
 		var audio = Audio()
@@ -37,11 +37,9 @@ function Activator(socket) {
 		window.j = audio
 		window.onresize = scrollToBottom
 		//file.createReadStream().pipe(audio) //future
-
 		ractive.set(context.data)
 
-		audio.muted = true //sanity purposes
-		ractive.set('music.muted', true)
+		toggleMute() //sanity purposes
 
 		socket.on('chat receive', function pushMessage(msgObj) {
 			ractive.get('chat.array').push(msgObj)
@@ -67,24 +65,25 @@ function Activator(socket) {
 
 		setInterval(function updateTimeView() {
 			ractive.set({
+				'music.muted': audio.muted,
 				'music.currentSec': audio.currentTime || 0,
 				'music.durationSec': audio.duration || 0.1 // no div by zero
 			})
 		}, 50)
 
-		ractive.on('mute', function toggleMute() {
-			var toggled = !this.get('music.muted')
-			audio.muted = toggled
-			this.set('music.muted', toggled)
-		})
+		ractive.on('mute', toggleMute)
 
 		socket.emit('join', room)
-		context.on('destroy', function() {
+		context.on('destroy', function dest() {
 			socket.emit('leave', room)
 			delete window.da
 			delete window.j
 			delete window.onresize
 		})
+
+		function toggleMute() {
+			audio.muted = !audio.muted
+		}
 	}
 }
 
