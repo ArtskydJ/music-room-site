@@ -4,7 +4,7 @@ var path = require('path')
 var Audio = require('./audio.js')
 var data = require('./data.js')
 
-module.exports = function(stateRouter, socket) {
+module.exports = function(stateRouter, socket, getSessionId) {
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
@@ -12,28 +12,25 @@ module.exports = function(stateRouter, socket) {
 		name: 'app.room',
 		route: '/room/:room',
 		template: template,
-		resolve: resolver(socket),
+		resolve: resolver(socket, getSessionId),
 		data: data,
 		activate: activator(socket)
 	})
 }
 
-function resolver(socket) {
-	var connected = new Promise(function(resolve, reject) {
-		socket.on('connect', resolve)
-		socket.on('error', reject)
-	})
+function resolver(socket, getSessionId) {
+	return function (data, parameters, cb) {
+		var room = parameters.room
+		var sessionId = getSessionId()
 
-	return function resolve() {
-		var authenticated = Promise.denodeify( socket.emit )('session isAuthenticated')
-		return Promise.all([ connected, authenticated ])
-			.then(function (arr) {
-				return arr.every(Boolean)
-			})
+		socket.emit('join', sessionId, room, function (err) {
+			console.log('join value', err)
+			err ? cb.redirect('app.login') : cb()
+		})
 	}
 }
 
-function activator(socket) {
+function activator(socket, getSessionId) {
 	return function activate(context) {
 		var ractive = context.domApi
 		var audio = Audio()
@@ -79,7 +76,6 @@ function activator(socket) {
 
 		ractive.on('mute', toggleMute)
 
-		socket.emit('join', room)
 		context.on('destroy', function dest() {
 			socket.emit('leave', room)
 			delete window.da

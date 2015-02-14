@@ -1,6 +1,6 @@
 var http = require('http')
 var Socketio = require('socket.io')
-var Level = require('level')
+var Level = require('level-mem')
 var St = require('st')
 var AutoplayRoom = require('./server/room-autoplay.js')
 var SessionManager = require('./server/session-manager.js')

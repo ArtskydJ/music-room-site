@@ -1,0 +1,27 @@
+<div class="container">
+	<h1>Login to be Awesome!</h1>
+	<!--<form> on-submit="email-submit">-->
+		<div class="col-sm-8">
+			<input
+				type="text"
+				class="form-control input-lg"
+				placeholder="you@youremail.com"
+				value="{{emailAddressInput}}"
+				disabled="{{loggingIn}}"
+			>
+		</div>
+		<div class="col-sm-4">
+			<button
+				class="btn btn-primary btn-lg"
+				on-click="email-submit"
+				disabled="{{loggingIn}}"
+				style="width:100%">
+				{{#if loggingIn}}
+					Check your email...
+				{{else}}
+					Login
+				{{/if}}
+			</button>
+		</div>
+	<!--</form>-->
+</div>
