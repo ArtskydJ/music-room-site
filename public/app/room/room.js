@@ -19,12 +19,18 @@ module.exports = function(stateRouter, socket) {
 }
 
 function resolver(socket) {
-	var p = new Promise(function (resolve, reject) {
+	var connected = new Promise(function(resolve, reject) {
 		socket.on('connect', resolve)
 		socket.on('error', reject)
 	})
 
-	return function resolve() { return p }
+	return function resolve() {
+		var authenticated = Promise.denodeify( socket.emit )('session isAuthenticated')
+		return Promise.all([ connected, authenticated ])
+			.then(function (arr) {
+				return arr.every(Boolean)
+			})
+	}
 }
 
 function activator(socket) {
