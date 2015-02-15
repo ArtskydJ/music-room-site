@@ -1,21 +1,17 @@
 # music-room-site
-The site for the room of the musicz
-
-#goals
 
 ###chatroom
 
-- [ ] auto-post a message in the chat when a song starts
+- [x] auto-post a message in the chat when a song starts
 - [x] use socket.io
-- [ ] in chat.js, abstract away the message format. can't pass the user's name on construct?
+- [ ] in chat.js, abstract away the message format. (can't pass the user's name on construct?)
 
 ###session/auth
 
-- [ ] require authentication
-- [ ] room names should be a random id
-- [ ] each person gets their own id
+- [ ] require authentication to access a room
+- [x] each person gets their own id
 - [ ] when a person connects to a room, disconnect \'em from the other rooms!
-- [ ] session management
+- [x] session management
 
 ###song files
 
@@ -31,12 +27,11 @@ The site for the room of the musicz
 	- see [playlist-combinator](https://github.com/ArtskyJ/playlist-combinator)
 - [ ] download songs when needed, not all at once
 - [ ] people who join late should start downloading stuff
-- [x] get rid of aurora.js on the client
 
 ###torrent
 
 - [ ] use the server as a peer
-- [x] instead of uploading entire torrent to server, use `parse-torrent`, to get the hash, then emit the hash.
+- [x] instead of uploading entire torrent to server, just emit the hash.
 - [ ] When a client receives the hash, it must start downloading it. `client.download(infoHash)`
 - [x] get metadata with https://www.npmjs.org/package/musicmetadata
 - [ ] Find out what happens when you torrent.download(\'123abc\') after you torrent.seed(\'123abc\').
@@ -51,15 +46,14 @@ The site for the room of the musicz
 
 ###mock server
 
-- [ ] pings all users and say 'hey new song!', and gives them the song id
-- [ ] it is, in the meanwhile, hosting a thing on a different port that is seeding 3 songs, and 2 album art pics
+- [x] pings all users and say 'hey new song!', and gives them the song id
+- [x] and it provides 3 songs and album art pics
 
 ###other
 
 - [x] add tests for sox-stream, add good docs
 - [x] shorten test files, preferably find non-copyrighted material
 - [ ] https://www.npmjs.com/package/album-cover
-- [ ] put templates into .ract files. use opt.template = fs.readFileSync(\'tplt.ract\')
-- [ ] create the overview rooms page
+- [x] create the overview rooms page
 
 
