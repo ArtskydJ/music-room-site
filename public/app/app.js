@@ -20,9 +20,9 @@ module.exports = function(stateRouter) {
 		defaultChild: 'overview',
 		template: template
 	})
-	addOverviewState(stateRouter)
+	addOverviewState(stateRouter, socket)
 	addRoomState(stateRouter, socket, sessId.get)
-	addLoginState(stateRouter)
+	addLoginState(stateRouter, socket)
 
 	socket.once('connect', function() {
 		connectSession(socket)

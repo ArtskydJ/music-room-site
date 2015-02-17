@@ -1,6 +1,7 @@
 var JustLogin = require('just-login-core')
 var SessionManager = require('just-login-example-session-manager')
 var Spaces = require('level-spaces')
+var bypass = require('just-login-bypass')
 
 function noop() {}
 
@@ -13,11 +14,9 @@ module.exports = function SessMng(io, db) {
 	io.on('connect', function (socket) {
 		// Establishing a Session
 		socket.on('session create', function create(cb) {
-			console.log('create session')
 			manager.createSession(onSession(cb))
 		})
 		socket.on('session continue', function continu(sessionId, cb) {
-			console.log('continue attempt')
 			manager.continueSession(sessionId, onSession(cb))
 		})
 
@@ -35,9 +34,17 @@ module.exports = function SessMng(io, db) {
 			unauthenticate: noop
 		}
 
-		socket.on('session isAuthenticated',     api.isAuthenticated)
-		socket.on('session beginAuthentication', api.beginAuthentication)
-		socket.on('session unauthenticate',      api.unauthenticate)
+		socket.on('session isAuthenticated', function si() {
+			api.isAuthenticated.apply(null, [].slice.call(arguments))
+		})
+		socket.on('session unauthenticate', function su() {
+			api.unauthenticate.apply(null, [].slice.call(arguments))
+		})
+		socket.on('session beginAuthentication', function sb(email, cb) {
+			api.beginAuthentication(email, function (err, authReq) {
+				cb && cb(err, err ? null : authReq.contactAddress)
+			})
+		})
 
 		// Chat Relay
 		function validRoom(room) {
@@ -65,11 +72,7 @@ module.exports = function SessMng(io, db) {
 		socket.on('leave', socket.leave.bind(socket))
 	})
 
-	core.on('authentication initiated', function auth1(credentials) {
-		core.authenticate(credentials.token, function auth2(err, contactAddress) {
-			console.log(err ? ('Error: ' + err.message) : ('Signed in as: ' + contactAddress))
-		})
-	})
+	bypass(core)
 
 	return core
 }
