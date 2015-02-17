@@ -1,12 +1,9 @@
 module.exports = {
 	starred: {
 		array: [
-			{item: 'room1'},
-			{item: 'room2', 'badge': 2},
-			{item: 'room3'},
-			{item: 'room4'}
+			{item: 'autoplay', href: '#/room/autoplay'},
+			{item: 'wip', 'badge': 2}
 		],
-		empty: 'No starred rooms',
-		isAuthenticated: true
+		empty: 'No starred rooms'
 	}
 }

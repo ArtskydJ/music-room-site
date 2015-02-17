@@ -1,7 +1,9 @@
 var fs = require('fs')
 var path = require('path')
+var AuthHelpers = require('../auth-helpers.js')
 
 module.exports = function(stateRouter, socket, mediator) {
+	var auth = AuthHelpers(socket)
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'login.html'), { encoding: 'utf8' } )
 
@@ -9,53 +11,42 @@ module.exports = function(stateRouter, socket, mediator) {
 		name: 'app.login',
 		route: '/login',
 		template: template,
-		resolve: resolver(socket),
-		activate: activator(socket)
+		resolve: auth.resolve,
+		activate: activator(auth)
 	})
 }
 
-function logIn(socket, address, cb) {
-	socket.emit('session beginAuthentication', address, cb)
-}
-
-function logOut(socket, cb) {
-	socket.emit('session unauthenticate', cb)
-}
-
-function isLoggedIn(socket, cb) {
-	socket.emit('session isAuthenticated', cb)
-}
-
-function resolver(socket) {
-	return function resolve(data, parameters, cb) {
-		isLoggedIn(socket, function (err, address) {
-			cb(err, { loggedIn: address, loggingIn: false })
-		})
-	}
-}
-
-function activator(socket) {
+function activator(auth) {
 	return function activate(context) {
 		var ractive = context.domApi
-		ractive.set(context.content)
+		var content = context.content
 
-		function update(err, address) {
-			ractive.set({ loggedIn: address })
+		function set(loggedIn, loggingIn) {
+			if (loggingIn === undefined) {
+				ractive.set('loggedIn', loggedIn)
+			} else {
+				ractive.set({
+					loggedIn: loggedIn,
+					loggingIn: loggingIn
+				})
+			}
 		}
 
-		setInterval(isLoggedIn, 2000, socket, update)
+		set(content.loggedIn, false)
+
+		setInterval(auth.isLoggedIn, 2000, function (err, address) {
+			set(address)
+		})
 
 		ractive.on('email-submit', function () {
-			ractive.set('loggingIn', true)
-			logIn(socket, ractive.get('emailAddressInput'), update)
+			auth.logIn(ractive.get('emailAddressInput'), function (err, address) {
+				set(address, true)
+			})
 		})
 
 		ractive.on('logout-btn', function () {
-			logOut(socket, function (err) {
-				ractive.set({
-					loggedIn: false,
-					loggingIn: false
-				})
+			auth.logOut(function (err) {
+				set(false, false)
 			})
 		})
 	}

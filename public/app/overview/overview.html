@@ -1,14 +1,12 @@
 <div class="container">
 	<div class="row">
 		<div class="col-sm-6">
-			<div class="panel panel-{{#isAuthenticated}}success{{else}}danger{{/}}">
+			<div class="panel panel-{{#loggedIn}}success{{else}}danger{{/}}">
 				<div class="panel-heading">
 					<h5>Starred Rooms</h5>
 				</div>
-					{{#isAuthenticated}}
-						{{#starred}}
-							{{>list}}
-						{{/}}
+					{{#loggedIn}}
+							{{>list starred}}
 					{{else}}
 						<div class="list-group">
 							<a class="list-group-item">Please log in to see view your starred rooms.</a>
