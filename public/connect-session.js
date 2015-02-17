@@ -11,9 +11,7 @@ function createSession(socket) {
 	var emit = Promise.denodeify( socket.emit.bind(socket) )
 
 	var sessionPromise = emit('session continue', existingSessionId)
-		.catch(function() {
-			return emit('session create')
-		})
+		.catch(function() { return emit('session create') })
 
 	sessionPromise.then(function (sessionId) {
 		local.set(sessionId)
