@@ -1,7 +1,7 @@
 var fs = require('fs')
 var path = require('path')
 
-module.exports = function(stateRouter, socket) {
+module.exports = function(stateRouter, socket, mediator) {
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'login.html'), { encoding: 'utf8' } )
 
