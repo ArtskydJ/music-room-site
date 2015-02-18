@@ -1,7 +1,7 @@
 var fs = require('fs')
 var path = require('path')
 var data = require('./data.js')
-var AuthHelpers = require('../auth-helpers.js')
+var AuthHelpers = require('auth-helpers.js')
 
 module.exports = function(stateRouter, socket, mediator) {
 	var auth = AuthHelpers(socket)
