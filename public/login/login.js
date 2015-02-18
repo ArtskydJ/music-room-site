@@ -8,7 +8,7 @@ module.exports = function(stateRouter, socket, mediator) {
 	var template = fs.readFileSync( path.join(__dirname, 'login.html'), { encoding: 'utf8' } )
 
 	stateRouter.addState({
-		name: 'app.login',
+		name: 'login',
 		route: '/login',
 		template: template,
 		resolve: auth.resolve,

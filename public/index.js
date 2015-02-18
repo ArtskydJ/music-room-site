@@ -4,6 +4,7 @@ var fs = require('fs')
 var path = require('path')
 var formatTime = require('./format-time.js')
 var addAppState = require('./app/app.js')
+var addLoginState = require('./login/login.js')
 var Socketio = require('socket.io-client')
 var Mediator = require('./mediator/mediator.js')
 var rememberMediator = require('./mediator/remember-mediator.js')
@@ -21,6 +22,7 @@ var renderer = RactiveRenderer({
 })
 var stateRouter = StateRouter(renderer, 'body')
 addAppState(stateRouter, socket, mediator)
+addLoginState(stateRouter, socket, mediator)
 
 socket.once('connect', function() {
 	connectSession(socket)

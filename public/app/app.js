@@ -2,7 +2,6 @@ var fs = require('fs')
 var path = require('path')
 var addOverviewState = require('./overview/overview.js')
 var addRoomState = require('./room/room.js')
-var addLoginState = require('./login/login.js')
 var AuthHelpers = require('./auth-helpers.js')
 
 module.exports = function(stateRouter, socket, mediator) {
@@ -19,5 +18,4 @@ module.exports = function(stateRouter, socket, mediator) {
 
 	addOverviewState(stateRouter, socket, mediator)
 	addRoomState(stateRouter, socket, mediator)
-	addLoginState(stateRouter, socket, mediator)
 }
