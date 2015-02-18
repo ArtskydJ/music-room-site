@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node .",
     "test": "node . -t | browserify test/test.js | smokestack",
-    "test2": "browserify public/index.js | smokestack",
-    "build": "browserify public/index.js -do public/bundle.js",
-    "watch": "watchify public/index.js -do public/bundle.js"
+    "test2": "browserify client/index.js | smokestack",
+    "build": "browserify client/index.js -do static/bundle.js",
+    "watch": "watchify client/index.js -do static/bundle.js"
   },
   "browserify": {
     "transform": [
