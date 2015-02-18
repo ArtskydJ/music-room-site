@@ -21,15 +21,12 @@ module.exports = function(stateRouter, socket, mediator) {
 function resolver(socket, mediator) {
 	return function (data, parameters, cb) {
 		var room = parameters.room
-		var sessionId
 
-		mediator.emit('session getId', function (sid) {
-			sessionId = sid
-		})
-
-		socket.emit('join', sessionId, room, function (err) {
-			console.log('join value', err)
-			err ? cb.redirect('app.login') : cb()
+		mediator.emit('session getId', function (sessionId) {
+			socket.emit('join', sessionId, room, function (err) {
+				console.log('join value', err)
+				err ? cb.redirect('app.login') : cb()
+			})
 		})
 	}
 }

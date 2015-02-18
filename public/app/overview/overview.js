@@ -13,7 +13,6 @@ module.exports = function(stateRouter, socket, mediator) {
 		route: '/',
 		template: template,
 		data: data,
-		resolve: auth.resolve,
-		activate: auth.activate
+		resolve: auth.resolve
 	})
 }
