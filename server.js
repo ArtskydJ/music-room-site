@@ -1,5 +1,5 @@
 var usingNode0_10 = /0\.10\./.test(process.version)
-console.log('Server started, running on ', usingNode0_10 ? 'node 0.10' : 'node 0.12 / iojs')
+console.log('Server started, running on', usingNode0_10 ? 'node 0.10' : 'node 0.12 / iojs')
 var http = require('http')
 var Socketio = require('socket.io')
 var Level = require(usingNode0_10 ? 'level' : 'level-mem')

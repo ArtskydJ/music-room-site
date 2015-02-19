@@ -4,7 +4,7 @@ var path = require('path')
 var Audio = require('./audio.js')
 var data = require('./data.js')
 
-module.exports = function(stateRouter, socket, sessionIdGetter) {
+module.exports = function(stateRouter, socket) {
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
@@ -12,31 +12,30 @@ module.exports = function(stateRouter, socket, sessionIdGetter) {
 		name: 'app.room',
 		route: '/room/:room',
 		template: template,
-		resolve: resolver(socket, sessionIdGetter),
+		resolve: resolver(socket),
 		data: data,
 		activate: activator(socket)
 	})
 }
 
-function resolver(socket, sessionIdGetter) {
+function resolver(socket) {
 	return function (data, parameters, cb) {
 		var room = parameters.room
 
-		var sessionId = sessionIdGetter()
-		
-		socket.emit('join', sessionId, room, function (err) {
-			console.log('join value', err)
+		socket.emit('join', room, function (err) {
+			console.log('join! err =', err)
 			err ? cb.redirect('app.login') : cb()
 		})
 	}
 }
 
-function activator(socket, mediator) {
+function activator(socket) {
 	return function activate(context) {
 		var ractive = context.domApi
-		var audio = Audio()
 		var room = context.parameters.room
 
+		var audio = Audio()
+		
 		window.r = ractive
 		window.j = audio
 		window.onresize = scrollToBottom
@@ -51,6 +50,7 @@ function activator(socket, mediator) {
 		})
 
 		socket.on('new song', function (song) {
+			console.log('new song! src =', song.src)
 			ractive.set('music', song)
 			audio.src = song.src
 		})

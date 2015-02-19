@@ -16,18 +16,20 @@ module.exports = function SessMng(io, db) {
 		socket.on('session create', function create(cb) {
 			manager.createSession(onSession(cb))
 		})
-		socket.on('session continue', function continu(sessionId, cb) {
-			manager.continueSession(sessionId, onSession(cb))
+		socket.on('session continue', function continu(sessId, cb) {
+			manager.continueSession(sessId, onSession(cb))
 		})
 
 		function onSession(cb) {
-			return function onSess(err, loginApi, sessionId) {
+			return function onSess(err, loginApi, sessId) {
 				api = loginApi || api
-				cb(err, sessionId)
+				sessionId = sessId || sessionId
+				cb(err, sessId)
 			}
 		}
 
 		// Authentication API
+		var sessionId = null
 		var api = {
 			isAuthenticated: noop,
 			beginAuthentication: noop,
@@ -58,14 +60,16 @@ module.exports = function SessMng(io, db) {
 		})
 
 		// Room Connection and Disconnection
-		socket.on('join', function(sessionId, room, cb) {
+		socket.on('join', function(room, cb) {
 			cb = cb || noop
-			core.isAuthenticated(sessionId, function (err, addr) {
-				if (!err && addr) {
+			api.isAuthenticated(function (err, addr) {
+				if (err) {
+					cb(err)
+				} else if (!addr) {
+					cb(new Error('You tried to join a room while unauthenticated'))
+				} else {
 					socket.join(room)
 					cb(null)
-				} else {
-					cb(new Error('You tried to join a room while unauthenticated'))
 				}
 			})
 		})
