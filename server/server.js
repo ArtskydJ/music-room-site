@@ -4,15 +4,15 @@ var http = require('http')
 var Socketio = require('socket.io')
 var Level = require(usingNode0_10 ? 'level' : 'level-mem')
 var St = require('st')
-var AutoplayRoom = require('./server/room-autoplay.js')
-var SessionManager = require('./server/session-manager.js')
+var AutoplayRoom = require('./room-autoplay.js')
+var SessionManager = require('./session-manager.js')
 
 var router = St({
-	path: './static/',
+	path: __dirname + '/../static',
 	url: '/',
 	index: 'index.html'
 })
-var db = new Level('./database')
+var db = new Level(__dirname + '/../database')
 var server = http.createServer(router)
 var io = new Socketio()
 
