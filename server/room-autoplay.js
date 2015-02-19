@@ -29,7 +29,7 @@ module.exports = function autoplayRoom(io, testMode) {
 			if (room === 'autoplay') {
 				setTimeout(function(){
 					play(0)
-				}, 10)
+				}, 100)
 			}
 		})
 	})

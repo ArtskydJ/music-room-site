@@ -23,7 +23,7 @@ function resolver(socket) {
 		var room = parameters.room
 
 		socket.emit('join', room, function (err) {
-			console.log('join! err =', err)
+			console.log('joining', room, '| err =', err)
 			err ? cb.redirect('app.login') : cb()
 		})
 	}
@@ -35,7 +35,7 @@ function activator(socket) {
 		var room = context.parameters.room
 
 		var audio = Audio()
-		
+
 		window.r = ractive
 		window.j = audio
 		window.onresize = scrollToBottom
@@ -78,7 +78,7 @@ function activator(socket) {
 		ractive.on('mute', toggleMute)
 
 		context.on('destroy', function dest() {
-			socket.emit('leave', room)
+			socket.emit('leave', room, console.log.bind(console, 'left', room))
 			delete window.da
 			delete window.j
 			delete window.onresize
