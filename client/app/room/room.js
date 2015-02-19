@@ -24,7 +24,7 @@ function resolver(socket) {
 
 		socket.emit('join', room, function (err) {
 			console.log('joining', room, '| err =', err)
-			err ? cb.redirect('app.login') : cb()
+			err ? cb.redirect('login') : cb()
 		})
 	}
 }
@@ -40,52 +40,57 @@ function activator(socket) {
 		window.j = audio
 		window.onresize = scrollToBottom
 		//file.createReadStream().pipe(audio) //future
+
 		ractive.set(context.data)
-
 		toggleMute() //sanity purposes
+		socket.on('chat receive', chatReceive)
+		socket.on('new song', newSong)
+		ractive.on('text-submit', textSubmit)
+		ractive.on('mute', toggleMute)
 
-		socket.on('chat receive', function pushMessage(msgObj) {
+		var ivUpdate = setInterval(updateTimeView, 50) // too often?
+
+		context.on('destroy', destroy)
+
+		function chatReceive(msgObj) {
 			ractive.get('chat.array').push(msgObj)
 			scrollToBottom()
-		})
+		}
 
-		socket.on('new song', function (song) {
+		function textSubmit() {
+			var text = ractive.get('chat.input')
+			socket.emit('chat send', text)
+			ractive.set('chat.input', '')
+			return false
+		}
+
+		function newSong(song) {
 			console.log('new song! src =', song.src)
 			ractive.set('music', song)
 			audio.src = song.src
-		})
+		}
 
-		ractive.on('text-submit', function ts() {
-			var text = this.get('chat.input')
-			this.set('chat.input', '')
-			if (text) {
-				socket.emit('chat send', {
-					label: 'Joseph',
-					item: text
-				})
-			}
-			return false
-		})
+		function toggleMute() {
+			audio.muted = !audio.muted
+		}
 
-		setInterval(function updateTimeView() {
+		function updateTimeView() {
 			ractive.set({
 				'music.muted': audio.muted,
 				'music.currentSec': audio.currentTime || 0,
 				'music.durationSec': audio.duration || 0.1 // no div by zero
 			})
-		}, 50)
+		}
 
-		ractive.on('mute', toggleMute)
-
-		context.on('destroy', function dest() {
+		function destroy() {
 			socket.emit('leave', room, console.log.bind(console, 'left', room))
 			delete window.da
 			delete window.j
 			delete window.onresize
-		})
+			clearInterval(ivUpdate)
 
-		function toggleMute() {
-			audio.muted = !audio.muted
+			socket.removeAllListeners()
+			//ractive.off() // not actually necessary
 		}
 	}
 }

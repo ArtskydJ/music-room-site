@@ -53,10 +53,15 @@ module.exports = function SessMng(io, db) {
 			return room !== socket.id
 		}
 
-		socket.on('chat send', function chatsend(messageObj) {
-			console.log('chat')
-			socket.rooms.filter(validRoom).forEach(function emit(room) {
-				io.in(room).emit('chat receive', messageObj)
+		socket.on('chat send', function chatsend(text) {
+			api.isAuthenticated(function (err, address) {
+				var messageObj = {
+					label: address,
+					item: text
+				}
+				socket.rooms.filter(validRoom).forEach(function emit(room) {
+					io.in(room).emit('chat receive', messageObj)
+				})
 			})
 		})
 
@@ -69,9 +74,7 @@ module.exports = function SessMng(io, db) {
 				} else if (!addr) {
 					cb(new Error('You tried to join a room while unauthenticated'))
 				} else {
-					socket.join(room, function (err) {
-						cb(err)
-					})
+					socket.join(room, cb)
 				}
 			})
 		})
