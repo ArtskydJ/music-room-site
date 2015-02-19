@@ -45,6 +45,7 @@ function activator(socket) {
 		toggleMute() //sanity purposes
 		socket.on('chat receive', chatReceive)
 		socket.on('new song', newSong)
+		socket.on('user list', userList)
 		ractive.on('text-submit', textSubmit)
 		ractive.on('mute', toggleMute)
 
@@ -57,17 +58,22 @@ function activator(socket) {
 			scrollToBottom()
 		}
 
+		function newSong(song) {
+			console.log('new song! src =', song.src)
+			ractive.set('music', song)
+			audio.src = song.src
+		}
+
+		function userList(list) {
+			console.log('user list', list)
+			ractive.set('usersInRoom.array', list)
+		}
+
 		function textSubmit() {
 			var text = ractive.get('chat.input')
 			socket.emit('chat send', text)
 			ractive.set('chat.input', '')
 			return false
-		}
-
-		function newSong(song) {
-			console.log('new song! src =', song.src)
-			ractive.set('music', song)
-			audio.src = song.src
 		}
 
 		function toggleMute() {

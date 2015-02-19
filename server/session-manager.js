@@ -11,6 +11,8 @@ module.exports = function SessMng(io, db) {
 	var core = JustLogin(db)
 	var manager = SessionManager(core, sessionManagerDb)
 
+	var idToAddressMap = {}
+
 	io.on('connect', function (socket) {
 		// Establishing a Session
 		socket.on('session create', function create(cb) {
@@ -74,11 +76,32 @@ module.exports = function SessMng(io, db) {
 				} else if (!addr) {
 					cb(new Error('You tried to join a room while unauthenticated'))
 				} else {
-					socket.join(room, cb)
+					socket.join(room, function (err) {
+						setTimeout(function () {
+							addUserToList(room, addr)
+						})
+						cb(err)
+					})
 				}
 			})
 		})
 		socket.on('leave', socket.leave.bind(socket))
+
+		function addUserThenEmit(room, addr) {
+			idToAddressMap[room] = idToAddressMap[room] || {}
+			idToAddressMap[room][sessionId] = addr
+			emitUserList(room)
+		}
+		function removeUserThenEmit(room) {
+			delete idToAddressMap[room][sessionId]
+			emitUserList(room)
+		}
+		function emitUserList(room) {
+			var userList = Object.keys( idToAddressMap[room] ).map(function (sessId) {
+				return { item: idToAddressMap[room][sessId] }
+			})
+			io.in(room).emit('user list', userList)
+		}
 	})
 
 	bypass(core)
