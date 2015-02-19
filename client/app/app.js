@@ -4,7 +4,7 @@ var addOverviewState = require('./overview/overview.js')
 var addRoomState = require('./room/room.js')
 var AuthHelpers = require('auth-helpers.js')
 
-module.exports = function(stateRouter, socket) {
+module.exports = function(stateRouter, socket, sessionIdGetter) {
 	var auth = AuthHelpers(socket)
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'app.html'), { encoding: 'utf8' } )
@@ -16,5 +16,5 @@ module.exports = function(stateRouter, socket) {
 	})
 
 	addOverviewState(stateRouter, socket)
-	addRoomState(stateRouter, socket)
+	addRoomState(stateRouter, socket, sessionIdGetter)
 }

@@ -19,7 +19,7 @@ var renderer = RactiveRenderer({
 	partials: { list: listPartial }
 })
 var stateRouter = StateRouter(renderer, 'body')
-addAppState(stateRouter, socket)
+addAppState(stateRouter, socket, sessId.get)
 addLoginState(stateRouter, socket)
 
 socket.once('connect', function() {

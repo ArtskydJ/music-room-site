@@ -4,7 +4,7 @@ var path = require('path')
 var Audio = require('./audio.js')
 var data = require('./data.js')
 
-module.exports = function(stateRouter, socket, mediator) {
+module.exports = function(stateRouter, socket, sessionIdGetter) {
 	// Don't change the following line much; brfs won't like it
 	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
 
@@ -12,21 +12,21 @@ module.exports = function(stateRouter, socket, mediator) {
 		name: 'app.room',
 		route: '/room/:room',
 		template: template,
-		resolve: resolver(socket, mediator),
+		resolve: resolver(socket, sessionIdGetter),
 		data: data,
 		activate: activator(socket)
 	})
 }
 
-function resolver(socket, mediator) {
+function resolver(socket, sessionIdGetter) {
 	return function (data, parameters, cb) {
 		var room = parameters.room
 
-		mediator.emit('session getId', function (sessionId) {
-			socket.emit('join', sessionId, room, function (err) {
-				console.log('join value', err)
-				err ? cb.redirect('app.login') : cb()
-			})
+		var sessionId = sessionIdGetter()
+		
+		socket.emit('join', sessionId, room, function (err) {
+			console.log('join value', err)
+			err ? cb.redirect('app.login') : cb()
 		})
 	}
 }
