@@ -12,6 +12,7 @@ module.exports = function(stateRouter, socket) {
 		name: 'app',
 		defaultChild: 'overview',
 		template: template,
+		resolve: auth.resolve,
 		activate: auth.activate
 	})
 
