@@ -42,6 +42,7 @@ function activator(auth) {
 			auth.logIn(ractive.get('emailAddressInput'), function (err, address) {
 				set(address, true)
 			})
+			return false
 		})
 
 		ractive.on('logout-btn', function () {
