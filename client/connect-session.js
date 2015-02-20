@@ -1,11 +1,11 @@
 var Promise = require('promise')
 
-var local = {
-	get: localStorage.getItem.bind(localStorage, 'sessionid'),
-	set: localStorage.setItem.bind(localStorage, 'sessionid')
-}
+function createSession(socket, replaceLocal) {
+	var local = replaceLocal || {
+		get: localStorage.getItem.bind(localStorage, 'sessionid'),
+		set: localStorage.setItem.bind(localStorage, 'sessionid')
+	}
 
-function createSession(socket) {
 	var existingSessionId = local.get()
 
 	var emit = Promise.denodeify( socket.emit.bind(socket) )

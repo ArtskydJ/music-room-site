@@ -1,9 +1,13 @@
 var test = require('tape')
 var EventEmitter = require('events').EventEmitter
 var SessionManager = require('../server/session-manager.js')
+var connectSession = require('../client/connect-session.js')
 var Level = require('level-mem')
+var StateHolder = require('state-holder')
+var bypass = require('just-login-bypass')
+var Promise = require('promise')
 
-function makeIo(t) {
+function makeIo() {
 	var rooms = {}
 	var io = new EventEmitter()
 	io.in = function ioin(room) {
@@ -28,24 +32,79 @@ function makeSocket(io) {
 	return socket
 }
 
-function makeSessionManager(t) {
+function makeSessionManager() {
 	var io = makeIo()
-	var socket = makeSocket(io)
 	var core = SessionManager(io, new Level())
+	if (false) {
+		// delete the if block when the just-login-emailer
+		// is implemented in session-manager.js
+		io.removeAllListeners('authentication initiated')
+		bypass(core)
+	}
+	var socket = makeSocket(io)
 	return socket
 }
 
-test('session manager', function (t) {
+function establishSession() {
+	var socket = makeSessionManager()
+	var state = StateHolder()
+	return connectSession(socket, state).then(function (sessionId) {
+		return Promise.resolve({
+			socket: socket,
+			sessionId: sessionId
+		})
+	})
+}
+
+function timeout(ms) {
+	return function (val) {
+		return new Promise(function (resolve, reject) {
+			setTimeout(resolve, ms, val)
+		})
+	}
+}
+
+test('client/connect-session.js', function (t) {
 	t.plan(1)
 
 	var socket = makeSessionManager()
+	var state = StateHolder()
 
-	socket.emit('join', 'autoplay', function (err) {
-		t.notOk(err, err ? err.message : 'no error')
-
-		t.end()
+	connectSession(socket, state).then(function (sessionId1) {
+		connectSession(socket, state).then(function (sessionId2) {
+			t.equal(sessionId1, sessionId2, 'session IDs are identical')
+		})
 	})
+})
 
-	setTimeout(function () {}, 100)
+test('client/connect-session.js', function (t) {
+	t.plan(3)
 
+	establishSession()
+	.then(function (obj) {
+		var sessionId = obj.sessionId
+		var socket = obj.socket
+		var socketEmit = Promise.denodeify( socket.emit.bind(socket) )
+
+		socketEmit('session isAuthenticated')
+		.then(function (addr) {
+			t.notOk(addr, 'not authenticated')
+		})
+
+		.then( socketEmit('session beginAuthentication', 'joe') )
+		.then(function (addr) {
+			t.equal(addr, 'joe', 'authenticated')
+		})
+		.then(timeout(100))
+
+		.then( socketEmit('session isAuthenticated') )
+		.then(function (addr) {
+			t.equal(addr, 'joe', 'authenticated')
+			t.end()
+		})
+		.catch(function (err) {
+			t.notOk(err, err ? err.message : 'no error')
+			t.end()
+		})
+	})
 })
