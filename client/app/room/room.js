@@ -93,10 +93,10 @@ function activator(socket) {
 			delete window.da
 			delete window.j
 			delete window.onresize
+			delete audio
 			clearInterval(ivUpdate)
 
 			socket.removeAllListeners()
-			//ractive.off() // not actually necessary
 		}
 	}
 }
