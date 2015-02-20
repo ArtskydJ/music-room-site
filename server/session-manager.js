@@ -49,8 +49,8 @@ module.exports = function SessMng(io, db) {
 				cb && cb(err, err ? null : authReq.contactAddress)
 			})
 		})
-
 		// Chat Relay
+
 		function validRoom(room) {
 			return room !== socket.id
 		}
@@ -78,7 +78,7 @@ module.exports = function SessMng(io, db) {
 				} else {
 					socket.join(room, function (err) {
 						setTimeout(function () {
-							addUserToList(room, addr)
+							addUserThenEmit(room, addr)
 						})
 						cb(err)
 					})
