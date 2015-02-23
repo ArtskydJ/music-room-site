@@ -8,6 +8,7 @@ var AutoplayRoom = require('./room-autoplay.js')
 var SessionManager = require('./session-manager.js')
 
 var router = St({
+	cache: false,
 	path: __dirname + '/../static',
 	url: '/',
 	index: 'index.html'
