@@ -38,19 +38,20 @@ module.exports = function SessMng(io, db) {
 			unauthenticate: noop
 		}
 
-		socket.on('session isAuthenticated', function si() {
-			api.isAuthenticated.apply(null, [].slice.call(arguments))
+		socket.on('session isAuthenticated', function si(cb) {
+			api.isAuthenticated(cb || noop)
 		})
-		socket.on('session unauthenticate', function su() {
-			api.unauthenticate.apply(null, [].slice.call(arguments))
+		socket.on('session unauthenticate', function su(cb) {
+			api.unauthenticate(cb || noop)
 		})
 		socket.on('session beginAuthentication', function sb(email, cb) {
+			cb = cb || noop
 			api.beginAuthentication(email, function (err, authReq) {
-				cb && cb(err, err ? null : authReq.contactAddress)
+				cb(err, authReq && authReq.contactAddress)
 			})
 		})
-		// Chat Relay
 
+		// Chat Relay
 		function validRoom(room) {
 			return room !== socket.id
 		}

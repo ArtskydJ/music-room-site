@@ -91,13 +91,17 @@ test('client/connect-session.js', function (t) {
 			t.notOk(addr, 'not authenticated')
 		})
 
-		.then( socketEmit('session beginAuthentication', 'joe') )
+		.then(function () {
+			return socketEmit('session beginAuthentication', 'joe')
+		})
 		.then(function (addr) {
 			t.equal(addr, 'joe', 'authenticated')
 		})
 		.then(timeout(100))
 
-		.then( socketEmit('session isAuthenticated') )
+		.then(function () {
+			return socketEmit('session isAuthenticated')
+		})
 		.then(function (addr) {
 			t.equal(addr, 'joe', 'authenticated')
 			t.end()
