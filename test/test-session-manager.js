@@ -22,6 +22,7 @@ function makeIo() {
 function makeSocket(io) {
 	var inRooms = []
 	var socket = new EventEmitter()
+	socket.id = Math.random().toString().slice(2)
 	socket.join = function join(room) {
 		socket.emit('_join', room)
 	}
@@ -49,10 +50,7 @@ function establishSession() {
 	var socket = makeSessionManager()
 	var state = StateHolder()
 	return connectSession(socket, state).then(function (sessionId) {
-		return Promise.resolve({
-			socket: socket,
-			sessionId: sessionId
-		})
+		return Promise.resolve(socket)
 	})
 }
 
@@ -61,6 +59,13 @@ function timeout(ms) {
 		return new Promise(function (resolve, reject) {
 			setTimeout(resolve, ms, val)
 		})
+	}
+}
+
+function handle(t) {
+	return function (err) {
+		t.notOk(err, (err && err.message) ? err.message : 'no error')
+		t.end()
 	}
 }
 
@@ -74,28 +79,26 @@ test('client/connect-session.js', function (t) {
 		connectSession(socket, state).then(function (sessionId2) {
 			t.equal(sessionId1, sessionId2, 'session IDs are identical')
 		})
-	})
+	}).catch(handle(t))
 })
 
 test('client/connect-session.js', function (t) {
 	t.plan(3)
 
 	establishSession()
-	.then(function (obj) {
-		var sessionId = obj.sessionId
-		var socket = obj.socket
+	.then(function (socket) {
 		var socketEmit = Promise.denodeify( socket.emit.bind(socket) )
 
 		socketEmit('session isAuthenticated')
 		.then(function (addr) {
-			t.notOk(addr, 'not authenticated')
+			t.notOk(addr, 'is not authenticated')
 		})
 
 		.then(function () {
 			return socketEmit('session beginAuthentication', 'joe')
 		})
 		.then(function (addr) {
-			t.equal(addr, 'joe', 'authenticated')
+			t.equal(addr, 'joe', 'begin authentication')
 		})
 		.then(timeout(100))
 
@@ -103,12 +106,10 @@ test('client/connect-session.js', function (t) {
 			return socketEmit('session isAuthenticated')
 		})
 		.then(function (addr) {
-			t.equal(addr, 'joe', 'authenticated')
+			t.equal(addr, 'joe', 'is authenticated')
 			t.end()
 		})
-		.catch(function (err) {
-			t.notOk(err, err ? err.message : 'no error')
-			t.end()
-		})
+		.catch(handle(t))
 	})
+	.catch(handle(t))
 })
