@@ -7,6 +7,7 @@ function noop() {}
 
 module.exports = function SessMng(io, db) {
 	var sessionManagerDb = Spaces(db, 'session-manager')
+	var socketSessionDb = Spaces(db, 'socket-session')
 
 	var core = JustLogin(db)
 	var manager = SessionManager(core, sessionManagerDb)
@@ -26,7 +27,14 @@ module.exports = function SessMng(io, db) {
 			return function onSess(err, loginApi, sessId) {
 				api = loginApi || api
 				sessionId = sessId || sessionId
-				cb(err, sessId)
+
+				if (err) {
+					cb(err)
+				} else {
+					socketSessionDb.put(socket.id, sessId, function (err) {
+						cb(err, err ? null : sessId)
+					})
+				}
 			}
 		}
 
@@ -49,6 +57,11 @@ module.exports = function SessMng(io, db) {
 			api.beginAuthentication(email, function (err, authReq) {
 				cb(err, authReq && authReq.contactAddress)
 			})
+		})
+
+		// Teardown (is it necessary?)
+		socket.on('disconnect', function () {
+			socketSessionDb.del(socket.id)
 		})
 
 		// Chat Relay
