@@ -1,6 +1,6 @@
 var test = require('tape')
 var EventEmitter = require('events').EventEmitter
-var SessionManager = require('../server/session-manager.js')
+var SessionManager = require('../server/socket-manager.js')
 var connectSession = require('../client/connect-session.js')
 var Level = require('level-mem')
 var StateHolder = require('state-holder')

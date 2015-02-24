@@ -5,7 +5,7 @@ var Socketio = require('socket.io')
 var Level = require(usingNode0_10 ? 'level' : 'level-mem')
 var St = require('st')
 var AutoplayRoom = require('./room-autoplay.js')
-var SessionManager = require('./session-manager.js')
+var Manager = require('./manager.js')
 
 var router = St({
 	cache: false,
@@ -20,5 +20,5 @@ var io = new Socketio()
 io.attach(server)
 server.listen(80)
 
-var core = SessionManager(io, db)
+var core = Manager(io, db)
 AutoplayRoom(io, process.argv[2] === '-t')
