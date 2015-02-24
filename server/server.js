@@ -4,7 +4,7 @@ var http = require('http')
 var Socketio = require('socket.io')
 var Level = require(usingNode0_10 ? 'level' : 'level-mem')
 var St = require('st')
-var AutoplayRoom = require('./room-autoplay.js')
+var AutoplayRoom = require('./autoplay/room-autoplay.js')
 var Manager = require('./manager.js')
 
 var router = St({
