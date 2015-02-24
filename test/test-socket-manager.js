@@ -1,60 +1,46 @@
 var test = require('tape')
 var EventEmitter = require('events').EventEmitter
-var SocketManager = require('../server/socket-manager.js')
+var Manager = require('../server/manager.js')
 var connectSession = require('../client/connect-session.js')
 var Level = require('level-mem')
 var StateHolder = require('state-holder')
 var bypass = require('just-login-bypass')
 var Promise = require('promise')
 
-function expect(t, x, msg) {
-	return function (y) {
-		t.equal(x, y, msg)
+function makeIo() {
+	var rooms = {}
+	var io = new EventEmitter()
+	io.in = function ioin(room) {
+		if (!rooms[room]) {
+			rooms[room] = new EventEmitter()
+		}
+		return rooms[room]
 	}
+	return io
 }
 
-function id() {
-	return Math.random().toString().slice(2)
-}
-
-function makeSession(t) {
-	// I don't think this makes much sense...
-	// Try getting 8 hours of sleep, and then figuring it out.
-	var fullApi = {
-		isAuthenticated: expect(t, 0, 'is auth'),
-		beginAuthentication: expect(t, 1, 'begin auth'),
-		unauthenticate: expect(t, 2, 'unauth')
-	}
-	var sid = id()
-	return function (cb1, cb2) {
-		var cb = cb2 || cb1
-		process.nextTick(function () {
-			cb(null, fullApi, sid)
-		})
-	}
-}
-
-function makeSocket() {
+function makeSocket(io) {
 	var socket = new EventEmitter()
-	socket.id = id()
+	socket.id = Math.random().toString().slice(2)
 	socket.join = function join(room) {
 		socket.emit('_join', room)
 	}
 	socket.leave = function leave(room) {
 		socket.emit('_leave', room)
 	}
+	io.emit('connect', socket) // timeout?
 	return socket
 }
 
 function makeSessionManager(t) {
 	var db = new Level()
-	var manager = {
-		createSession: makeSession(t),
-		continueSession: makeSession(t)
-	}
-	var socket = makeSocket()
-	SocketManager(db, manager)(socket)
-	return socket
+	var io = makeIo()
+	var core = Manager(io, db)
+	// Enable these when the just-login-emailer
+	// is implemented in '../server/manager.js'
+	// core.removeAllListeners('authentication initiated')
+	// bypass(core)
+	return makeSocket(io)
 }
 
 function establishSession(t) {
