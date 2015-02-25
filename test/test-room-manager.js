@@ -1,31 +1,36 @@
 var test = require('tape')
-var EventEmitter = require('events').EventEmitter
-var connectSession = require('../client/connect-session.js')
-var StateHolder = require('state-holder')
 var Promise = require('promise')
-var Manager = require('./helpers/manager.js')
+var timeout = require('./helpers/promise-timeout.js')
+var handle = require('./helpers/handle-error.js')
+var establishSession = require('./helpers/establish-session.js')
 
-function establishSession() {
-	var socket = Manager()
-	var state = StateHolder()
-	return connectSession(socket, state).then(function (sessionId) {
-		return Promise.resolve(socket)
-	})
-}
+test('room manager i guess', function (t) {
+	t.plan(2)
 
-function timeout(ms) {
-	return function (val) {
-		return new Promise(function (resolve, reject) {
-			setTimeout(resolve, ms, val)
+	establishSession()
+	.then(function (socket) {
+		var socketEmit = Promise.denodeify( socket.emit.bind(socket) )
+
+		socket.on('chat receive', function (msg) {
+			t.equal(msg.item, 'ok', 'RECEIVED MESSAGE: "' + msg.item + '"')
 		})
-	}
-}
 
-function handle(t) {
-	return function (err) {
-		t.notOk(err, (err && err.message) ? err.message : 'no error')
-		t.end()
-	}
-}
-
-// Add tests!!!
+		socketEmit('chat send', 'not authenticated')
+		.then(function () {
+			return socketEmit('session beginAuthentication', 'joe')
+		}).then(function () {
+			return socketEmit('chat send', 'not joined yet')
+		}).then(function () {
+			return socketEmit('join', 'room-whatever')
+		}).then(function () {
+			return socketEmit('chat send', 'ok')
+		}).then(function () {
+			return socketEmit('leave', 'room-whatever')
+		}).then(function () {
+			return socketEmit('chat send', 'left room')
+		}).then( timeout(0) ).then(function () {
+			t.pass()
+			t.end()
+		}).catch( handle(t) )
+	}).catch( handle(t) )
+})
