@@ -10,11 +10,8 @@ function id() {
 function Server() {
 	var rooms = {}
 	var io = new EventEmitter()
-	io.in = function ioin(room) {
-		if (!rooms[room]) {
-			rooms[room] = new EventEmitter()
-		}
-		return rooms[room]
+	io.in = function (room) {
+		return rooms[room] = rooms[room] || new EventEmitter()
 	}
 	return io
 }
@@ -22,11 +19,19 @@ function Server() {
 function Client(io) {
 	var socket = new EventEmitter()
 	socket.id = id()
-	socket.join = function join(room) {
-		socket.emit('_join', room)
+	socket.rooms = [] // Used in server/room-manager.js:18 at function chatsend(text)
+	var relay = function (msg) {
+		socket.emit('chat receive', msg)
 	}
-	socket.leave = function leave(room) {
-		socket.emit('_leave', room)
+	socket.join = function (room, cb) {
+		socket.rooms.push(room)
+		io.in(room).on('chat receive', relay)
+		cb && cb(null)
+	}
+	socket.leave = function (room, cb) {
+		socket.rooms = socket.rooms.filter(function (x) { return x !== room })
+		io.in(room).removeListener('chat receive', relay)
+		cb && cb(null)
 	}
 	io.emit('connect', socket)
 	return socket
