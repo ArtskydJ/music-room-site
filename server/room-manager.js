@@ -46,7 +46,28 @@ module.exports = function roomManager(socketSessionDb, sessionContactDb, io, cor
 				}
 			})
 		})
-		socket.on('leave', socket.leave.bind(socket))
+		socket.on('leave', function (room, cb) {
+			socket.leave(room, function (err) {
+				if (err) {
+					cb(err)
+				} else {
+					socketSessionDb.get(socket.id, function (err, sessionId) {
+						if (err) {
+							cb(err)
+						} else {
+							removeUserThenEmit(room, sessionId)
+						}
+					})
+				}
+			})
+		})
+		socket.on('disconnect', function () {
+			socketSessionDb.get(socket.id, function (err, sessionId) {
+				socket.rooms.forEach(function (room) {
+					removeUserThenEmit(room, sessionId)
+				})
+			})
+		})
 
 		function addUserThenEmit(room, addr, sessionId) {
 			sessionContactDb.put(room + '\x00' + sessionId, addr, function (err) {
@@ -71,3 +92,5 @@ module.exports = function roomManager(socketSessionDb, sessionContactDb, io, cor
 		}
 	}
 }
+
+function noop() {}
