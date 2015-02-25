@@ -5,8 +5,9 @@
   "main": "./server/server.js",
   "scripts": {
     "start": "node .",
-    "test": "node . -t | browserify test/test.js | smokestack",
+    "test": "tape test/*.js",
     "test2": "browserify client/client.js | smokestack",
+    "test3": "node . -t | browserify test/test.js | smokestack",
     "build": "browserify client/client.js -do static/bundle.js",
     "watch": "watchify client/client.js -do static/bundle.js"
   },
