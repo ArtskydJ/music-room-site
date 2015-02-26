@@ -4,11 +4,12 @@
 
 - [x] auto-post a message in the chat when a song starts
 - [x] use socket.io
-- [ ] in chat.js, abstract away the message format. (can't pass the user's name on construct?)
+- [x] in chat.js, abstract away the message format. (can't pass the user's name on construct?)
 
 ###session/auth
 
-- [ ] require authentication to access a room
+- [x] require authentication to access a room
+- [ ] if user logs out in a different tab, they should be kicked from the room
 - [x] each person gets their own id
 - [ ] when a person connects to a room, disconnect \'em from the other rooms!
 - [x] session management
@@ -55,5 +56,3 @@
 - [x] shorten test files, preferably find non-copyrighted material
 - [ ] https://www.npmjs.com/package/album-cover
 - [x] create the overview rooms page
-
-
