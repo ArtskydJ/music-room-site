@@ -5,10 +5,10 @@ var path = require('path')
 var formatTime = require('./format-time.js')
 var addAppState = require('./app/app.js')
 var addLoginState = require('./login/login.js')
-var Socketio = require('socket.io-client')
+var Client = require('socket.io-client')
 var connectSession = require('./connect-session.js')
 
-var socket = new Socketio()
+var socket = new Client('localhost:80')
 
 // Don't change the following line much; brfs won't like it
 var listPartial = fs.readFileSync( path.join(__dirname, 'list-partial.html'), { encoding: 'utf8' } )

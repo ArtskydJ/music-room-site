@@ -33,7 +33,10 @@ function Client(io) {
 		io.in(room).removeListener('chat receive', relay)
 		cb && cb(null)
 	}
-	io.emit('connect', socket)
+	io.emit('connect', socket) // Must be synchronous! IDK why...
+	setTimeout(function () {
+		socket.emit('connect') // Must be asynchronous!
+	}, 0)
 	return socket
 }
 
