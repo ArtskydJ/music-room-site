@@ -1,3 +1,28 @@
+function cbIfErr(reject, fulfill) {
+	return function (err) {
+		if (err && !err.notFound) {
+			console.log('er1:', err)
+			reject(err)
+		} else {
+			fulfill.apply(null, [].slice.call(arguments, 1)) //the error is not applied
+		}
+	}
+}
+
+function cbIfNotAuth(action, reject, fulfill) {
+	return function (err, addr) {
+		if (err) {
+			console.log('er2:', err)
+			reject(err)
+		} else if (!addr) {
+			reject(new Error('Can not ' + action + ' while unauthenticated.'))
+		} else {
+			console.log('authed')
+			fulfill.apply(null, [].slice.call(arguments, 1)) //the error is not applied
+		}
+	}
+}
+
 module.exports = function roomManager(socketSessionDb, sessionContactDb, io, core) {
 	return function (socket) {
 
@@ -8,60 +33,43 @@ module.exports = function roomManager(socketSessionDb, sessionContactDb, io, cor
 
 		socket.on('chat send', function chatsend(text, cb) {
 			cb = cb || noop
-			socketSessionDb.get(socket.id, function (err, sessionId) {
-				core.isAuthenticated(sessionId, function (err, address) {
+			socketSessionDb.get(socket.id, cbIfErr(cb, function (sessionId) {
+				core.isAuthenticated(sessionId, cbIfNotAuth('send chat', cb, function (addr) {
 					var messageObj = {
-						label: address,
+						label: addr,
 						item: text
 					}
 					socket.rooms.filter(validRoom).forEach(function emit(room) {
 						io.in(room).emit('chat receive', messageObj)
 					})
-					cb(err, messageObj)
-				})
-			})
+					cb(null, messageObj)
+				}))
+			}))
 		})
 
 		// Room Connection and Disconnection
 		socket.on('join', function(room, cb) {
 			cb = cb || noop
-			socketSessionDb.get(socket.id, function (err, sessionId) {
-				if (err) {
-					cb(err)
-				} else {
-					core.isAuthenticated(sessionId, function (err, addr) {
-						if (err) {
-							cb(err)
-						} else if (!addr) {
-							cb(new Error('You tried to join a room while unauthenticated'))
-						} else {
-							socket.join(room, function (err) {
-								setTimeout(function () {
-									addUserThenEmit(room, addr, sessionId)
-								}, 100)
-								cb(err)
-							})
-						}
+			socketSessionDb.get(socket.id, cbIfErr(cb, function (sessionId) {
+				core.isAuthenticated(sessionId, cbIfNotAuth('join a room', cb, function (addr) {
+					socket.join(room, function (err) {
+						setTimeout(function () {
+							addUserThenEmit(room, addr, sessionId)
+						}, 100)
+						console.log('er4:', err)
+						cb(err)
 					})
-				}
-			})
+				}))
+			}))
 		})
 		socket.on('leave', function (room, cb) {
 			cb = cb || noop
-			socket.leave(room, function (err) {
-				if (err) {
-					cb(err)
-				} else {
-					socketSessionDb.get(socket.id, function (err, sessionId) {
-						if (err) {
-							cb(err)
-						} else {
-							removeUserThenEmit(room, sessionId)
-							cb(null)
-						}
-					})
-				}
-			})
+			socket.leave(room, cbIfErr(cb, function () {
+				socketSessionDb.get(socket.id, cbIfErr(cb, function (sessionId) {
+					removeUserThenEmit(room, sessionId)
+					cb(null)
+				}))
+			}))
 		})
 		socket.on('disconnect', function () {
 			socketSessionDb.get(socket.id, function (err, sessionId) {
