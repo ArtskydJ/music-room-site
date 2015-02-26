@@ -14,6 +14,9 @@ test('client/connect-session.js', function (t) {
 		connectSession(socket, state).then(function (sessionId2) {
 			t.equal(sessionId1, sessionId2, 'session IDs are identical')
 			t.end()
+			if (typeof window !== 'undefined') {
+				window.close()
+			}
 		}).catch( handle(t) )
 	}).catch( handle(t) )
 })

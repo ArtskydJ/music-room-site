@@ -25,6 +25,9 @@ test('client/connect-session.js', function (t) {
 		}).then(function (addr) {
 			t.equal(addr, 'joe', 'is authenticated')
 			t.end()
+			if (typeof window !== 'undefined') {
+				window.close()
+			}
 		}).catch( handle(t) )
 	}).catch( handle(t) )
 })

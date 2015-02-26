@@ -47,6 +47,7 @@ module.exports = function roomManager(socketSessionDb, sessionContactDb, io, cor
 			})
 		})
 		socket.on('leave', function (room, cb) {
+			cb = cb || noop
 			socket.leave(room, function (err) {
 				if (err) {
 					cb(err)
@@ -56,6 +57,7 @@ module.exports = function roomManager(socketSessionDb, sessionContactDb, io, cor
 							cb(err)
 						} else {
 							removeUserThenEmit(room, sessionId)
+							cb(null)
 						}
 					})
 				}

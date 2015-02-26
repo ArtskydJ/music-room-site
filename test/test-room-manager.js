@@ -28,9 +28,12 @@ test('room manager i guess', function (t) {
 			return socketEmit('leave', 'room-whatever')
 		}).then(function () {
 			return socketEmit('chat send', 'left room')
-		}).then( timeout(0) ).then(function () {
-			t.pass()
+		}).then(function () {
+			t.pass('got to the end')
 			t.end()
+			if (typeof window !== 'undefined') {
+				window.close()
+			}
 		}).catch( handle(t) )
 	}).catch( handle(t) )
 })
