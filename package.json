@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node .",
     "test": "tape test/*.js",
-    "test2": "browserify client/client.js | smokestack",
-    "test3": "node . -t | browserify test/test.js | smokestack",
+    "test1": "node . -t | browserify test/test-connection.js | smokestack",
+    "test2": "node . -t | browserify test/test-socket-manager.js | smokestack",
+    "test3": "node . -t | browserify test/test-room-manager.js | smokestack",
     "build": "browserify client/client.js -do static/bundle.js",
     "watch": "watchify client/client.js -do static/bundle.js"
   },
