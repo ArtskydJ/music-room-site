@@ -4,7 +4,7 @@ var timeout = require('./helpers/promise-timeout.js')
 var handle = require('./helpers/handle-error.js')
 var establishSession = require('./helpers/establish-session.js')
 
-test('room manager i guess', function (t) {
+test('room-manager', function (t) {
 	t.plan(2)
 
 	establishSession()
@@ -31,9 +31,6 @@ test('room manager i guess', function (t) {
 		}).then(function () {
 			t.pass('got to the end')
 			t.end()
-			if (typeof window !== 'undefined') {
-				window.close()
-			}
 		}).catch( handle(t) )
 	}).catch( handle(t) )
 })

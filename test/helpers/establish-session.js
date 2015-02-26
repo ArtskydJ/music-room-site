@@ -6,7 +6,7 @@ var Client = require('socket.io-client')
 
 function establishSession() {
 	var inNode = (typeof window === 'undefined')
-	var socket = inNode ? Manager() : Client('localhost:80')
+	var socket = inNode ? Manager() : Client('http://localhost:80/')
 	var state = inNode && StateHolder()
 	return new Promise(function (resolve, reject) {
 		socket.once('connect', function () {

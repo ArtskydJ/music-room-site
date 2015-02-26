@@ -5,10 +5,8 @@
   "main": "./server/server.js",
   "scripts": {
     "start": "node .",
-    "test": "tape test/*.js",
-    "test1": "node . -t | browserify test/test-connection.js | smokestack",
-    "test2": "node . -t | browserify test/test-socket-manager.js | smokestack",
-    "test3": "node . -t | browserify test/test-room-manager.js | smokestack",
+    "test": "node test/index.js",
+    "test-browser": "node . -t | browserify test/index.js | tap-closer | smokestack",
     "build": "browserify client/client.js -do static/bundle.js",
     "watch": "watchify client/client.js -do static/bundle.js"
   },
