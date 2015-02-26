@@ -1,6 +1,5 @@
 var test = require('tape')
 var Promise = require('promise')
-var timeout = require('./helpers/promise-timeout.js')
 var handle = require('./helpers/handle-error.js')
 var establishSession = require('./helpers/establish-session.js')
 
