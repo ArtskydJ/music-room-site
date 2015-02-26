@@ -6,7 +6,7 @@ var Client = require('socket.io-client')
 
 function establishSession() {
 	var inNode = (typeof window === 'undefined')
-	var socket = inNode ? Manager() : Client('http://localhost:80/')
+	var socket = inNode ? Manager() : Client('http://localhost:80/', { multiplex: false })
 	var state = inNode && StateHolder()
 	return new Promise(function (resolve, reject) {
 		socket.once('connect', function () {
@@ -15,6 +15,8 @@ function establishSession() {
 			}).catch( reject )
 		})
 		socket.once('connect_error', reject)
+		var unref = setTimeout(reject, 5500, new Error('Took too long!')).unref
+		unref && unref()
 	})
 }
 
