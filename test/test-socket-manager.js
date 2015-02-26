@@ -19,7 +19,7 @@ test('socket-manager', function (t) {
 		}).then(function (addr) {
 			t.equal(addr, 'joe', 'begin authentication')
 		}).then(
-			timeout(100)
+			timeout(0)
 		).then(function () {
 			return socketEmit('session isAuthenticated')
 		}).then(function (addr) {
