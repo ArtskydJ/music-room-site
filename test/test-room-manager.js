@@ -4,18 +4,24 @@ var handle = require('./helpers/handle-error.js')
 var establishSession = require('./helpers/establish-session.js')
 
 test('room-manager', function (t) {
-	t.plan(2)
+	t.plan(3)
 
 	establishSession()
 	.then(function (socket) {
 		var socketEmit = Promise.denodeify( socket.emit.bind(socket) )
 
 		socket.on('chat receive', function (msg) {
-			t.equal(msg.item, 'ok', 'RECEIVED MESSAGE: "' + msg.item + '"')
+			t.equal(msg.item, 'ok', 'Received messsage: "' + msg.item + '"')
 		})
 
 		socketEmit('chat send', 'not authenticated')
 		.then(function () {
+			t.pass('already authenticated')
+		}).catch(function (err) {
+			var search = 'unauthenticated'
+			var index = err.message && err.message.indexOf(search)
+			t.notEqual(index, -1, 'error message says "' + search + '"')
+		}).then(function () {
 			return socketEmit('session beginAuthentication', 'joe')
 		}).then(function () {
 			return socketEmit('chat send', 'not joined yet')

@@ -5,7 +5,7 @@ var handle = require('./helpers/handle-error.js')
 var establishSession = require('./helpers/establish-session.js')
 
 test('socket-manager', function (t) {
-	t.plan(3)
+	t.plan(4)
 
 	establishSession()
 	.then(function (socket) {
@@ -14,7 +14,6 @@ test('socket-manager', function (t) {
 		socketEmit('session isAuthenticated')
 		.then(function (addr) {
 			t.notOk(addr, 'is not authenticated')
-		}).then(function () {
 			return socketEmit('session beginAuthentication', 'joe')
 		}).then(function (addr) {
 			t.equal(addr, 'joe', 'begin authentication')
@@ -24,6 +23,11 @@ test('socket-manager', function (t) {
 			return socketEmit('session isAuthenticated')
 		}).then(function (addr) {
 			t.equal(addr, 'joe', 'is authenticated')
+			return socketEmit('session unauthenticate')
+		}).then(function () {
+			return socketEmit('session isAuthenticated')
+		}).then(function (addr) {
+			t.notOk(addr, 'is not authenticated')
 			t.end()
 		}).catch( handle(t) )
 	}).catch( handle(t) )

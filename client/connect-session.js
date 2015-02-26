@@ -10,14 +10,12 @@ function createSession(socket, replaceLocal) {
 
 	var emit = Promise.denodeify( socket.emit.bind(socket) )
 
-	var sessionPromise = emit('session continue', existingSessionId)
+	return emit('session continue', existingSessionId)
 		.catch(function() { return emit('session create') })
-
-	sessionPromise.then(function (sessionId) {
-		local.set(sessionId)
-	})
-
-	return sessionPromise
+		.then(function (sessionId) {
+			local.set(sessionId)
+			return sessionId
+		})
 }
 
 module.exports = createSession
