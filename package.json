@@ -5,7 +5,8 @@
   "main": "./server/server.js",
   "scripts": {
     "start": "node .",
-    "test": "node test/index.js",
+    "test": "npm run test-node && npm run test-browser",
+    "test-node": "node test/index.js",
     "test-browser": "node . -t | browserify test/index.js | tap-closer | smokestack",
     "build": "browserify client/client.js -do static/bundle.js",
     "watch": "watchify client/client.js -do static/bundle.js"
