@@ -12,6 +12,7 @@
     "build": "browserify client/client.js -do static/bundle.js",
     "watch": "watchify client/client.js -do static/bundle.js"
   },
+  "private": true,
   "browserify": {
     "transform": [
       "brfs"
