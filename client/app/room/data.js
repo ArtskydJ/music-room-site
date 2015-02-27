@@ -17,7 +17,8 @@ module.exports = {
 
 	queue: {
 		array: [],
-		empty: "Drag songs onto this page to upload!"
+		empty: "Drag songs onto this page to upload!",
+		sortable: true
 	},
 
 	usersInRoom: {

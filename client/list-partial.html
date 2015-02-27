@@ -1,6 +1,10 @@
 <div class="list-group">
 	{{#array}}
-		<a class="list-group-item{{#highlight}} active{{/highlight}}" {{#href}}href="{{href}}"{{/}}>
+		<a
+			class="list-group-item{{#highlight}} active{{/}}"
+			{{#href}}href="{{href}}"{{/}}
+			{{#sortable}}decorator="sortable"{{/}}
+		>
 			{{#label}}
 				<small class="text-muted">{{label}}</small>&nbsp;&nbsp;
 			{{/}}

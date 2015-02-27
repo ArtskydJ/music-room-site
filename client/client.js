@@ -7,6 +7,7 @@ var addAppState = require('./app/app.js')
 var addLoginState = require('./login/login.js')
 var Client = require('socket.io-client')
 var connectSession = require('./connect-session.js')
+require('ractive-decorators-sortable')
 
 var socket = new Client('localhost:80')
 

@@ -37,6 +37,7 @@
     "playlist-combinator": "0.0.5",
     "promise": "^6.1.0",
     "ractive": "^0.6.1",
+    "ractive-decorators-sortable": "^0.1.0",
     "ractive-state-router": "^4.0.0",
     "socket.io": "^1.3.4",
     "socket.io-client": "^1.3.4",
