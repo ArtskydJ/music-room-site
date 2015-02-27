@@ -25,5 +25,9 @@
 }
 
 #muteBtn {
-	width:100%;
+	width: 100%;
+}
+
+#upload .drag {
+	/*#upload:active: true;*/
 }

@@ -1,8 +1,8 @@
-var Promise = require('promise')
 var fs = require('fs')
 var path = require('path')
 var Audio = require('./audio.js')
 var data = require('./data.js')
+var dragDrop = require('drag-drop/buffer')
 
 module.exports = function(stateRouter, socket) {
 	// Don't change the following line much; brfs won't like it
@@ -49,6 +49,7 @@ function activator(socket) {
 		ractive.on('text-submit', textSubmit)
 		ractive.on('mute', toggleMute)
 
+		dragDrop('#upload', onFiles)
 		var ivUpdate = setInterval(updateTimeView, 50) // too often?
 
 		context.on('destroy', destroy)
@@ -59,7 +60,7 @@ function activator(socket) {
 		}
 
 		function newSong(song) {
-			console.log('new song! src =', song.src)
+			console.log('new song! src:', song.src)
 			ractive.set('music', song)
 			audio.src = song.src
 		}
@@ -86,6 +87,14 @@ function activator(socket) {
 				'music.currentSec': audio.currentTime || 0,
 				'music.durationSec': audio.duration || 0.1 // no div by zero
 			})
+		}
+
+		function onFiles(files, pos) {
+			var oldFiles = ractive.get('queue.array')
+			var newFiles = files.map(function (file) {
+				return file.name
+			})
+			ractive.set('queue.array', oldFiles.concat(newFiles))
 		}
 
 		function destroy() {
