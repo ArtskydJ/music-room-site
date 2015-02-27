@@ -17,16 +17,10 @@ module.exports = {
 
 	queue: {
 		array: [],
-		empty: "Drag songs here to upload!! (Coming soon.)"
+		empty: "Drag songs onto this page to upload!"
 	},
 
 	usersInRoom: {
-		array: [
-			{item: 'user1'},
-			{item: 'user2', 'badge': 2},
-			{item: 'user3'},
-			{item: 'user4'}
-		],
-		empty: 'You are alooooooone...'
+		array: []
 	}
 }
