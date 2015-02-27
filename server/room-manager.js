@@ -1,7 +1,6 @@
 function cbIfErr(reject, fulfill) {
 	return function (err) {
 		if (err && !err.notFound) {
-			console.log('er1:', err)
 			reject(err)
 		} else {
 			fulfill.apply(null, [].slice.call(arguments, 1)) //the error is not applied
@@ -12,12 +11,10 @@ function cbIfErr(reject, fulfill) {
 function cbIfNotAuth(action, reject, fulfill) {
 	return function (err, addr) {
 		if (err) {
-			console.log('er2:', err)
 			reject(err)
 		} else if (!addr) {
 			reject(new Error('Can not ' + action + ' while unauthenticated.'))
 		} else {
-			console.log('authed')
 			fulfill.apply(null, [].slice.call(arguments, 1)) //the error is not applied
 		}
 	}
@@ -56,7 +53,6 @@ module.exports = function roomManager(socketSessionDb, sessionContactDb, io, cor
 						setTimeout(function () {
 							addUserThenEmit(room, addr, sessionId)
 						}, 100)
-						console.log('er4:', err)
 						cb(err)
 					})
 				}))
