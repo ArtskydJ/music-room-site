@@ -1,12 +1,12 @@
 # music-room-site
 
-###chatroom
+### chatroom
 
 - [x] auto-post a message in the chat when a song starts
 - [x] use socket.io
 - [x] in chat.js, abstract away the message format. (can't pass the user's name on construct?)
 
-###session/auth
+### session/auth
 
 - [x] require authentication to access a room
 - [ ] if user logs out in a different tab, they should be kicked from the room
@@ -14,7 +14,7 @@
 - [ ] when a person connects to a room, disconnect \'em from the other rooms!
 - [x] session management
 
-###song files
+### song files
 
 - [ ] drag audio files to page
 - [ ] reorder songs via gui
@@ -29,7 +29,7 @@
 - [ ] download songs when needed, not all at once
 - [ ] people who join late should start downloading stuff
 
-###torrent
+### torrent
 
 - [ ] use the server as a peer
 - [x] instead of uploading entire torrent to server, just emit the hash.
@@ -45,12 +45,12 @@
 - [x] on `'upload' (ih1)` emit `'uploaded' (ih2, ih3)`
 - [x] hang out in #webtorrent chatroom
 
-###mock server
+### mock server
 
 - [x] pings all users and say 'hey new song!', and gives them the song id
 - [x] and it provides 3 songs and album art pics
 
-###other
+### other
 
 - [x] add tests for sox-stream, add good docs
 - [x] shorten test files, preferably find non-copyrighted material
