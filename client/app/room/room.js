@@ -91,9 +91,7 @@ function activator(socket) {
 
 		function onFiles(files, pos) {
 			var oldFiles = ractive.get('queue.array')
-			var newFiles = files.map(function (file) {
-				return { item: removeExtension(file.name) }
-			})
+			var newFiles = files.filter(isAudio).map(listify)
 			ractive.set('queue.array', oldFiles.concat(newFiles))
 		}
 
@@ -117,5 +115,21 @@ function scrollToBottom() {
 }
 
 function removeExtension(name) {
-	return path.basename(name, path.extname(name)) // path.parse() is in node 0.12
+	return path.basename(name, path.extname(name)) // path.parse() would be useful, but is not in node 0.10
+}
+
+function isAudio(file) {
+	return file.type.split('/').shift() === 'audio'
+}
+
+function typeofAudio(file) {
+	return file.type.split('/').pop()
+}
+
+function listify(file) {
+	// Formats file for ../../list-partial.js
+	return {
+		label: typeofAudio(file),
+		item: removeExtension(file.name)
+	}
 }
