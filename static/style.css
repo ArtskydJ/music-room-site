@@ -1,5 +1,7 @@
-.container {
+body {
 	font-family: sans-serif;
+	min-height: 100vh;
+	word-break: break-word;
 }
 
 .progress-bar {
@@ -15,7 +17,6 @@
 }
 
 #autoscroll {
-	word-break: break-word;
 	overflow: auto;
 	max-height: calc(100vh - 308px);
 }
@@ -26,8 +27,4 @@
 
 #muteBtn {
 	width: 100%;
-}
-
-#upload .drag {
-	/*#upload:active: true;*/
 }

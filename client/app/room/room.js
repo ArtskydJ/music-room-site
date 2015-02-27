@@ -49,7 +49,7 @@ function activator(socket) {
 		ractive.on('text-submit', textSubmit)
 		ractive.on('mute', toggleMute)
 
-		dragDrop('#upload', onFiles)
+		dragDrop('body', onFiles)
 		var ivUpdate = setInterval(updateTimeView, 50) // too often?
 
 		context.on('destroy', destroy)
@@ -92,7 +92,7 @@ function activator(socket) {
 		function onFiles(files, pos) {
 			var oldFiles = ractive.get('queue.array')
 			var newFiles = files.map(function (file) {
-				return file.name
+				return { item: removeExtension(file.name) }
 			})
 			ractive.set('queue.array', oldFiles.concat(newFiles))
 		}
@@ -114,4 +114,8 @@ function scrollToBottom() {
 	// http://stackoverflow.com/questions/270612/scroll-to-bottom-of-div
 	var div = document.getElementById('autoscroll')
 	div.scrollTop = div.scrollHeight
+}
+
+function removeExtension(name) {
+	return path.basename(name, path.extname(name)) // path.parse() is in node 0.12
 }
