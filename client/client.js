@@ -7,7 +7,7 @@ var addAppState = require('./app/app.js')
 var addLoginState = require('./login/login.js')
 var Client = require('socket.io-client')
 var connectSession = require('./connect-session.js')
-require('ractive-decorators-sortable')
+var sortable = require('../vendor/Ractive-decorators-sortable')
 
 var socket = new Client('localhost:80')
 
@@ -15,7 +15,8 @@ var socket = new Client('localhost:80')
 var listPartial = fs.readFileSync( path.join(__dirname, 'list-partial.html'), { encoding: 'utf8' } )
 var renderer = RactiveRenderer({
 	data: { formatTime: formatTime },
-	partials: { list: listPartial }
+	partials: { list: listPartial },
+	decorators: { sortable: sortable }
 })
 var stateRouter = StateRouter(renderer, 'body')
 addAppState(stateRouter, socket)
