@@ -48,7 +48,7 @@ function activator(socket) {
 		ractive.on('text-submit', textSubmit)
 		ractive.on('mute', toggleMute)
 		context.on('destroy', destroy)
-		dragDrop('#filedrop', onFiles)
+		dragDrop('body', onFiles)
 
 		toggleMute() //sanity purposes
 		updateTimeView()
@@ -97,6 +97,7 @@ function activator(socket) {
 
 		function destroy() {
 			socket.emit('leave', room, console.log.bind(console, 'left', room))
+
 			delete window.da
 			delete window.j
 			delete window.onresize
