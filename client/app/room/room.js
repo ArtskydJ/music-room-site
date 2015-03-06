@@ -42,17 +42,17 @@ function activator(socket) {
 		//file.createReadStream().pipe(audio) //future
 
 		ractive.set(context.data)
-		toggleMute() //sanity purposes
 		socket.on('chat receive', chatReceive)
 		socket.on('new song', newSong)
 		socket.on('user list', userList)
 		ractive.on('text-submit', textSubmit)
 		ractive.on('mute', toggleMute)
-
-		dragDrop('body', onFiles)
-		var ivUpdate = setInterval(updateTimeView, 50) // too often?
-
 		context.on('destroy', destroy)
+		dragDrop('#filedrop', onFiles)
+
+		toggleMute() //sanity purposes
+		updateTimeView()
+		var ivUpdate = setInterval(updateTimeView, 50) // too often?
 
 		function chatReceive(msgObj) {
 			ractive.get('chat.array').push(msgObj)
