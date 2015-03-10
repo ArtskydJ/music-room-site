@@ -29,21 +29,20 @@
 - [ ] download songs when needed, not all at once
 - [ ] people who join late should start downloading stuff
 
-### torrent
+### convert-and-seed-audio
 
+- See [`ArtskydJ/convert-and-seed-audio`](https://github.com/ArtskydJ/convert-and-seed-audio).
 - [ ] use the server as a peer
 - [x] instead of uploading entire torrent to server, just emit the hash.
-- [ ] When a client receives the hash, it must start downloading it. `client.download(infoHash)`
+- [x] When a client receives the hash, it must start downloading it. `client.download(infoHash)`
+	- See `convert-and-seed-audio, lib/client.js:20`
 - [x] get metadata with https://www.npmjs.org/package/musicmetadata
-- [ ] Find out what happens when you torrent.download(\'123abc\') after you torrent.seed(\'123abc\').
-	- Hopefully we send a message to everyone in the room at once, telling them to download the next song.
-	- The person who originally uploaded it will attempt to, but should ignore it.
-	- I think this makes the world break but try it anyway.
-- [x] torrent master will be given an infoHash, and a song id, ensures mp3 and ogg, acts as client for both.
-	- then if given a song id, gives back {mp3infohash:\'abcd\ ogginfohash:\'1234\'}
-	- see [convert-and-seed-audio](https://github.com/ArtskydJ/convert-and-seed-audio)
+- [x] Find out what happens when you torrent.download('123abc') after you torrent.seed('123abc').
+	- This throws an error after about 45 seconds. See `ArtskydJ/JS_Source, webtorrent-seed-download-test.js`.
+	- The person who originally uploaded might attempt to do this; do a try/catch.
+- [x] given an infoHash and a song id, it ensures it has an mp3 and ogg, and seeds both.
+	- then if given a song id, gives back `{ mp3infohash:'abcd ogginfohash:'1234' }`
 - [x] on `'upload' (ih1)` emit `'uploaded' (ih2, ih3)`
-- [x] hang out in #webtorrent chatroom
 
 ### mock server
 
@@ -56,3 +55,5 @@
 - [x] shorten test files, preferably find non-copyrighted material
 - [ ] https://www.npmjs.com/package/album-cover
 - [x] create the overview rooms page
+- [ ] create a landing page that explains what music-room is
+- [ ] get a name other than 'music-room'
