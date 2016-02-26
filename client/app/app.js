@@ -2,7 +2,7 @@ var fs = require('fs')
 var path = require('path')
 var addOverviewState = require('./overview/overview.js')
 var addRoomState = require('./room/room.js')
-var AuthHelpers = require('auth-helpers.js')
+var AuthHelpers = require('../auth-helpers.js')
 
 module.exports = function(stateRouter, socket) {
 	var auth = AuthHelpers(socket)

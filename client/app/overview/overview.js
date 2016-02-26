@@ -1,7 +1,6 @@
 var fs = require('fs')
 var path = require('path')
-var data = require('./data.js')
-var AuthHelpers = require('auth-helpers.js')
+var AuthHelpers = require('../../auth-helpers.js')
 
 module.exports = function(stateRouter, socket, mediator) {
 	var auth = AuthHelpers(socket)
@@ -12,7 +11,15 @@ module.exports = function(stateRouter, socket, mediator) {
 		name: 'app.overview',
 		route: '/',
 		template: template,
-		data: data,
+		data: {
+			starred: {
+				array: [
+					{item: 'autoplay', href: '#/room/autoplay'},
+					{item: 'wip', badge: 2}
+				],
+				empty: 'No starred rooms'
+			}
+		},
 		resolve: auth.resolve,
 		activate: auth.activate
 	})

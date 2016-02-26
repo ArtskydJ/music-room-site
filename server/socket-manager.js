@@ -1,4 +1,4 @@
-module.exports = function SocketManager(socketSessionDb, manager) {
+module.exports = function SocketManager(manager) {
 	return function onsock(socket) {
 		socket.on('session create', function create(cb) {
 			manager.createSession(onSession(cb))
@@ -9,15 +9,11 @@ module.exports = function SocketManager(socketSessionDb, manager) {
 
 		function onSession(cb) {
 			return function onSess(err, loginApi, sessId) {
-				api = loginApi || api
+				if (err) return cb(err)
+				api = loginApi // || api
 
-				if (err) {
-					cb(err)
-				} else {
-					socketSessionDb.put(socket.id, sessId, function (err) {
-						cb(err, err ? null : sessId)
-					})
-				}
+				socket.mySessionId = sessId
+				cb(null, sessId)
 			}
 		}
 
@@ -34,14 +30,15 @@ module.exports = function SocketManager(socketSessionDb, manager) {
 			api.unauthenticate(cb || noop)
 		})
 		socket.on('session beginAuthentication', function sb(email, cb) {
-			cb = cb || noop
+			if (!cb) cb = noop
 			api.beginAuthentication(email, function (err, authReq) {
-				cb(err, authReq && authReq.contactAddress)
+				if (err) return cb(err)
+				cb(null, authReq && authReq.contactAddress)
 			})
 		})
 
 		socket.on('disconnect', function () {
-			socketSessionDb.del(socket.id)
+			socket.mySessionId = null
 		})
 	}
 }

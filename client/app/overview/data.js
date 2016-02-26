@@ -1,9 +1,0 @@
-module.exports = {
-	starred: {
-		array: [
-			{item: 'autoplay', href: '#/room/autoplay'},
-			{item: 'wip', 'badge': 2}
-		],
-		empty: 'No starred rooms'
-	}
-}

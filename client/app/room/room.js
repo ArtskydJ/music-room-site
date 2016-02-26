@@ -1,6 +1,5 @@
 var fs = require('fs')
 var path = require('path')
-var Audio = require('./audio.js')
 var data = require('./data.js')
 var dragDrop = require('drag-drop/buffer')
 
@@ -24,7 +23,11 @@ function resolver(socket) {
 
 		socket.emit('join', room, function (err) {
 			console.log('joining', room, '| err =', err)
-			err ? cb.redirect('login') : cb()
+			if (err) {
+				cb.redirect('login')
+			} else {
+				cb()
+			}
 		})
 	}
 }
@@ -34,7 +37,7 @@ function activator(socket) {
 		var ractive = context.domApi
 		var room = context.parameters.room
 
-		var audio = Audio()
+		var audio = document.getElementById('audio-element')
 
 		window.r = ractive
 		window.j = audio
@@ -98,10 +101,10 @@ function activator(socket) {
 		function destroy() {
 			socket.emit('leave', room, console.log.bind(console, 'left', room))
 
-			delete window.da
-			delete window.j
-			delete window.onresize
-			delete audio
+			window.da = null
+			window.j = null
+			window.onresize = null
+			audio = null
 			clearInterval(ivUpdate)
 
 			socket.removeAllListeners()

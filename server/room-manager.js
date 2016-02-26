@@ -20,7 +20,7 @@ function cbIfNotAuth(action, reject, fulfill) {
 	}
 }
 
-module.exports = function roomManager(socketSessionDb, sessionContactDb, io, core) {
+module.exports = function roomManager(sessionContactDb, io, core) {
 	return function (socket) {
 
 		// Chat Relay
@@ -29,49 +29,42 @@ module.exports = function roomManager(socketSessionDb, sessionContactDb, io, cor
 		}
 
 		socket.on('chat send', function chatsend(text, cb) {
-			cb = cb || noop
-			socketSessionDb.get(socket.id, cbIfErr(cb, function (sessionId) {
-				core.isAuthenticated(sessionId, cbIfNotAuth('send chat', cb, function (addr) {
-					var messageObj = {
-						label: addr,
-						item: text
-					}
-					socket.rooms.filter(validRoom).forEach(function emit(room) {
-						io.in(room).emit('chat receive', messageObj)
-					})
-					cb(null, messageObj)
-				}))
+			if (!cb) cb = noop
+
+			core.isAuthenticated(socket.mySessionId, cbIfNotAuth('send chat', cb, function (addr) {
+				var messageObj = {
+					label: addr,
+					item: text
+				}
+				socket.rooms.filter(validRoom).forEach(function emit(room) {
+					io.in(room).emit('chat receive', messageObj)
+				})
+				cb(null, messageObj)
 			}))
 		})
 
 		// Room Connection and Disconnection
 		socket.on('join', function(room, cb) {
-			cb = cb || noop
-			socketSessionDb.get(socket.id, cbIfErr(cb, function (sessionId) {
-				core.isAuthenticated(sessionId, cbIfNotAuth('join a room', cb, function (addr) {
-					socket.join(room, function (err) {
-						setTimeout(function () {
-							addUserThenEmit(room, addr, sessionId)
-						}, 100)
-						cb(err)
-					})
-				}))
+			if (!cb) cb = noop
+			core.isAuthenticated(socket.mySessionId, cbIfNotAuth('join a room', cb, function (addr) {
+				socket.join(room, function (err) {
+					setTimeout(function () {
+						addUserThenEmit(room, addr, socket.mySessionId)
+					}, 100)
+					cb(err)
+				})
 			}))
 		})
 		socket.on('leave', function (room, cb) {
 			cb = cb || noop
 			socket.leave(room, cbIfErr(cb, function () {
-				socketSessionDb.get(socket.id, cbIfErr(cb, function (sessionId) {
-					removeUserThenEmit(room, sessionId)
-					cb(null)
-				}))
+				removeUserThenEmit(room, socket.mySessionId)
+				cb(null)
 			}))
 		})
 		socket.on('disconnect', function () {
-			socketSessionDb.get(socket.id, function (err, sessionId) {
 				socket.rooms.forEach(function (room) {
-					removeUserThenEmit(room, sessionId)
-				})
+				removeUserThenEmit(room, socket.mySessionId)
 			})
 		})
 

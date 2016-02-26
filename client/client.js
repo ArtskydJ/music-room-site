@@ -1,5 +1,6 @@
 var StateRouter = require('abstract-state-router')
 var RactiveRenderer = require('ractive-state-router')
+var Ractive = require('ractive')
 var fs = require('fs')
 var path = require('path')
 var formatTime = require('./format-time.js')
@@ -13,7 +14,7 @@ var socket = new Client('localhost:80')
 
 // Don't change the following line much; brfs won't like it
 var listPartial = fs.readFileSync( path.join(__dirname, 'list-partial.html'), { encoding: 'utf8' } )
-var renderer = RactiveRenderer({
+var renderer = RactiveRenderer(Ractive, {
 	data: { formatTime: formatTime },
 	partials: { list: listPartial },
 	decorators: { sortable: sortable }
