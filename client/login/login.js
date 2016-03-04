@@ -1,22 +1,4 @@
-var fs = require('fs')
-var path = require('path')
-var AuthHelpers = require('../auth-helpers.js')
-
-module.exports = function(stateRouter, socket, mediator) {
-	var auth = AuthHelpers(socket)
-	// Don't change the following line much; brfs won't like it
-	var template = fs.readFileSync( path.join(__dirname, 'login.html'), { encoding: 'utf8' } )
-
-	stateRouter.addState({
-		name: 'login',
-		route: '/login',
-		template: template,
-		resolve: auth.resolve,
-		activate: activator(auth)
-	})
-}
-
-function activator(auth) {
+module.exports = function activator(auth) {
 	return function activate(context) {
 		var ractive = context.domApi
 		var content = context.content

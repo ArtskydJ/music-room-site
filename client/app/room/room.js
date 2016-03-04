@@ -1,20 +1,8 @@
-var fs = require('fs')
-var path = require('path')
-var data = require('./data.js')
 var dragDrop = require('drag-drop/buffer')
 
-module.exports = function(stateRouter, socket) {
-	// Don't change the following line much; brfs won't like it
-	var template = fs.readFileSync( path.join(__dirname, 'room.html'), { encoding: 'utf8' } )
-
-	stateRouter.addState({
-		name: 'app.room',
-		route: '/room/:room',
-		template: template,
-		resolve: resolver(socket),
-		data: data,
-		activate: activator(socket)
-	})
+module.exports = {
+	resolver: resolver,
+	activator: activator
 }
 
 function resolver(socket) {
@@ -22,8 +10,9 @@ function resolver(socket) {
 		var room = parameters.room
 
 		socket.emit('join', room, function (err) {
-			console.log('joining', room, '| err =', err)
+			console.log('joining', room)
 			if (err) {
+				console.error(err)
 				cb.redirect('login')
 			} else {
 				cb()
@@ -119,7 +108,7 @@ function scrollToBottom() {
 }
 
 function removeExtension(name) {
-	return path.basename(name, path.extname(name)) // path.parse() would be useful, but is not in node 0.10
+	return name.replace(/\.[^\.]+/, '') // use path.parse()?
 }
 
 function isAudio(file) {

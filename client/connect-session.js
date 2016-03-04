@@ -1,6 +1,4 @@
-var Promise = require('promise')
-
-function createSession(socket, replaceLocal) {
+function createSession(socket, replaceLocal, cb) {
 	var local = replaceLocal || {
 		get: localStorage.getItem.bind(localStorage, 'sessionid'),
 		set: localStorage.setItem.bind(localStorage, 'sessionid')
@@ -8,14 +6,28 @@ function createSession(socket, replaceLocal) {
 
 	var existingSessionId = local.get()
 
-	var emit = Promise.denodeify( socket.emit.bind(socket) )
+	if (existingSessionId) {
+		continueASession()
+	} else {
+		requestNewSession()
+	}
 
-	return emit('session continue', existingSessionId)
-		.catch(function() { return emit('session create') })
-		.then(function (sessionId) {
-			local.set(sessionId)
-			return sessionId
+	function continueASession() {
+		socket.emit('session continue', existingSessionId, function (err, sessionId) {
+			if (err) return requestNewSession()
+
+			cb(null, sessionId)
 		})
+	}
+
+	function requestNewSession() {
+		socket.emit('session create', function (err, sessionId) {
+			if (err) return cb(err)
+			
+			local.set(sessionId)
+			cb(null, sessionId)
+		})
+	}
 }
 
 module.exports = createSession
