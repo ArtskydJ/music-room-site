@@ -7,7 +7,7 @@ var connectSession = require('./connect-session.js')
 var sortable = require('../vendor/Ractive-decorators-sortable')
 var createAllStates = require('./create-all-states.js')
 
-var socket = new Client('localhost:80')
+var socket = new Client('localhost:8080')
 
 var renderer = RactiveRenderer(Ractive, {
 	data: { formatTime: formatTime },

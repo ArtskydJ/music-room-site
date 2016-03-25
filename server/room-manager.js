@@ -31,14 +31,16 @@ module.exports = function roomManager(sessionContactDb, io, core) {
 		socket.on('chat send', function chatsend(text, cb) {
 			if (!cb) cb = noop
 
+			if (!socket._musicRoom) {
+				return cb(new Error('You are not connected to a room.'))
+			}
+
 			core.isAuthenticated(socket.mySessionId, cbIfNotAuth('send chat', cb, function (addr) {
 				var messageObj = {
 					label: addr,
 					item: text
 				}
-				socket.rooms.filter(validRoom).forEach(function emit(room) {
-					io.in(room).emit('chat receive', messageObj)
-				})
+				io.in(socket._musicRoom).emit('chat receive', messageObj)
 				cb(null, messageObj)
 			}))
 		})
@@ -47,48 +49,27 @@ module.exports = function roomManager(sessionContactDb, io, core) {
 		socket.on('join', function(room, cb) {
 			if (!cb) cb = noop
 			core.isAuthenticated(socket.mySessionId, cbIfNotAuth('join a room', cb, function (addr) {
+				if (socket._musicRoom) {
+					socket.leave(socket._musicRoom)
+				}
+				socket._musicRoom = room
 				socket.join(room, function (err) {
-					setTimeout(function () {
+					// setTimeout(function () {
 						addUserThenEmit(room, addr, socket.mySessionId)
-					}, 100)
+					// }, 100)
 					cb(err)
 				})
 			}))
 		})
 		socket.on('leave', function (room, cb) {
-			cb = cb || noop
-			socket.leave(room, cbIfErr(cb, function () {
-				removeUserThenEmit(room, socket.mySessionId)
+			if (!cb) cb = noop
+
+			socket._musicRoom = null
+			socket.leave(socket._musicRoom, cbIfErr(cb, function () {
+				removeUserThenEmit(socket._musicRoom, socket.mySessionId)
 				cb(null)
 			}))
 		})
-		socket.on('disconnect', function () {
-				socket.rooms.forEach(function (room) {
-				removeUserThenEmit(room, socket.mySessionId)
-			})
-		})
-
-		function addUserThenEmit(room, addr, sessionId) {
-			sessionContactDb.put(room + '\x00' + sessionId, addr, function (err) {
-				emitUserList(room)
-			})
-		}
-		function removeUserThenEmit(room, sessionId) {
-			sessionContactDb.del(room + '\x00' + sessionId, function (err) {
-				emitUserList(room)
-			})
-		}
-		function emitUserList(room) {
-			var userList = []
-			sessionContactDb.createValueStream({
-				gte: room + '\x00',
-				lt: room + '\x00~'
-			}).on('data', function (value) {
-				userList.push({ item: value })
-			}).on('end', function () {
-				io.in(room).emit('user list', userList)
-			})
-		}
 	}
 }
 

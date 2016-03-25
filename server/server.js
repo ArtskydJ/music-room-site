@@ -2,8 +2,9 @@ var http = require('http')
 var Socketio = require('socket.io')
 var Level = require('level-mem')
 var St = require('st')
-var AutoplayRoom = require('./autoplay/room-autoplay.js')
-var Manager = require('./manager.js')
+var Instance = require('./instance.js')
+
+var port = process.argv[2] || 80
 
 var router = St({
 	cache: false,
@@ -16,7 +17,7 @@ var server = http.createServer(router)
 var io = new Socketio()
 
 io.attach(server)
-server.listen(80)
+server.listen(port)
+console.log('Listening on localhost:' + port)
 
-var core = Manager(io, db)
-AutoplayRoom(io, process.argv[2] === '-t')
+var core = Instance(io, db)
