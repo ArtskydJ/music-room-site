@@ -1,24 +1,23 @@
-var StateHolder = require('state-holder')
-var Promise = require('promise')
+var onetime = require('onetime')
 var connectSession = require('../../client/connect-session.js')
 var Manager = require('./manager.js')
 var Client = require('socket.io-client')
+global.localStorage = require('mock-dom-storage')()
 
-function establishSession() {
-	var inNode = (typeof window === 'undefined')
-	var socket = inNode ? Manager() : Client('http://localhost:80/', { multiplex: false })
-	var state = inNode? { replaceLocal: StateHolder() } : {}
-	return new Promise(function (resolve, reject) {
-		socket.once('connect', function () {
-			connectSession(socket, state, function (err, sessionId) {
-				if (err) return reject(err)
-				resolve(socket)
-			})
+function establishSession(cb) {
+	var socket = (typeof window === 'undefined') ? Manager() : Client('http://localhost:80/', { multiplex: false })
+
+	cb = onetime(cb)
+
+	socket.once('connect', function () {
+		connectSession(socket, function (err, sessionId) {
+			if (err) return cb(err)
+			cb(null, socket)
 		})
-		socket.once('connect_error', reject)
-		var unref = setTimeout(reject, 5500, new Error('Took too long!')).unref
-		if (unref) unref()
 	})
+	socket.once('connect_error', cb)
+	var unref = setTimeout(cb, 5500, new Error('Took too long!')).unref
+	if (unref) unref()
 }
 
 module.exports = establishSession

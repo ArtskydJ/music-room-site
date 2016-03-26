@@ -14,7 +14,14 @@
   "private": true,
   "browserify": {
     "transform": [
-      [ "stringify", { "extensions": [ ".html" ] } ]
+      [
+        "stringify",
+        {
+          "extensions": [
+            ".html"
+          ]
+        }
+      ]
     ]
   },
   "repository": {
@@ -30,12 +37,11 @@
   "dependencies": {
     "abstract-state-router": "^5.0.0",
     "drag-drop": "^2.0.0",
-    "just-login-core": "^1.3.2",
-    "just-login-example-session-manager": "^1.2.0",
+    "just-login-core": "^2.0.1",
+    "just-login-session-state": "^2.0.1",
     "level": "^0.18.0",
     "level-spaces": "^1.1.1",
     "playlist-combinator": "0.0.5",
-    "promise": "^6.1.0",
     "ractive": "^0.7.3",
     "ractive-state-router": "^6.0.0",
     "socket.io": "^1.3.4",
@@ -48,7 +54,8 @@
     "browserify": "^13.0.0",
     "just-login-bypass": "^1.0.0",
     "level-mem": "^0.18.0",
-    "state-holder": "^1.0.0",
+    "mock-dom-storage": "^1.0.0",
+    "onetime": "^1.1.0",
     "stringify": "^5.0.0",
     "tape": "^3.4.0",
     "uglify-js": "^2.6.2",

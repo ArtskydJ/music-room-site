@@ -1,10 +1,10 @@
-module.exports = function SocketManager(manager) {
+module.exports = function SocketManager(sessState) {
 	return function onsock(socket) {
 		socket.on('session create', function create(cb) {
-			manager.createSession(onSession(cb))
+			sessState.createSession(onSession(cb))
 		})
 		socket.on('session continue', function continu(sessId, cb) {
-			manager.continueSession(sessId, onSession(cb))
+			sessState.sessionExists(sessId, onSession(cb))
 		})
 
 		function onSession(cb) {

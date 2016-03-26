@@ -19,7 +19,7 @@ createAllStates(stateRouter, socket)
 
 socket.once('connect', function() {
 	stateRouter.evaluateCurrentRoute('app.overview')
-	connectSession(socket, null, function (err, sessionId) {
+	connectSession(socket, function (err, sessionId) {
 		if (err) console.error(err)
 		// stateRouter.go('fail or something')
 	})

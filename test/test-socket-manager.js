@@ -1,34 +1,41 @@
 var test = require('tape')
-var Promise = require('promise')
-var timeout = require('./helpers/promise-timeout.js')
-var handle = require('./helpers/handle-error.js')
 var establishSession = require('./helpers/establish-session.js')
 
 test('socket-manager', function (t) {
 	t.plan(4)
 
-	establishSession()
-	.then(function (socket) {
-		var socketEmit = Promise.denodeify( socket.emit.bind(socket) )
-
-		socketEmit('session isAuthenticated')
-		.then(function (addr) {
-			t.notOk(addr, 'is not authenticated')
-			return socketEmit('session beginAuthentication', 'joe')
-		}).then(function (addr) {
-			t.equal(addr, 'joe', 'begin authentication')
-		}).then(
-			timeout(0)
-		).then(function () {
-			return socketEmit('session isAuthenticated')
-		}).then(function (addr) {
-			t.equal(addr, 'joe', 'is authenticated')
-			return socketEmit('session unauthenticate')
-		}).then(function () {
-			return socketEmit('session isAuthenticated')
-		}).then(function (addr) {
-			t.notOk(addr, 'is not authenticated')
+	establishSession(function (err, socket) {
+		if (err) {
+			t.ifError(err)
 			t.end()
-		}).catch( handle(t) )
-	}).catch( handle(t) )
+		}
+
+		socket.emit('session isAuthenticated', function (err, addr) {
+			t.ifError(err)
+			t.notOk(addr, 'is not authenticated')
+
+			socket.emit('session beginAuthentication', 'joe', function (err, addr) {
+				t.ifError(err)
+				t.equal(addr, 'joe', 'begin authentication')
+
+				setTimeout(function () {
+					socket.emit('session isAuthenticated', function (err, addr) {
+						t.ifError(err)
+						t.equal(addr, 'joe', 'is authenticated')
+
+						socket.emit('session unauthenticate', function (err) {
+							t.ifError(err)
+
+							socket.emit('session isAuthenticated', function (err, addr) {
+								t.ifError(err)
+								t.notOk(addr, 'is not authenticated')
+
+								t.end()
+							})
+						})
+					})
+				}, 0)
+			})
+		})
+	})
 })

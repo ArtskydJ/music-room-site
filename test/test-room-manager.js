@@ -1,41 +1,48 @@
 var test = require('tape')
-var Promise = require('promise')
-var handle = require('./helpers/handle-error.js')
 var establishSession = require('./helpers/establish-session.js')
 
 test('room-manager', function (t) {
 	t.plan(3)
 
-	establishSession()
-	.then(function (socket) {
-		var socketEmit = Promise.denodeify( socket.emit.bind(socket) )
+	establishSession(function (err, socket) {
+		if (err) return handle(t, err)
 
 		socket.on('chat receive', function (msg) {
 			t.equal(msg.item, 'ok', 'Received messsage: "' + msg.item + '"')
 		})
 
-		socketEmit('chat send', 'not authenticated')
-		.then(function () {
-			t.pass('already authenticated')
-		}).catch(function (err) {
-			var search = 'unauthenticated'
-			var index = err.message && err.message.indexOf(search)
-			t.notEqual(index, -1, 'error message says "' + search + '"')
-		}).then(function () {
-			return socketEmit('session beginAuthentication', 'joe')
-		}).then(function () {
-			return socketEmit('chat send', 'not joined yet')
-		}).then(function () {
-			return socketEmit('join', 'room-whatever')
-		}).then(function () {
-			return socketEmit('chat send', 'ok')
-		}).then(function () {
-			return socketEmit('leave', 'room-whatever')
-		}).then(function () {
-			return socketEmit('chat send', 'left room')
-		}).then(function () {
-			t.pass('got to the end')
-			t.end()
-		}).catch( handle(t) )
-	}).catch( handle(t) )
+		socket.emit('chat send', 'not authenticated', function (err) {
+			if (err) {
+				var index = err.message.indexOf('unauthenticated')
+				t.notEqual(index, -1, 'error message says "unauthenticated"')
+			} else {
+				t.pass('already authenticated')
+			}
+			socket.emit('session beginAuthentication', 'joe', function (err) {
+				if (err) return handle(t, err)
+				socket.emit('chat send', 'not joined yet', function (err) {
+					if (err) return handle(t, err)
+					socket.emit('join', 'room-whatever', function (err) {
+						if (err) return handle(t, err)
+						socket.emit('chat send', 'ok', function (err) {
+							if (err) return handle(t, err)
+							socket.emit('leave', 'room-whatever', function (err) {
+								if (err) return handle(t, err)
+								socket.emit('chat send', 'left room', function (err) {
+									if (err) return handle(t, err)
+									t.pass('got to the end')
+									t.end()
+								})
+							})
+						})
+					})
+				})
+			})
+		})
+	})
 })
+
+function handle(t, err) {
+	t.ifError(err)
+	t.end()
+}
