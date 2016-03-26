@@ -3,7 +3,7 @@ var RactiveRenderer = require('ractive-state-router')
 var Ractive = require('ractive')
 var formatTime = require('./format-time.js')
 var Client = require('socket.io-client')
-var connectSession = require('./connect-session.js')
+var establishSession = require('./establish-session.js')
 var sortable = require('../vendor/Ractive-decorators-sortable')
 var createAllStates = require('./create-all-states.js')
 
@@ -19,8 +19,9 @@ createAllStates(stateRouter, socket)
 
 socket.once('connect', function() {
 	stateRouter.evaluateCurrentRoute('app.overview')
-	connectSession(socket, function (err, sessionId) {
+	establishSession(socket, function (err, sessionId) {
 		if (err) console.error(err)
+		else console.log('connected with session ' + sessionId)
 		// stateRouter.go('fail or something')
 	})
 })

@@ -1,19 +1,8 @@
 module.exports = function authHelpers(socket) {
-	function logIn(address, cb) {
-		socket.emit('session beginAuthentication', address, cb)
-	}
-
-	function logOut(cb) {
-		socket.emit('session unauthenticate', cb)
-	}
-
-	function isLoggedIn(cb) {
-		socket.emit('session isAuthenticated', cb)
-	}
 
 	function resolve(data, parameters, cb) {
-		isLoggedIn(function (err, address) {
-			cb(null, {
+		socket.emit('session isAuthenticated', function (err, address) {
+			cb(null, { // why doesn't the error get applied???
 				err: err,
 				loggedIn: address
 			})
@@ -29,9 +18,6 @@ module.exports = function authHelpers(socket) {
 	}
 
 	return {
-		logIn: logIn,
-		logOut: logOut,
-		isLoggedIn: isLoggedIn,
 		resolve: resolve,
 		activate: activate
 	}

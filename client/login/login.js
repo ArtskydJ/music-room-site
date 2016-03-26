@@ -1,9 +1,9 @@
-module.exports = function activator(auth) {
+module.exports = function activator(socket) {
 	return function activate(context) {
 		var ractive = context.domApi
 		var content = context.content
 
-		function set(loggedIn, loggingIn) {
+		function setLoggedInState(loggedIn, loggingIn) {
 			if (loggingIn === undefined) {
 				ractive.set('loggedIn', loggedIn)
 			} else {
@@ -14,22 +14,31 @@ module.exports = function activator(auth) {
 			}
 		}
 
-		set(content.loggedIn, false)
-
-		setInterval(auth.isLoggedIn, 2000, function (err, address) {
-			set(address)
-		})
+		setLoggedInState(content.loggedIn, false)
 
 		ractive.on('email-submit', function () {
-			auth.logIn(ractive.get('emailAddressInput'), function (err, address) {
-				set(address, true)
+			var emailAddress = ractive.get('emailAddressInput')
+			console.log('session beginAuthentication')
+			socket.emit('session beginAuthentication', emailAddress, function (err, address) {
+				if (err) throw err
+
+				console.log('session beginAuthentication ' + arguments)
+
+				setLoggedInState(address, true)
+
+				var interval = setInterval(function () {
+					socket.emit('session isAuthenticated', function (err, address) {
+						if (address) clearInterval(interval)
+						setLoggedInState(address)
+					})
+				}, 2000)
 			})
-			return false
+			return false // not sure what this is for
 		})
 
 		ractive.on('logout-btn', function () {
-			auth.logOut(function (err) {
-				set(false, false)
+			socket.emit('session unauthenticate', function (err) {
+				setLoggedInState(false, false)
 			})
 		})
 	}

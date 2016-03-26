@@ -22,7 +22,7 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		route: '/login',
 		template: require('./login/login.html'),
 		resolve: auth.resolve,
-		activate: require('./login/login.js')(auth)
+		activate: require('./login/login.js')(socket)
 	})
 
 	var room = require('./app/room/room.js')

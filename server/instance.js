@@ -1,21 +1,20 @@
 var JustLogin = require('just-login-core')
 var bypass = require('just-login-bypass')
-var SessionManager = require('just-login-example-session-manager')
+var SessionState = require('just-login-session-state')
 var Spaces = require('level-spaces')
-var SocketManager = require('./socket-manager.js')
 var RoomManager = require('./room-manager.js')
+var socketSessionState = require('./socket-session-state.js')
 
 module.exports = function SessMng(io, db) {
-	var sessionManagerDb = Spaces(db, 'session-manager')
+	var sessionStateDb = Spaces(db, 'session-manager')
 	var sessionContactDb = Spaces(db, 'session-contact')
 
 	var core = JustLogin(db)
-	var manager = SessionManager(core, sessionManagerDb)
-
-	var onSocket1 = SocketManager(manager)
+	var sessState = SessionState(core, sessionStateDb)
 	var onSocket2 = RoomManager(sessionContactDb, io, core)
+
 	io.on('connect', function (socket) {
-		onSocket1(socket)
+		socketSessionState(socket, core, sessState)
 		onSocket2(socket)
 	})
 
