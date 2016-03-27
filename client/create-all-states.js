@@ -5,24 +5,17 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 
 	stateRouter.addState({
 		name: 'app',
-		defaultChild: 'front-page',
+		defaultChild: 'overview',
 		template: require('./app/app.html'),
 		resolve: auth.resolve,
-		activate: auth.activate
+		activate: require('./app/app.js')(socket)
 	})
 
 	stateRouter.addState({
-		name: 'app.front-page',
+		name: 'app.overview',
 		route: '/',
-		template: require('./about/about.html')
-	})
-
-	stateRouter.addState({
-		name: 'login',
-		route: '/login',
-		template: require('./login/login.html'),
-		resolve: auth.resolve,
-		activate: require('./login/login.js')(socket)
+		template: require('./app/overview/overview.html'),
+		data: require('./app/overview/data.json')
 	})
 
 	var room = require('./app/room/room.js')
@@ -36,11 +29,8 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 	})
 
 	stateRouter.addState({
-		name: 'app.overview',
-		route: '/overview',
-		template: require('./app/overview/overview.html'),
-		data: require('./app/overview/data.json'),
-		resolve: auth.resolve,
-		activate: auth.activate
+		name: 'app.404',
+		route: '/404',
+		template: '<div style="text-align:center;"><h1>404</h1></div>'
 	})
 }

@@ -9,10 +9,19 @@
 		<script src="/bundle.js"></script>
 	</head>
 	<body>
-		<noscript>
-			You'll need a browser that supports javascript to view this website. Perhaps you could try
-			<a href="https://www.google.com/chrome/browser/desktop/index.html">Google Chrome</a>.
-		</noscript>
-		<p>You're supposed to start this using <code>npm start</code>!</p>
+		<div id="state-router">
+			<noscript>
+				You'll need a browser that supports javascript to view this website. Perhaps you could try
+				<a href="https://www.google.com/chrome/browser/desktop/index.html">Google Chrome</a>.
+			</noscript>
+		</div>
+		<!--
+			This is 40kb smaller, but it is not dynamic like jquery + bootstrap is, so
+			if a menu changes (e.g. the login menu) then this won't add a listener to
+			the changed dropdown elements
+			<script src="/bootstrap-without-jquery.min.js"></script>
+		-->
+		<script src="/jquery-2.2.2.min.js"></script>
+		<script src="/bootstrap.min.js"></script>
 	</body>
 </html>

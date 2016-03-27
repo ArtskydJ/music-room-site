@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/ArtskydJ/music-room-site",
   "dependencies": {
-    "abstract-state-router": "^5.0.0",
+    "abstract-state-router": "^5.11.0",
     "drag-drop": "^2.0.0",
     "just-login-core": "^2.0.1",
     "just-login-session-state": "^2.0.1",

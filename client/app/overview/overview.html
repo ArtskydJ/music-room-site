@@ -1,21 +1,27 @@
-<div class="container">
+{{#loggedIn}}
 	<div class="row">
 		<div class="col-sm-6">
 			<div class="panel panel-{{#loggedIn}}success{{else}}danger{{/}}">
 				<div class="panel-heading">
 					<h5>Starred Rooms</h5>
 				</div>
-					{{#loggedIn}}
-							{{>list starred}}
-					{{else}}
-						<div class="list-group">
-							<a class="list-group-item">Please log in to see view your starred rooms.</a>
-						</div>
-					{{/}}
+					{{>list starred}}
 			</div>
 		</div>
 		<div class="col-sm-6">
 			<!-- some other view will go here i guess... -->
 		</div>
 	</div>
-</div>
+{{else}}
+	<h1>Welcome!</h1>
+	<p>
+		This is the main page where you go if you just type in the url, or google search for the name of the site. You see some basic info, and probably a big login prompt at the top if you have visited the site before? A big NO REGISTRATION NEEDED TYPE IN YOUR EMAIL ADDRESS TO GET LOGGED IN section.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet i forget the rest.
+	</p>
+	<p>
+		Under construction.
+		<img src="http://thumbs.dreamstime.com/t/website-under-construction-sign-grungy-vector-44227111.jpg" />
+	</p>
+{{/}}

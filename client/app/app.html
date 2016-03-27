@@ -4,14 +4,48 @@
 			<a class="navbar-brand" href="{{makePath('app.overview')}}">Music Room</a>
 		</div>
 		<div class="nav navbar-nav navbar-right">
-			<a class="navbar-brand" href="{{makePath('login')}}">
-				{{#loggedIn}}
-					{{loggedIn}}
-				{{else}}
-					Log In
-				{{/}}
-			</a>
+			<ul class="nav navbar-nav">
+				<li class="dropdown">
+					{{#loggedIn}}
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							Signed is as {{loggedIn}} <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu" role="menu">
+							<!--
+								<li><a href="#">Action</a></li>
+								<li class="divider"></li>
+							-->
+							<li><a href="#" on-click="logout-btn">Sign out</a></li>
+						</ul>
+					{{elseif loggingIn}}
+							Check your email...
+					{{else}}
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							Sign In/Create Account <span class="caret"></span>
+						</a>
+						<div class="dropdown-menu" style="padding:10px;" role="menu">
+							<form on-submit="email-submit" action="">
+								<input type="text"
+									class="form-control input-sm"
+									placeholder="you@youremail.com"
+									value="{{emailAddressInput}}"
+									disabled="{{loggingIn}}"
+									autofocus>
+								<button type="button"
+									class="btn btn-primary"
+									on-click="email-submit"
+									style="margin-top:10px;"
+									disabled="{{loggingIn}}">
+									Sign in
+								</button>
+							</form>
+						</div>
+					{{/}}
+				</li>
+			</ul>
 		</div>
 	</div>
 </div>
-<ui-view></ui-view>
+<div class="container">
+	<ui-view></ui-view>
+</div>

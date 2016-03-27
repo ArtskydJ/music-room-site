@@ -14,11 +14,11 @@ var renderer = RactiveRenderer(Ractive, {
 	partials: { list: require('./list-partial.html') },
 	decorators: { sortable: sortable }
 })
-var stateRouter = StateRouter(renderer, 'body')
+var stateRouter = StateRouter(renderer, '#state-router')
 createAllStates(stateRouter, socket)
 
 socket.once('connect', function() {
-	stateRouter.evaluateCurrentRoute('app.overview')
+	stateRouter.evaluateCurrentRoute('app.404')
 	establishSession(socket, function (err, sessionId) {
 		if (err) console.error(err)
 		else console.log('connected with session ' + sessionId)
