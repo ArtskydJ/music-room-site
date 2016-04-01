@@ -18,7 +18,7 @@ var stateRouter = StateRouter(renderer, '#state-router')
 createAllStates(stateRouter, socket)
 
 socket.once('connect', function() {
-	stateRouter.evaluateCurrentRoute('app.404')
+	stateRouter.evaluateCurrentRoute('404')
 	establishSession(socket, function (err, sessionId) {
 		if (err) console.error(err)
 		else console.log('connected with session ' + sessionId)
