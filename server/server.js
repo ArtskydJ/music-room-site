@@ -4,7 +4,7 @@ var Level = require('level-mem')
 var St = require('st')
 var Instance = require('./instance.js')
 
-var port = process.argv[2] || 80
+var port = require('../package.json').port || process.argv[2] || 80
 
 var router = St({
 	cache: false,

@@ -4,7 +4,7 @@
   "description": "",
   "main": "./server/server.js",
   "scripts": {
-    "start": "node . 8080",
+    "start": "node .",
     "test": "npm run test-node && npm run test-browser",
     "test-node": "node test/index.js",
     "test-browser": "node . | browserify test/index.js | tap-closer | smokestack",
@@ -12,6 +12,7 @@
     "watch": "watchify client/client.js -vdo static/bundle.js"
   },
   "private": true,
+  "port": 8081,
   "browserify": {
     "transform": [
       [
@@ -35,7 +36,7 @@
   },
   "homepage": "https://github.com/ArtskydJ/music-room-site",
   "dependencies": {
-    "abstract-state-router": "^5.11.0",
+    "abstract-state-router": "^5.12.4",
     "drag-drop": "^2.0.0",
     "just-login-core": "^2.0.1",
     "just-login-session-state": "^2.0.1",

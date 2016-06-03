@@ -6,8 +6,9 @@ var Client = require('socket.io-client')
 var establishSession = require('./establish-session.js')
 var sortable = require('../vendor/Ractive-decorators-sortable')
 var createAllStates = require('./create-all-states.js')
+var port = require('../package.json').port || 80
 
-var socket = new Client('localhost:8080')
+var socket = new Client('localhost:' + port)
 
 var renderer = RactiveRenderer(Ractive, {
 	data: { formatTime: formatTime },

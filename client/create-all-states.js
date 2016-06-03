@@ -14,13 +14,16 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 
 	stateRouter.addState({
 		name: 'logged-in',
-		defaultChild: 'overview',
+		route:'/a',
 		template: require('./app/logged-in-navbar.html'),
 		resolve: function resolve(data, parameters, cb) {
+			console.log('resolving')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
+					console.log('not logged in')
 					cb.redirect('not-logged-in')
 				} else {
+					console.log('setting email')
 					cb(null, { emailAddress: emailAddress })
 				}
 			})
@@ -30,16 +33,27 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 
 	stateRouter.addState({
 		name: 'not-logged-in',
+		//defaultChild: 'overview',
 		template: require('./app/not-logged-in-navbar.html'),
+		resolve: function (a,b,cb) {
+			console.log('resolving')
+			cb(null)
+		},
 		activate: notLoggedInActivate.bind(null, socket)
 	})
 
 	stateRouter.addState({
-		name: 'not-logged-in.overview',
-		route: '/',
-		template: require('./app/overview/overview.html'),
-		data: require('./app/overview/data.json')
+		name: 'logged-in.overview',
+		route: '/a/b',
+		template: require('./app/logged-in-overview/overview.html'),
+		data: require('./app/logged-in-overview/data.json')
 	})
+/*
+	stateRouter.addState({
+		name: 'not-logged-in.overview',
+		//route: '/',
+		template: require('./app/not-logged-in-overview/overview.html')
+	})*/
 
 	var room = require('./app/room/room.js')
 	stateRouter.addState({
@@ -58,17 +72,24 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 	})
 
 	stateRouter.on('routeNotFound', function (route, parameters) {
-		stateRouter.go('not-found', {
+		console.log('routeNotFound!')
+		stateRouter.go('404', {
 			route: route,
 			parameters: parameters
 		})
 	})
-	stateRouter.on('StateChangeError', function (err) {
+	stateRouter.on('stateChangeError', function (err) {
 		throw err
 	})
-	stateRouter.on('StateError', function (err) {
+	stateRouter.on('stateError', function (err) {
 		throw err
 	})
+	stateRouter.on('stateChangeCancelled', function (err) {
+		process.nextTick(function () {
+			console.log(err)
+		})
+	})
+
 
 	var previousAddress = 'unknown'
 	setInterval(function () {
@@ -100,6 +121,8 @@ function loggedInActivate(socket, context) {
 function notLoggedInActivate(socket, context) {
 	var ractive = context.domApi
 	var resolved = context.content
+
+	console.log('activation')
 
 	ractive.on('email-submit', function () {
 		var emailAddress = ractive.get('emailAddressInput')
