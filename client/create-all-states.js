@@ -1,72 +1,92 @@
 module.exports = function addStates(stateRouter, socket, mediator) {
-	
 
-	function activate(context) {
-		console.log('auth-helpers activate!')
-		var ractive = context.domApi
-		var content = context.content
-		var data = context.data
-		if (data) ractive.set(data)
-		ractive.set(content)
-	}
+	/*
+	I'm thinking I'll add a login page, rather than the navbar login. The
+	navbar login isn't standard practice, and loading a login page should be
+	ridiculously fast.
 
-	
+	If you click a link to a auth-only page, then get redirected to a login
+	page, it should redirect you back to the page you attempted to go to at
+	first.
+	*/
 
 	stateRouter.addState({
-		name: 'logged-in',
-		route:'/a',
-		template: require('./app/logged-in-navbar.html'),
+		name: 'app',
+		template: require('./app/navbar.html'),
+		defaultChild: 'splash-page',
+		activate: function notLoggedInActivate(context) {
+			var ractive = context.domApi
+			// var resolved = context.content
+
+			console.log('activation')
+
+			ractive.on('email-submit', function () {
+				var emailAddress = ractive.get('emailAddressInput')
+
+				ractive.set({ emailAddress: emailAddress, loggingIn: true })
+				
+				socket.emit('session beginAuthentication', emailAddress, function (err, address) {
+					if (err) throw err
+				})
+
+				return false // not sure what this is for
+			})
+		}
+	})
+
+	stateRouter.addState({
+		name: 'app.logged-in',
+		defaultChild: 'dashboard',
 		resolve: function resolve(data, parameters, cb) {
 			console.log('resolving')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
 					console.log('not logged in')
-					cb.redirect('not-logged-in')
+					cb.redirect('not-logged-in') // figure out what to do about this
 				} else {
 					console.log('setting email')
 					cb(null, { emailAddress: emailAddress })
 				}
 			})
 		},
-		activate: loggedInActivate.bind(null, socket)
+		activate: function loggedInActivate(context) {
+			var ractive = context.domApi
+			var resolved = context.content
+
+			ractive.set({ emailAddress: resolved.emailAddress, loggingIn: false })
+
+			ractive.on('logout-btn', function () {
+				socket.emit('session unauthenticate', function (err) {
+					ractive.set({ emailAddress: null, loggingIn: false })
+				})
+			})
+		}
 	})
 
 	stateRouter.addState({
-		name: 'not-logged-in',
-		//defaultChild: 'overview',
-		template: require('./app/not-logged-in-navbar.html'),
-		resolve: function (a,b,cb) {
-			console.log('resolving')
-			cb(null)
-		},
-		activate: notLoggedInActivate.bind(null, socket)
+		name: 'app.logged-in.dashboard',
+		route: '/dashboard',
+		template: require('./app/dashboard/dashboard.html'),
+		data: require('./app/dashboard/data.json')
 	})
 
 	stateRouter.addState({
-		name: 'logged-in.overview',
-		route: '/a/b',
-		template: require('./app/logged-in-overview/overview.html'),
-		data: require('./app/logged-in-overview/data.json')
-	})
-/*
-	stateRouter.addState({
-		name: 'not-logged-in.overview',
-		//route: '/',
-		template: require('./app/not-logged-in-overview/overview.html')
-	})*/
-
-	var room = require('./app/room/room.js')
-	stateRouter.addState({
-		name: 'logged-in.room',
+		name: 'app.logged-in.room',
 		route: '/room/:room',
 		template: require('./app/room/room.html'),
-		resolve: room.resolver(socket),
+		resolve: require('./app/room/resolve.js'),
 		data: require('./app/room/data.json'),
-		activate: room.activator(socket)
+		activate: require('./app/room/activate.js')
 	})
 
 	stateRouter.addState({
-		name: '404',
+		name: 'app.splash-page',
+		route: '/',
+		template: require('./app/splash-page/splash-page.html')
+	})
+
+	stateRouter.addState({
+		name: 'app.404',
 		route: '/404',
 		template: '<div style="text-align:center;"><h1>404</h1></div>'
 	})
@@ -79,15 +99,13 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		})
 	})
 	stateRouter.on('stateChangeError', function (err) {
-		throw err
+		console.log(err)
 	})
 	stateRouter.on('stateError', function (err) {
-		throw err
+		console.log(err)
 	})
 	stateRouter.on('stateChangeCancelled', function (err) {
-		process.nextTick(function () {
-			console.log(err)
-		})
+		console.log(err)
 	})
 
 
@@ -101,40 +119,3 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		})
 	}, 10000)
 }
-
-
-
-function loggedInActivate(socket, context) {
-	var ractive = context.domApi
-	var resolved = context.content
-
-	ractive.set({ emailAddress: resolved.emailAddress, loggingIn: false })
-
-	ractive.on('logout-btn', function () {
-		socket.emit('session unauthenticate', function (err) {
-			ractive.set({ emailAddress: null, loggingIn: false })
-		})
-	})
-}
-
-
-function notLoggedInActivate(socket, context) {
-	var ractive = context.domApi
-	var resolved = context.content
-
-	console.log('activation')
-
-	ractive.on('email-submit', function () {
-		var emailAddress = ractive.get('emailAddressInput')
-
-		ractive.set({ emailAddress: emailAddress, loggingIn: true })
-		
-		socket.emit('session beginAuthentication', emailAddress, function (err, address) {
-			if (err) throw err
-		})
-
-		return false // not sure what this is for
-	})
-}
-
-
