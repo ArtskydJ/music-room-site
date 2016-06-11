@@ -1,0 +1,15 @@
+<p>
+	You don't have to create an account.
+</p>
+<p>
+	Just enter your email address, and we'll send you an email with a link you click to log in.
+</p>
+<form on-submit="email-submit" action="" class="form-horizontal row">
+	<div class="col-sm-5 col-sm-offset-3">
+		<input type="text" class="form-control" placeholder="you@youremail.com"
+			value="{{emailAddressInput}}" disabled="{{loggingIn}}" autofocus>
+	</div>
+	<div class="col-sm-1">
+		<button type="button" class="btn btn-primary" on-click="email-submit" disabled="{{loggingIn}}">Sign in</button>
+	</div>
+</form>

@@ -1,10 +1,17 @@
+/*
+- app
+	- splash-page
+	- login
+	- logged-in
+		- dashboard
+		- room
+	- 404
+*/
+
+
 module.exports = function addStates(stateRouter, socket, mediator) {
 
 	/*
-	I'm thinking I'll add a login page, rather than the navbar login. The
-	navbar login isn't standard practice, and loading a login page should be
-	ridiculously fast.
-
 	If you click a link to a auth-only page, then get redirected to a login
 	page, it should redirect you back to the page you attempted to go to at
 	first.
@@ -37,12 +44,13 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 	stateRouter.addState({
 		name: 'app.logged-in',
 		defaultChild: 'dashboard',
+		template: '<ui-view></ui-view>',
 		resolve: function resolve(data, parameters, cb) {
 			console.log('resolving')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
 					console.log('not logged in')
-					cb.redirect('not-logged-in') // figure out what to do about this
+					cb.redirect('app.login') // figure out what to do about this
 				} else {
 					console.log('setting email')
 					cb(null, { emailAddress: emailAddress })
@@ -83,6 +91,12 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		name: 'app.splash-page',
 		route: '/',
 		template: require('./app/splash-page/splash-page.html')
+	})
+
+	stateRouter.addState({
+		name: 'app.login',
+		route: '/login',
+		template: require('./app/login/login.html')
 	})
 
 	stateRouter.addState({

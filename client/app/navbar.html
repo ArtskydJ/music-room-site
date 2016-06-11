@@ -1,49 +1,22 @@
 <div class="navbar navbar-default">
 	<div class="container">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="{{makePath('app.overview')}}">Music Room</a>
+			<a href="{{makePath('app.splash-page')}}" class="navbar-brand">Music Room</a>
 		</div>
 		<div class="nav navbar-nav navbar-right">
 			<ul class="nav navbar-nav">
-				{{if loggingIn}}
-					<li>Check your email...</li>
-				{{elseif loggedIn}}
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-							Sign In/Create Account <span class="caret"></span>
-						</a>
-						<div class="dropdown-menu" style="padding:10px;" role="menu">
-							<form on-submit="email-submit" action="">
-								<input type="text"
-									class="form-control input-sm"
-									placeholder="you@youremail.com"
-									value="{{emailAddressInput}}"
-									disabled="{{loggingIn}}"
-									autofocus>
-								<button type="button"
-									class="btn btn-primary"
-									on-click="email-submit"
-									style="margin-top:10px;"
-									disabled="{{loggingIn}}">
-									Sign in
-								</button>
-							</form>
-						</div>
+				{{#if loggedIn}}
+					<li decorator="active:app.logged-in.dashboard">
+						<a href="{{makePath('app.logged-in.dashboard')}}">{{emailAddress}}</a>
+					</li>
+					<li>
+						<a on-click="logout-btn">Sign out</a>
 					</li>
 				{{else}}
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-							Signed is as {{emailAddress}} <span class="caret"></span>
-						</a>
-						<ul class="dropdown-menu" role="menu"> <!-- Why in a dropdown? -->
-							<!--
-								<li><a href="#">Action</a></li>
-								<li class="divider"></li>
-							-->
-							<li><a href="#" on-click="logout-btn">Sign out</a></li>
-						</ul>
+					<li decorator="active:app.login">
+						<a href="{{makePath('app.login')}}">Sign In/Create Account</a>
 					</li>
-				{{/}}
+				{{/if}}
 			</ul>
 		</div>
 	</div>
