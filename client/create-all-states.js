@@ -28,13 +28,10 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		defaultChild: 'dashboard',
 		template: require('./li/navbar.html'),
 		resolve: function resolve(data, parameters, cb) {
-			console.log('resolving')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
-					console.log('not logged in')
 					cb.redirect('nli.login') // figure out what to do about this
 				} else {
-					console.log('setting email')
 					cb(null, { emailAddress: emailAddress })
 				}
 			})
@@ -43,12 +40,9 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 			var ractive = context.domApi
 			var resolved = context.content
 
-			ractive.set({ emailAddress: resolved.emailAddress, loggingIn: false })
-
-			ractive.on('logout-btn', function () {
-				socket.emit('session unauthenticate', function (err) {
-					ractive.set({ emailAddress: null, loggingIn: false })
-				})
+			ractive.set({
+				emailAddress: resolved.emailAddress,
+				loggingIn: false
 			})
 		}
 	})
@@ -84,41 +78,49 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		template: require('./nli/login/login.html'),
 		activate: function (context) {
 			var ractive = context.domApi
+			var action = context.parameters.action
+
+			if (action === 'logout') {
+				socket.emit('session unauthenticate')
+			}
 
 			ractive.on('login-event', function (ev) {
 				ev.original.preventDefault()
 
 				var emailAddress = ractive.get('emailAddress')
-				console.log('email submit = ' + emailAddress)
 
-				ractive.set({
-					loggingIn: true,
-					loggedIn: false
-				})
+				ractive.set('errorMessage', '')
+
 				socket.emit('session beginAuthentication', emailAddress, function (err, contactAddress) {
-					ractive.set({
-						loggingIn: false,
-						loggedIn: true,
-						emailAddress: contactAddress
-					})
-					stateRouter.go('li.dashboard')
+					if (err) {
+						ractive.set('errorMessage', err) // sending a string as the error
+						setTimeout(function () {
+							ractive.set('errorMessage', '')
+						}, 5000)
+					} else {
+						ractive.set('errorMessage', '')
+						stateRouter.go('li.dashboard')
+					}
 				})
 			})
 		}
 	})
 
 	stateRouter.addState({
-		name: '404',
+		name: 'nli.404',
 		route: '/404',
-		template: '<div style="text-align:center;"><h1>404</h1></div>'
+		template: require('./nli/404.html'),
+		activate: function (context) {
+			var ractive = context.domApi
+			var parameters = context.parameters
+			
+			ractive.set('route', parameters.route)
+		}
 	})
 
 	stateRouter.on('routeNotFound', function (route, parameters) {
-		console.log('routeNotFound!')
-		stateRouter.go('404', {
-			route: route,
-			parameters: parameters
-		})
+		parameters.route = route
+		stateRouter.go('nli.404', parameters)
 	})
 	stateRouter.on('stateChangeError', function (err) {
 		console.log(err)

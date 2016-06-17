@@ -1,5 +1,6 @@
 module.exports = function establishSession(socket, core, sessState) {
 	socket._sessionId = null
+	socket._allowBeginAuth = true
 
 	socket.on('session establish', function sessionEstablish(existingSessionId, cb) {
 
@@ -30,11 +31,21 @@ module.exports = function establishSession(socket, core, sessState) {
 	socket.on('session beginAuthentication', function sb(email, cb) {
 		if (!cb) cb = noop
 
-		core.beginAuthentication(socket._sessionId, email, function (err, authReq) {
-			if (err) return cb(err)
+		if (socket._allowBeginAuth) {
+			core.beginAuthentication(socket._sessionId, email, function (err, authReq) {
+				if (err) return cb(err)
 
-			cb(null, authReq && authReq.contactAddress)
-		})
+				cb(null, authReq && authReq.contactAddress)
+			})
+
+			// Disallow for 30 seconds
+			socket._allowBeginAuth = false
+			setTimeout(function () {
+				socket._allowBeginAuth = true
+			}, 30 * 1000)
+		} else {
+			cb('You must wait up to 30 seconds before trying again.') // sending a string as the error
+		}
 	})
 
 	socket.on('disconnect', function () {
