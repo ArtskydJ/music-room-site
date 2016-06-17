@@ -19,7 +19,7 @@ var stateRouter = StateRouter(renderer, '#state-router')
 createAllStates(stateRouter, socket)
 
 socket.once('connect', function() {
-	stateRouter.evaluateCurrentRoute('app.splash-page')
+	stateRouter.evaluateCurrentRoute('nli.splash-page')
 	establishSession(socket, function (err, sessionId) {
 		if (err) console.error(err)
 		else console.log('connected with session ' + sessionId)

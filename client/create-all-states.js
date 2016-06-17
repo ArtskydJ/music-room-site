@@ -1,11 +1,11 @@
 /*
-- app
+- nli
 	- splash-page
 	- login
-	- logged-in
-		- dashboard
-		- room
-	- 404
+- li
+	- dashboard
+	- room
+- 404
 */
 
 
@@ -18,39 +18,21 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 	*/
 
 	stateRouter.addState({
-		name: 'app',
-		template: require('./app/navbar.html'),
-		defaultChild: 'splash-page',
-		activate: function notLoggedInActivate(context) {
-			var ractive = context.domApi
-			// var resolved = context.content
-
-			console.log('activation')
-
-			ractive.on('email-submit', function () {
-				var emailAddress = ractive.get('emailAddressInput')
-
-				ractive.set({ emailAddress: emailAddress, loggingIn: true })
-				
-				socket.emit('session beginAuthentication', emailAddress, function (err, address) {
-					if (err) throw err
-				})
-
-				return false // not sure what this is for
-			})
-		}
+		name: 'nli',
+		template: require('./nli/navbar.html'),
+		defaultChild: 'splash-page'
 	})
 
 	stateRouter.addState({
-		name: 'app.logged-in',
+		name: 'li',
 		defaultChild: 'dashboard',
-		template: '<ui-view></ui-view>',
+		template: require('./li/navbar.html'),
 		resolve: function resolve(data, parameters, cb) {
 			console.log('resolving')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
 					console.log('not logged in')
-					cb.redirect('app.login') // figure out what to do about this
+					cb.redirect('nli.login') // figure out what to do about this
 				} else {
 					console.log('setting email')
 					cb(null, { emailAddress: emailAddress })
@@ -72,35 +54,61 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 	})
 
 	stateRouter.addState({
-		name: 'app.logged-in.dashboard',
+		name: 'li.dashboard',
 		route: '/dashboard',
-		template: require('./app/dashboard/dashboard.html'),
-		data: require('./app/dashboard/data.json')
+		template: require('./li/dashboard/dashboard.html'),
+		data: require('./li/dashboard/data.json'),
+		activate: function(context) {
+			console.log(context.domApi.get('loggedIn'))
+		}
 	})
 
 	stateRouter.addState({
-		name: 'app.logged-in.room',
+		name: 'li.room',
 		route: '/room/:room',
-		template: require('./app/room/room.html'),
-		resolve: require('./app/room/resolve.js'),
-		data: require('./app/room/data.json'),
-		activate: require('./app/room/activate.js')
+		template: require('./li/room/room.html'),
+		resolve: require('./li/room/resolve.js'),
+		data: require('./li/room/data.json'),
+		activate: require('./li/room/activate.js')
 	})
 
 	stateRouter.addState({
-		name: 'app.splash-page',
+		name: 'nli.splash-page',
 		route: '/',
-		template: require('./app/splash-page/splash-page.html')
+		template: require('./nli/splash-page/splash-page.html')
 	})
 
 	stateRouter.addState({
-		name: 'app.login',
+		name: 'nli.login',
 		route: '/login',
-		template: require('./app/login/login.html')
+		template: require('./nli/login/login.html'),
+		activate: function (context) {
+			var ractive = context.domApi
+
+			ractive.on('login-event', function (ev) {
+				ev.original.preventDefault()
+
+				var emailAddress = ractive.get('emailAddress')
+				console.log('email submit = ' + emailAddress)
+
+				ractive.set({
+					loggingIn: true,
+					loggedIn: false
+				})
+				socket.emit('session beginAuthentication', emailAddress, function (err, contactAddress) {
+					ractive.set({
+						loggingIn: false,
+						loggedIn: true,
+						emailAddress: contactAddress
+					})
+					stateRouter.go('li.dashboard')
+				})
+			})
+		}
 	})
 
 	stateRouter.addState({
-		name: 'app.404',
+		name: '404',
 		route: '/404',
 		template: '<div style="text-align:center;"><h1>404</h1></div>'
 	})
@@ -122,7 +130,7 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		console.log(err)
 	})
 
-
+	/*
 	var previousAddress = 'unknown'
 	setInterval(function () {
 		socket.emit('session isAuthenticated', function (err, address) {
@@ -132,4 +140,5 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 			previousAddress = address
 		})
 	}, 10000)
+	*/
 }

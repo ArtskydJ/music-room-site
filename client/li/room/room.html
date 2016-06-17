@@ -1,0 +1,58 @@
+<div class="row">
+	<div class="col-sm-3">
+		<img src="{{music.cover}}" id="cover">
+
+		<div class="panel panel-success">
+			<div class="panel-heading">
+				<h5>In Room</h5>
+			</div>
+			{{>list usersInRoom}}
+		</div>
+	</div>
+
+	<div class="col-sm-7">
+		{{#music}}
+			<div class="well">
+				{{ formatTime( currentSec ) }} / {{ formatTime( durationSec ) }}
+
+				<div class="progress">
+					<div class="progress-bar" style="width: {{ 100 * currentSec / durationSec }}%"></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-9">
+						<b>{{title}}</b><br>
+						<i>{{artist}}</i><br>
+						{{album}}
+					</div>
+					<div class="col-sm-3">
+						<a id="muteBtn" class="btn btn-{{muted ? 'success' : 'danger'}}"
+							on-click='mute'>{{muted ? "Unm" : "M"}}ute</a>
+					</div>
+				</div>
+			</div>
+		{{/}}
+		<div id="autoscroll">
+			{{>list chat}}
+		</div>
+		<form on-submit="text-submit">
+			<input
+				class="form-control"
+				value="{{chat.input}}"
+				placeholder="Enter your message..."
+				autofocus
+				id="input"
+			>
+		</form>
+	</div>
+
+	<div class="col-sm-2">
+		<div class="panel panel-warning sortable">
+			<div class="panel-heading">
+				<h5>Queue</h5>
+			</div>
+			{{>list queue}}
+		</div>
+	</div>
+
+</div>
+<audio id="audio-element" autoplay></audio>
