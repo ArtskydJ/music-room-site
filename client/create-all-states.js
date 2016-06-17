@@ -76,13 +76,22 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		name: 'nli.login',
 		route: '/login',
 		template: require('./nli/login/login.html'),
+		resolve: function resolve(data, parameters, cb) {
+			var action = parameters.action
+
+			socket.emit('session isAuthenticated', function (err, emailAddress) {
+
+				if (action === 'logout') {
+					socket.emit('session unauthenticate', cb)
+				} else if (err || !emailAddress) {
+					cb(null)
+				} else {
+					cb.redirect('li.dashboard')
+				}
+			})
+		},
 		activate: function (context) {
 			var ractive = context.domApi
-			var action = context.parameters.action
-
-			if (action === 'logout') {
-				socket.emit('session unauthenticate')
-			}
 
 			ractive.on('login-event', function (ev) {
 				ev.original.preventDefault()
@@ -113,7 +122,7 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		activate: function (context) {
 			var ractive = context.domApi
 			var parameters = context.parameters
-			
+
 			ractive.set('route', parameters.route)
 		}
 	})
@@ -123,24 +132,12 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		stateRouter.go('nli.404', parameters)
 	})
 	stateRouter.on('stateChangeError', function (err) {
-		console.log(err)
+		console.error(err)
 	})
 	stateRouter.on('stateError', function (err) {
-		console.log(err)
+		console.error(err)
 	})
 	stateRouter.on('stateChangeCancelled', function (err) {
-		console.log(err)
+		console.error(err)
 	})
-
-	/*
-	var previousAddress = 'unknown'
-	setInterval(function () {
-		socket.emit('session isAuthenticated', function (err, address) {
-			if (previousAddress !== 'unknown' && address !== previousAddress) {
-				stateRouter.go(address ? 'logged-in' : 'not-logged-in')
-			}
-			previousAddress = address
-		})
-	}, 10000)
-	*/
 }
