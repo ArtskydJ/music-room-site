@@ -28,10 +28,13 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		defaultChild: 'dashboard',
 		template: require('./li/navbar.html'),
 		resolve: function resolve(data, parameters, cb) {
+			console.log('am I authed?')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
+					console.log('NOPE redir to login screen')
 					cb.redirect('nli.login') // figure out what to do about this
 				} else {
+					console.log('YES I am authed')
 					cb(null, { emailAddress: emailAddress })
 				}
 			})
@@ -39,6 +42,8 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		activate: function loggedInActivate(context) {
 			var ractive = context.domApi
 			var resolved = context.content
+
+			console.log('activating li state')
 
 			ractive.set({
 				emailAddress: resolved.emailAddress,
@@ -55,6 +60,17 @@ module.exports = function addStates(stateRouter, socket, mediator) {
 		activate: function(context) {
 			console.log(context.domApi.get('loggedIn'))
 		}
+	})
+
+	stateRouter.addState({
+		name: 'li.create-room',
+		route: '/create-room',
+		template: require('./li/create-room/create-room.html'),
+		resolve: function (d, p, cb) {
+			console.log('create room resolve')
+			cb(null, {})
+		},
+		activate: function () {}
 	})
 
 	stateRouter.addState({

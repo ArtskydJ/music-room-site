@@ -1,13 +1,23 @@
+<div class="row" style="margin-bottom:20px;">
+	<div class="col-sm-offset-10 col-sm-2">
+		<a href="{{makePath('li.create-room')}}" class="btn btn-primary btn-block">Create Room</a>
+	</div>
+</div>
 <div class="row">
 	<div class="col-sm-6">
 		<div class="panel panel-success">
 			<div class="panel-heading">
-				<h5>Starred Rooms</h5>
+				<h5>Your Starred Rooms</h5>
 			</div>
 				{{>list starred}}
 		</div>
 	</div>
 	<div class="col-sm-6">
-		<!-- some other view will go here i guess... -->
+		<div class="panel panel-warning">
+			<div class="panel-heading">
+				<h5>Recently Created Rooms</h5>
+			</div>
+				{{>list created}}
+		</div>
 	</div>
 </div>
