@@ -5,7 +5,8 @@ var formatTime = require('./format-time.js')
 var Client = require('socket.io-client')
 var establishSession = require('./establish-session.js')
 var sortable = require('../vendor/Ractive-decorators-sortable')
-var createAllStates = require('./create-all-states.js')
+var createNliStates = require('./nli/nli.js')
+var createLiStates = require('./li/li.js')
 var port = require('../package.json').port || 80
 
 var socket = new Client('localhost:' + port)
@@ -16,7 +17,9 @@ var renderer = RactiveRenderer(Ractive, {
 	decorators: { sortable: sortable }
 })
 var stateRouter = StateRouter(renderer, '#state-router')
-createAllStates(stateRouter, socket)
+
+createNliStates(stateRouter, socket)
+createLiStates(stateRouter, socket)
 
 socket.once('connect', function() {
 	stateRouter.evaluateCurrentRoute('nli.splash-page')
@@ -31,4 +34,16 @@ socket.on('error', function (err) {
 	console.error(err)
 })
 
-//setTimeout(window.close, 5000)
+stateRouter.on('routeNotFound', function (route, parameters) {
+	parameters.route = route
+	stateRouter.go('nli.404', parameters)
+})
+stateRouter.on('stateChangeError', function (err) {
+	console.error(err)
+})
+stateRouter.on('stateError', function (err) {
+	console.error(err)
+})
+stateRouter.on('stateChangeCancelled', function (err) {
+	console.error(err)
+})
