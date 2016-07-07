@@ -4,6 +4,7 @@ module.exports = function (stateRouter, socket) {
 		name: 'nli.login',
 		route: '/login',
 		template: require('./login.html'),
+		querystringParameters: [ 'action' ],
 		resolve: function resolve(data, parameters, cb) {
 			var action = parameters.action
 

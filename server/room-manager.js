@@ -1,76 +1,81 @@
-function cbIfErr(reject, fulfill) {
-	return function (err) {
-		if (err && !err.notFound) {
-			reject(err)
-		} else {
-			fulfill.apply(null, [].slice.call(arguments, 1)) //the error is not applied
-		}
-	}
-}
+var uuid = require('random-uuid-v4')
 
-function cbIfNotAuth(action, reject, fulfill) {
-	return function (err, addr) {
-		if (err) {
-			reject(err)
-		} else if (!addr) {
-			reject(new Error('Can not ' + action + ' while unauthenticated.'))
-		} else {
-			fulfill.apply(null, [].slice.call(arguments, 1)) //the error is not applied
-		}
-	}
-}
+module.exports = function roomManager(core, sessState, io, socket) {
 
-module.exports = function roomManager(sessionContactDb, io, core) {
-	return function (socket) {
+	// Chat Relay
+	socket.on('chat send', function chatsend(text, cb) {
+		if (!cb) cb = noop
 
-		// Chat Relay
-		function validRoom(room) {
-			return room !== socket.id
+		if (!socket._musicRoom) {
+			return cb(new Error('You are not connected to a room.'))
 		}
 
-		socket.on('chat send', function chatsend(text, cb) {
-			if (!cb) cb = noop
+		sessState.isAuthenticated(socket.mySessionId, function (err, addr) {
+			if (err) return cb(err)
+			if (!addr) return cb(new Error('Can not send a chat while unauthenticated'))
 
-			if (!socket._musicRoom) {
-				return cb(new Error('You are not connected to a room.'))
+			var messageObj = {
+				label: addr,
+				item: text
 			}
-
-			core.isAuthenticated(socket.mySessionId, cbIfNotAuth('send chat', cb, function (addr) {
-				var messageObj = {
-					label: addr,
-					item: text
-				}
-				io.in(socket._musicRoom).emit('chat receive', messageObj)
-				cb(null, messageObj)
-			}))
+			io.in(socket._musicRoom).emit('chat receive', messageObj)
+			cb(null, messageObj)
 		})
+	})
 
-		// Room Connection and Disconnection
-		socket.on('join', function(room, cb) {
-			if (!cb) cb = noop
-			core.isAuthenticated(socket.mySessionId, cbIfNotAuth('join a room', cb, function (addr) {
-				if (socket._musicRoom) {
-					socket.leave(socket._musicRoom)
-				}
-				socket._musicRoom = room
-				socket.join(room, function (err) {
-					// setTimeout(function () {
-						addUserThenEmit(room, addr, socket.mySessionId)
-					// }, 100)
-					cb(err)
-				})
-			}))
-		})
-		socket.on('leave', function (room, cb) {
-			if (!cb) cb = noop
+	function leaveRoom(cb) {
+		var currentRoom = socket._musicRoom
+		socket._musicRoom = null
 
-			socket._musicRoom = null
-			socket.leave(socket._musicRoom, cbIfErr(cb, function () {
-				removeUserThenEmit(socket._musicRoom, socket.mySessionId)
-				cb(null)
-			}))
+		if (currentRoom) {
+			socket.leave(currentRoom, cb)
+		} else {
+			cb(null)
+		}
+	}
+	function joinRoom(roomId, cb) {
+		leaveRoom(function (err) {
+			if (err) return cb(err)
+
+			socket._musicRoom = roomId
+			socket.join(roomId, cb)
 		})
 	}
+
+	// Rooms
+	socket.on('room create', function(name, cb) {
+		if (!cb) cb = noop
+
+		var roomId = makeRoomId()
+
+		sessState.isAuthenticated(socket.mySessionId, function (err, addr) {
+			if (err) return cb(err)
+			if (!addr) return cb('Can not create a room while unauthenticated')
+
+			joinRoom(roomId, cb)
+		})
+	})
+	socket.on('room join', function(roomId, cb) {
+		if (!cb) cb = noop
+
+		sessState.isAuthenticated(socket.mySessionId, function (err, addr) {
+			if (err) return cb(err)
+			if (!addr) return cb('Can not join a room while unauthenticated')
+
+			// ENSURE THE ROOM EXISTS FIRST! OTHERWISE
+			// SOMEONE CAN JUST GO TO /rooms/wheeeeee
+			// AND A NEW ROOM WILL BE CREATED! DERP!
+			joinRoom(roomId, cb)
+		})
+	})
+	socket.on('room leave', function (cb) {
+		if (!cb) cb = noop
+		leaveRoom(cb)
+	})
+}
+
+function makeRoomId() {
+	return uuid().replace(/-/g, '')
 }
 
 function noop() {}

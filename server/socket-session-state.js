@@ -1,4 +1,4 @@
-module.exports = function establishSession(socket, core, sessState) {
+module.exports = function establishSession(core, sessState, socket) {
 	socket._sessionId = null
 	socket._allowBeginAuth = true
 

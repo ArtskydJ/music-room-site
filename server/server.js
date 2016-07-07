@@ -20,4 +20,4 @@ io.attach(server)
 server.listen(port)
 console.log('Listening on localhost:' + port)
 
-var core = Instance(io, db)
+Instance(io, db)

@@ -7,12 +7,13 @@ module.exports = function (stateRouter, socket) {
 		name: 'li',
 		defaultChild: 'dashboard',
 		template: require('./navbar.html'),
+		querystringParameters: [ 'redirect' ],
 		resolve: function resolve(data, parameters, cb) {
 			console.log('am I authed?')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
-					console.log('NOPE redir to login screen')
-					cb.redirect('nli.login') // figure out what to do about this
+					console.log('NOPE redirect to login screen')
+					cb.redirect('nli.login', { redirect: 'ASK JOSH ABOUT THIS!!!!!!!!!!!!!!!!!!!!!!!' })
 				} else {
 					console.log('YES I am authed')
 					cb(null, { emailAddress: emailAddress })
