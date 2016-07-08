@@ -3,6 +3,15 @@ var createRoomState = require('./dashboard/dashboard.js')
 var createDashboardState = require('./room/room.js')
 
 module.exports = function (stateRouter, socket) {
+	var attemptingState = ''
+	var attemptingParameters = {}
+
+	stateRouter.on('stateChangeStart', function (state, parameters) {
+		attemptingState = state.name
+		attemptingParameters = parameters
+		console.log('stateChangeStart', attemptingState, JSON.stringify(attemptingParameters))
+	})
+
 	stateRouter.addState({
 		name: 'li',
 		defaultChild: 'dashboard',
@@ -13,7 +22,10 @@ module.exports = function (stateRouter, socket) {
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
 					console.log('NOPE redirect to login screen')
-					cb.redirect('nli.login', { redirect: 'ASK JOSH ABOUT THIS!!!!!!!!!!!!!!!!!!!!!!!' })
+					cb.redirect('nli.login', {
+						redirectState: attemptingState,
+						redirectParams: JSON.stringify(attemptingParameters)
+					})
 				} else {
 					console.log('YES I am authed')
 					cb(null, { emailAddress: emailAddress })

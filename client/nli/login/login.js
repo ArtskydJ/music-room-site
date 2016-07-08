@@ -4,17 +4,20 @@ module.exports = function (stateRouter, socket) {
 		name: 'nli.login',
 		route: '/login',
 		template: require('./login.html'),
-		querystringParameters: [ 'action' ],
+		querystringParameters: [ 'action', 'redirectState', 'redirectParams' ],
 		resolve: function resolve(data, parameters, cb) {
 			var action = parameters.action
 
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
-
 				if (action === 'logout') {
 					socket.emit('session unauthenticate', cb)
 				} else if (err || !emailAddress) {
 					cb(null)
+				} else if (parameters.redirectState) {
+					console.log('coool redirect to ' + parameters.redirectState)
+					cb.redirect(parameters.redirectState, parameters.redirectParams || {})
 				} else {
+					console.log('redirect to dashboard because ' + parameters.redirectState)
 					cb.redirect('li.dashboard')
 				}
 			})
