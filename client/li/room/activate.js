@@ -21,7 +21,6 @@ module.exports = function activator(socket) {
 		context.on('destroy', destroy)
 		dragDrop('body', onFiles)
 
-		toggleMute() //sanity purposes
 		updateTimeView()
 		var ivUpdate = setInterval(updateTimeView, 50) // too often?
 
@@ -67,7 +66,7 @@ module.exports = function activator(socket) {
 		}
 
 		function destroy() {
-			socket.emit('leave', room, console.log.bind(console, 'left', room))
+			socket.emit('room leave', room, console.log.bind(console, 'left', room))
 
 			window.da = null
 			window.j = null
@@ -86,8 +85,16 @@ function scrollToBottom() {
 	div.scrollTop = div.scrollHeight
 }
 
-function removeExtension(name) {
-	return name.replace(/\.[^\.]+/, '') // use path.parse()?
+function prettifyFilename(name) {
+	return name
+		.replace(/^\d+\.?\s*/, '') // Remove leading number
+		.replace(/.mp3$/, '') // Remove mp3 file extension
+		//.replace(/\.[^\.]+$/, '') // Remove file extension
+		.replace(/[\s\+_-]+/g, ' ')
+		.replace(/(\w+)/g, function (word) { // Dumb title case
+			return word[0].toUpperCase() + word.slice(1).toLowerCase()
+		})
+		.trim()
 }
 
 function isAudio(file) {
@@ -102,6 +109,6 @@ function listify(file) {
 	// Formats file for ../../list-partial.js
 	return {
 		label: typeofAudio(file),
-		item: removeExtension(file.name)
+		item: prettifyFilename(file.name)
 	}
 }

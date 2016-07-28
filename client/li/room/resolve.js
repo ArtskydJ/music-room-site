@@ -5,7 +5,7 @@ module.exports = function resolver(socket) {
 		console.log('resolving room ' + room)
 		if (room === 'new') throw new Error('went to the wrong stinkin\' state!')
 
-		socket.emit('join', room, function (err) {
+		socket.emit('room join', room, function (err) {
 			console.log('joining', room)
 			if (err) {
 				console.error(err)

@@ -16,12 +16,12 @@ module.exports = function (stateRouter, socket) {
 		name: 'li',
 		defaultChild: 'dashboard',
 		template: require('./navbar.html'),
-		querystringParameters: [ 'redirect' ],
 		resolve: function resolve(data, parameters, cb) {
 			console.log('am I authed?')
 			socket.emit('session isAuthenticated', function (err, emailAddress) {
 				if (err || !emailAddress) {
 					console.log('NOPE redirect to login screen')
+					// User attempted to view a logged-in-users-only state
 					cb.redirect('nli.login', {
 						redirectState: attemptingState,
 						redirectParams: JSON.stringify(attemptingParameters)
